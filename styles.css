@@ -1,0 +1,51 @@
+/* Chat Modal */
+
+.chat_container {
+	width: 100%;
+	margin-top: 20px;
+}
+
+.history_dropdown {
+	width: 100%;
+}
+
+.chat_options_dropdowns {
+	width: 100%;
+	display: flex;
+	gap: 10px;
+	margin: 20px 0;
+}
+
+.chat_prompt_textarea {
+	width: 100%;
+	min-height: 100px;
+	padding: 10px;
+	font-size: 16px;
+}
+
+.model_temperature {
+	margin-top: 20px;
+}
+
+.chatModal_button_container {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 15px;
+}
+
+.cancel_button {
+	background-color: #b33939;
+}
+
+.generate_button {
+	background-color: #218c74;
+}
+
+.history_container {
+	font-size: 10px;
+	display: flex;
+	align-items: center;
+	padding: 10px 0;
+	gap: 10px;
+}
