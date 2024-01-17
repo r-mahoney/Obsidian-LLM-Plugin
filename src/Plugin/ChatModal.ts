@@ -3,6 +3,7 @@ import { ChatModalSettings, GPT4AllParams } from "Types/types";
 import {
 	ButtonComponent,
 	DropdownComponent,
+	Editor,
 	MarkdownView,
 	Modal,
 	Notice,
@@ -259,9 +260,52 @@ export class ChatModal extends Modal {
 		return prompt;
 	}
 
+	moveCursorToEndOfFile(editor: Editor) {
+		try {
+			const length = editor.lastLine();
+
+			const newCursor = {
+				line: length + 1,
+				ch: 0,
+			};
+			editor.setCursor(newCursor);
+
+			return newCursor;
+		} catch (err) {
+			throw new Error("Error moving cursor to end of file" + err);
+		}
+	}
+
+	appendMessage(editor: Editor, message: string, type: string) {
+		let newLine;
+
+		if (type === "prompt") {
+			newLine = `\n\n<hr class="__chatgpt_plugin">\n\nPrompt: ${message}\n\n`;
+			editor.replaceRange(newLine, editor.getCursor());
+		} else {
+			newLine = `${message}\n\n<hr class="__chatgpt_plugin">\n\n`;
+			editor.replaceRange(newLine, editor.getCursor());
+		}
+	}
+
+	async messageGPT4AllServer(params: GPT4AllParams) {
+		const response = await fetch("http://localhost:4891/v1/completions", {
+			method: "POST",
+			body: JSON.stringify({
+				model: "mistral-7b-openorca.Q4_0.gguf",
+				prompt: params.prompt,
+				max_tokens: params.tokens,
+				temperature: params.temperature,
+			}),
+		}).then((res) => res.json());
+
+		return response.choices[0].text;
+	}
+
 	async handleGenerateClick() {
 		const view =
 			this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+		const editor = this.app.workspace.activeEditor?.editor;
 
 		if (!view) {
 			new Notice(
@@ -278,15 +322,29 @@ export class ChatModal extends Modal {
 			prompt: this.processedPrompt,
 			temperature: this.plugin.settings.temperature / 10,
 			tokens: this.plugin.settings.tokens,
-			model: this.plugin.settings.model,
+			model: "mistral-7b-openorca.Q4_0.gguf",
 		};
 
-		// const response = this.call();
+		this.close();
+		this.moveCursorToEndOfFile(editor!);
+		this.appendMessage(editor!, params.prompt, "prompt");
+		this.moveCursorToEndOfFile(editor!);
 
-		// if (!response) {
-		// 	this.generateButton.setDisabled(false);
-		// 	this.generateButton.setButtonText("Generate Notes");
-		// 	return;
-		// }
+		const response = await this.messageGPT4AllServer(params);
+
+		if (!response) {
+			this.generateButton.setDisabled(false);
+			this.generateButton.setButtonText("Generate Notes");
+			return;
+		}
+
+		if (!editor) {
+			new Notice(
+				"You must have a Markdown file open to complete this action."
+			);
+			return;
+		}
+		this.appendMessage(editor!, response, "response");
+		this.moveCursorToEndOfFile(editor!);
 	}
 }

@@ -8,11 +8,17 @@ import {
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
-import { ChatHistoryItem, ChatModalSettings, TokenParams } from "./Types/types";
+import {
+	ChatHistoryItem,
+	ChatModalSettings,
+	GPT4AllParams,
+	TokenParams,
+} from "./Types/types";
 import data from "../prompts.json";
 
 import SettingsView from "Settings/SettingsView";
 import { ChatModal } from "Plugin/ChatModal";
+import { json } from "stream/consumers";
 
 interface LocalLLMPluginSettings {
 	appName: string;
@@ -42,6 +48,14 @@ export default class LocalLLMPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsView(this.app, this));
+
+		this.addCommand({
+			id: "open-sample-modal-simple",
+			name: "Open sample modal (simple)",
+			editorCallback: () => {
+				new SampleModal(this.app).open();
+			},
+		});
 	}
 
 	onunload() {}
