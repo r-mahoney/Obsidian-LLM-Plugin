@@ -3,7 +3,7 @@ export type ChatModalSettings = {
 };
 
 export type GPT4AllParams = {
-	prompt: string;
+	messages: Message[];
 	temperature: number;
 	tokens: number;
 	model: string;
@@ -19,3 +19,8 @@ export type TokenParams = {
 	prefix: string[];
 	postfix: string[];
 };
+
+export type Message = {
+	role: "user" | "assistant";
+	content: string
+}

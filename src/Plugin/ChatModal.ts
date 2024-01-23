@@ -12,6 +12,7 @@ import {
 	ToggleComponent,
 } from "obsidian";
 import { ChatHistoryItem } from "Types/types";
+import { messageGPT4AllServer, processReplacementTokens } from "utils/utils";
 
 export class ChatModal extends Modal {
 	prompt: string;
@@ -42,7 +43,17 @@ export class ChatModal extends Modal {
 
 	onOpen() {
 		const { contentEl } = this;
-		contentEl.setText("Generate Text Using a Local Language Model");
+		const models = {
+			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
+			"Mistral Instruct": "mistral-7b-instruct-v0.1.Q4_0.gguf",
+			"GPT4All Falcon": "gpt4all-falcon-newbpe-q4_0.gguf",
+			"Orca 2 (Medium)": "orca-2-7b.Q4_0.gguf",
+		};
+		const titleDiv = contentEl.createDiv();
+		titleDiv.className = "setting-item setting-item-heading";
+		const title = titleDiv.createDiv();
+		title.className = "setting-item-info";
+		title.innerHTML = "What do you want to chat about?";
 
 		const container = contentEl.createDiv();
 		container.className = "chat_container";
@@ -111,6 +122,22 @@ export class ChatModal extends Modal {
 			this.prompt = change;
 		});
 
+		const modelOptions = new Setting(container)
+			.setName("Models")
+			.setDesc("The model you want to use to generate a chat response.")
+			.addDropdown((dropdown: DropdownComponent) => {
+				let keys = Object.keys(models);
+				for (let model of keys) {
+					//@ts-ignore
+					dropdown.addOption(models[model], model);
+				}
+				dropdown.onChange((change) => {
+					this.plugin.settings.model = change;
+					this.plugin.saveSettings();
+				});
+				dropdown.setValue(this.plugin.settings.model);
+			});
+
 		const tempSetting = new Setting(container)
 			.setName("Temperature")
 			.setDesc("The amount of variation in the model (randomness).")
@@ -142,32 +169,6 @@ export class ChatModal extends Modal {
 					this.plugin.saveSettings();
 				});
 			});
-
-		// if (
-		// 	models[this.plugin.settings.model as keyof typeof models] === "chat"
-		// ) {
-		// 	tokenSetting.settingEl.style.display = "none";
-		// }
-
-		// new Setting(container)
-		// 	.setName("GPT4All Model")
-		// 	.setDesc("The type of GPT4All model to use.")
-		// 	.addDropdown((dropdown: DropdownComponent) => {
-		// 		for (let model in modelsKeys) {
-		// 			dropdown.addOption(modelsKeys[model], modelsKeys[model]);
-		// 		}
-		// 		dropdown.onChange((change) => {
-		// 			this.plugin.settings.model = change;
-		// 			this.plugin.saveSettings();
-		// 			tokenSetting.settingEl.style.display =
-		// 				models[
-		// 					this.plugin.settings.model as keyof typeof models
-		// 				] === "chat"
-		// 					? "none"
-		// 					: "";
-		// 		});
-		// 		dropdown.setValue(this.plugin.settings.model);
-		// 	});
 
 		const buttonContainer = container.createDiv();
 		buttonContainer.className = "chatModal_button_container";
@@ -247,19 +248,6 @@ export class ChatModal extends Modal {
 		);
 	}
 
-	processReplacementTokens(prompt: string) {
-		const tokenRegex = /\{\{(.*?)\}\}/g;
-		const matches = [...prompt.matchAll(tokenRegex)];
-		matches.forEach((match) => {
-			const token = match[1] as keyof typeof this.replacementTokens;
-			if (this.replacementTokens[token]) {
-				prompt = this.replacementTokens[token](match, prompt);
-			}
-		});
-
-		return prompt;
-	}
-
 	moveCursorToEndOfFile(editor: Editor) {
 		try {
 			const length = editor.lastLine();
@@ -278,6 +266,7 @@ export class ChatModal extends Modal {
 
 	appendMessage(editor: Editor, message: string, type: string) {
 		let newLine;
+		this.moveCursorToEndOfFile(editor!);
 
 		if (type === "prompt") {
 			newLine = `\n\n<hr class="__chatgpt_plugin">\n\nPrompt: ${message}\n\n`;
@@ -286,65 +275,56 @@ export class ChatModal extends Modal {
 			newLine = `${message}\n\n<hr class="__chatgpt_plugin">\n\n`;
 			editor.replaceRange(newLine, editor.getCursor());
 		}
+		this.moveCursorToEndOfFile(editor!);
 	}
 
-	async messageGPT4AllServer(params: GPT4AllParams) {
-		const response = await fetch("http://localhost:4891/v1/completions", {
-			method: "POST",
-			body: JSON.stringify({
-				model: "mistral-7b-openorca.Q4_0.gguf",
-				prompt: params.prompt,
-				max_tokens: params.tokens,
-				temperature: params.temperature,
-			}),
-		}).then((res) => res.json());
 
-		return response.choices[0].text;
-	}
 
 	async handleGenerateClick() {
 		const view =
 			this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
 		const editor = this.app.workspace.activeEditor?.editor;
+		this.processedPrompt = processReplacementTokens(this.prompt);
 
 		if (!view) {
+			// const newFile = await this.app.vault.create("gpt-4all.md", "");
+			// console.log(
+			// 	await this.app.workspace.openLinkText(
+			// 		newFile.basename,
+			// 		newFile.path,
+			// 		true,
+			// 		{ state: { mode: "source" } }
+			// 	)
+			// );
 			new Notice(
-				"You must have a Markdown file open to complete this action."
+				"You must have a markdown file open to complete this action."
 			);
 			this.generateButton.setDisabled(false);
 			this.generateButton.setButtonText("Generate Notes");
 			return;
 		}
-
-		this.processedPrompt = this.processReplacementTokens(this.prompt);
 
 		const params: GPT4AllParams = {
-			prompt: this.processedPrompt,
+			messages: [{role: 'user', content: this.processedPrompt}],
 			temperature: this.plugin.settings.temperature / 10,
 			tokens: this.plugin.settings.tokens,
-			model: "mistral-7b-openorca.Q4_0.gguf",
+			// model: "mistral-7b-openorca.Q4_0.gguf",
+			model: this.plugin.settings.model,
+			// model: "mistral-7b-instruct-v0.1.Q4_0.gguf",
 		};
 
+		// this.appendMessage(editor!, params.prompt, "prompt");
+		
+		const response = await messageGPT4AllServer(params);
 		this.close();
-		this.moveCursorToEndOfFile(editor!);
-		this.appendMessage(editor!, params.prompt, "prompt");
-		this.moveCursorToEndOfFile(editor!);
 
-		const response = await this.messageGPT4AllServer(params);
+		// if (!response) {
+		// 	this.generateButton.setDisabled(false);
+		// 	this.generateButton.setButtonText("Generate Notes");
+		// 	return;
+		// }
+		this.plugin.showConversationalModel(params, response)
 
-		if (!response) {
-			this.generateButton.setDisabled(false);
-			this.generateButton.setButtonText("Generate Notes");
-			return;
-		}
-
-		if (!editor) {
-			new Notice(
-				"You must have a Markdown file open to complete this action."
-			);
-			return;
-		}
-		this.appendMessage(editor!, response, "response");
-		this.moveCursorToEndOfFile(editor!);
+		// this.appendMessage(editor!, response, "response");
 	}
 }

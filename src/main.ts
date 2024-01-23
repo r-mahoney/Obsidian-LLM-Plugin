@@ -1,24 +1,10 @@
-import {
-	App,
-	Editor,
-	MarkdownView,
-	Modal,
-	Notice,
-	Plugin,
-	PluginSettingTab,
-	Setting,
-} from "obsidian";
-import {
-	ChatHistoryItem,
-	ChatModalSettings,
-	GPT4AllParams,
-	TokenParams,
-} from "./Types/types";
+import { App, Modal, Plugin } from "obsidian";
 import data from "../prompts.json";
+import { ChatHistoryItem, GPT4AllParams, Message, TokenParams } from "./Types/types";
 
-import SettingsView from "Settings/SettingsView";
 import { ChatModal } from "Plugin/ChatModal";
-import { json } from "stream/consumers";
+import { ConversationalModal } from "Plugin/ConversationalModal";
+import SettingsView from "Settings/SettingsView";
 
 interface LocalLLMPluginSettings {
 	appName: string;
@@ -61,13 +47,36 @@ export default class LocalLLMPlugin extends Plugin {
 	onunload() {}
 
 	private registerRibbonIcons() {
-		const ribbonIcon = this.addRibbonIcon(
+		const singleQuestionIcon = this.addRibbonIcon(
 			"bot",
-			"GPT4All Chat",
+			"Ask A Question",
 			(evt: MouseEvent) => {
 				new ChatModal(this).open();
 			}
 		);
+
+		const conversationalModalIcon = this.addRibbonIcon(
+			"lines-of-text",
+			"test",
+			(evt: MouseEvent) => {
+				new ConversationalModal(
+					this,
+					{
+						model: "",
+						messages: [
+							{ role: "user", content: "what is 1 + 1" }
+						],
+						temperature: 0.7,
+						tokens: 10,
+					},
+					{role: 'assistant', content: "Response"}
+				).open();
+			}
+		);
+	}
+
+	showConversationalModel(modelParams: GPT4AllParams, response: Message) {
+		new ConversationalModal(this, modelParams, response).open();
 	}
 
 	async loadSettings() {
@@ -99,18 +108,6 @@ class SampleModal extends Modal {
 	}
 }
 
-// // This creates an icon in the left ribbon.
-// const ribbonIconEl = this.addRibbonIcon(
-// 	"dice",
-// 	"Sample Plugin",
-// 	(evt: MouseEvent) => {
-// 		// Called when the user clicks the icon.
-// 		new Notice("This is a notice!");
-// 	}
-// );
-// // Perform additional things with the ribbon
-// ribbonIconEl.addClass("my-plugin-ribbon-class");
-
 // // This adds a status bar item to the bottom of the app. Does not work on mobile apps.
 // const statusBarItemEl = this.addStatusBarItem();
 // statusBarItemEl.setText("Status Bar Text");
@@ -130,25 +127,5 @@ class SampleModal extends Modal {
 // 	editorCallback: (editor: Editor, view: MarkdownView) => {
 // 		console.log(editor.getSelection());
 // 		editor.replaceSelection("Sample Editor Command");
-// 	},
-// });
-// // This adds a complex command that can check whether the current state of the app allows execution of the command
-// this.addCommand({
-// 	id: "open-sample-modal-complex",
-// 	name: "Open sample modal (complex)",
-// 	checkCallback: (checking: boolean) => {
-// 		// Conditions to check
-// 		const markdownView =
-// 			this.app.workspace.getActiveViewOfType(MarkdownView);
-// 		if (markdownView) {
-// 			// If checking is true, we're simply "checking" if the command can be run.
-// 			// If checking is false, then we want to actually perform the operation.
-// 			if (!checking) {
-// 				new SampleModal(this.app).open();
-// 			}
-
-// 			// This command will only show up in Command Palette when the check function returns true
-// 			return true;
-// 		}
 // 	},
 // });

@@ -1,5 +1,4 @@
 /* Chat Modal */
-
 .chat_container {
 	width: 100%;
 	margin-top: 20px;
@@ -17,8 +16,25 @@
 }
 
 .chat_prompt_textarea {
-	width: 100%;
 	min-height: 100px;
+}
+
+.chat_prompt_textarea, .conversation_answer_textarea {
+	width: 100%;
+	padding: 10px;
+	font-size: 16px;
+}
+
+.conversation_answer_textarea {
+	height:min-content;
+	max-height: 60vh;
+	overflow: auto;
+	min-height: 250px;
+}
+
+.conversation_prompt_textarea {
+	width: 100%;
+	min-height: 50px;
 	padding: 10px;
 	font-size: 16px;
 }
@@ -49,3 +65,18 @@
 	padding: 10px 0;
 	gap: 10px;
 }
+
+/* SETTINGS CONTAINER in Conversation Modal */
+.settings_container {
+	padding-top: 0.75em;
+	border-top: 1px solid #363636;
+}
+
+/* .setting-item {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	align-items: center;
+	padding: 0.75em 0;
+	border-top: 1px solid #363636;
+} */
