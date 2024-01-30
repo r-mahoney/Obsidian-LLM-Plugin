@@ -1,9 +1,14 @@
 import { App, Modal, Plugin } from "obsidian";
-import data from "../prompts.json";
-import { ChatHistoryItem, GPT4AllParams, Message, TokenParams } from "./Types/types";
+import {
+	ChatHistoryItem,
+	GPT4AllParams,
+	Message,
+	TokenParams,
+} from "./Types/types";
 
 import { ChatModal } from "Plugin/ChatModal";
 import { ConversationalModal } from "Plugin/ConversationalModal";
+import { History } from "History/HistoryHandler";
 import SettingsView from "Settings/SettingsView";
 
 interface LocalLLMPluginSettings {
@@ -12,7 +17,6 @@ interface LocalLLMPluginSettings {
 	tokens: number;
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
-	tokenParams: TokenParams;
 }
 
 export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
@@ -21,30 +25,34 @@ export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 	tokens: 300,
 	temperature: 5,
 	promptHistory: [],
-	tokenParams: data as TokenParams,
 };
 
 export default class LocalLLMPlugin extends Plugin {
 	settings: LocalLLMPluginSettings;
+	history: History
 
 	async onload() {
 		await this.loadSettings();
 
 		this.registerRibbonIcons();
+		this.registerCommands();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsView(this.app, this));
-
-		this.addCommand({
-			id: "open-sample-modal-simple",
-			name: "Open sample modal (simple)",
-			editorCallback: () => {
-				new SampleModal(this.app).open();
-			},
-		});
+		this.history = new History(this);
 	}
 
 	onunload() {}
+
+	private registerCommands() {
+		const openChat = this.addCommand({
+			id: "open-conversation-modal",
+			name: "GPT4All Chat",
+			editorCallback: () => {
+				new ChatModal(this).open();
+			},
+		});
+	}
 
 	private registerRibbonIcons() {
 		const singleQuestionIcon = this.addRibbonIcon(
@@ -63,13 +71,11 @@ export default class LocalLLMPlugin extends Plugin {
 					this,
 					{
 						model: "",
-						messages: [
-							{ role: "user", content: "what is 1 + 1" }
-						],
+						messages: [{ role: "user", content: "what is 1 + 1" }],
 						temperature: 0.7,
 						tokens: 10,
 					},
-					{role: 'assistant', content: "Response"}
+					{ role: "assistant", content: "Response" }
 				).open();
 			}
 		);
@@ -89,22 +95,6 @@ export default class LocalLLMPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText("Woah!");
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
 	}
 }
 
