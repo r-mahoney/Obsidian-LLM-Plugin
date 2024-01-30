@@ -1,7 +1,3 @@
-export type ChatModalSettings = {
-	loadLastItem?: boolean;
-};
-
 export type GPT4AllParams = {
 	messages: Message[];
 	temperature: number;
@@ -11,6 +7,7 @@ export type GPT4AllParams = {
 export type ChatHistoryItem = {
 	prompt: string;
 	processedPrompt: string;
+	messages: Message[];
 	temperature: number;
 	tokens: number;
 };

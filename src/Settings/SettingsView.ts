@@ -24,16 +24,13 @@ export default class SettingsView extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName("Setting #1")
-			.setDesc("It's a secret")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your secret")
-					.setValue(this.plugin.settings.appName)
-					.onChange(async (value) => {
-						this.plugin.settings.appName = value;
-						await this.plugin.saveSettings();
-					})
-			);
+			.setName("Reset Chat History")
+			.setDesc("This will delete previous Prompts and Chat Contexts")
+			.addButton((button: ButtonComponent) => {
+				button.setButtonText("Reset History")
+				button.onClick(() => {
+					this.plugin.history.reset()
+				})
+			})
 	}
 }
