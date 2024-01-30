@@ -1,9 +1,8 @@
+import { ChatHistoryItem, GPT4AllParams } from "Types/types";
 import LocalLLMPlugin from "main";
-import { ChatModalSettings, GPT4AllParams } from "Types/types";
 import {
 	ButtonComponent,
 	DropdownComponent,
-	Editor,
 	MarkdownView,
 	Modal,
 	Notice,
@@ -11,8 +10,11 @@ import {
 	TextAreaComponent,
 	ToggleComponent,
 } from "obsidian";
-import { ChatHistoryItem } from "Types/types";
-import { messageGPT4AllServer, processReplacementTokens } from "utils/utils";
+import {
+	messageGPT4AllServer,
+	modelLookup,
+	processReplacementTokens,
+} from "utils/utils";
 
 export class ChatModal extends Modal {
 	prompt: string;
@@ -20,23 +22,10 @@ export class ChatModal extends Modal {
 	replaceTokensInHistory: boolean;
 	generateButton: ButtonComponent;
 	promptField: TextAreaComponent;
-
-	replacementTokens = {
-		selection: (match: RegExpMatchArray, prompt: string) => {
-			const view =
-				this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-			if (view) {
-				const selection = view.editor.getSelection();
-				prompt = this.replaceToken(match, prompt, selection);
-			}
-
-			return prompt;
-		},
-	};
+	historyIndex: number;
 
 	constructor(
 		private plugin: LocalLLMPlugin,
-		private settings: ChatModalSettings = {}
 	) {
 		super(plugin.app);
 	}
@@ -48,6 +37,8 @@ export class ChatModal extends Modal {
 			"Mistral Instruct": "mistral-7b-instruct-v0.1.Q4_0.gguf",
 			"GPT4All Falcon": "gpt4all-falcon-newbpe-q4_0.gguf",
 			"Orca 2 (Medium)": "orca-2-7b.Q4_0.gguf",
+			SBert: "all-MiniLM-L6-v2-f16.gguf",
+			"MPT Chat": "mpt-7b-chat-newbpe-q4_0.gguf",
 		};
 		const titleDiv = contentEl.createDiv();
 		titleDiv.className = "setting-item setting-item-heading";
@@ -57,70 +48,6 @@ export class ChatModal extends Modal {
 
 		const container = contentEl.createDiv();
 		container.className = "chat_container";
-		const history_toggle_container = container.createDiv({
-			cls: "history_container",
-			text: "Replace tokens in history",
-		});
-		const history_toggle = new ToggleComponent(history_toggle_container);
-
-		const history_dropdown = new DropdownComponent(container);
-		history_dropdown.selectEl.className = "history_dropdown";
-
-		let history = this.plugin.settings.promptHistory;
-
-		this.generateHistoryOptions(history_dropdown, history);
-		history_toggle.onChange((change) => {
-			this.replaceTokensInHistory = change;
-			history_dropdown.selectEl
-				.querySelectorAll("option")
-				.forEach((option) => {
-					history_dropdown.selectEl.removeChild(option);
-				});
-			this.generateHistoryOptions(history_dropdown, history);
-		});
-
-		history_dropdown.onChange((change) => {
-			try {
-				const index = parseInt(change);
-				this.useHistoryItem(history[index]);
-				history_dropdown.setValue("History");
-			} catch (e: any) {}
-		});
-
-		const dropdownsDiv = container.createDiv();
-		dropdownsDiv.className = "chat_options_dropdowns";
-		this.tokenSection(
-			dropdownsDiv,
-			"Prefix",
-			this.plugin.settings.tokenParams.prefix
-		);
-		this.tokenSection(
-			dropdownsDiv,
-			"Postfix",
-			this.plugin.settings.tokenParams.postfix
-		);
-		this.tokenSection(
-			dropdownsDiv,
-			"Tokens",
-			Object.keys(this.replacementTokens).map((key) => `{{${key}}}`)
-		);
-
-		this.promptField = new TextAreaComponent(container);
-		this.promptField.inputEl.className = "chat_prompt_textarea";
-
-		this.promptField.setPlaceholder("Enter your prompt...");
-
-		if (this.settings.loadLastItem) {
-			const lastHistoryItemIndex =
-				this.plugin.settings.promptHistory.length - 1;
-			const lastItem =
-				this.plugin.settings.promptHistory[lastHistoryItemIndex];
-			this.useHistoryItem(lastItem);
-		}
-
-		this.promptField.onChange((change) => {
-			this.prompt = change;
-		});
 
 		const modelOptions = new Setting(container)
 			.setName("Models")
@@ -140,27 +67,19 @@ export class ChatModal extends Modal {
 
 		const tempSetting = new Setting(container)
 			.setName("Temperature")
-			.setDesc("The amount of variation in the model (randomness).")
-			.addDropdown((dropdown) => {
-				for (let i = 0; i <= 10; i++) {
-					if (i == 5) {
-						dropdown.addOption(`${i}`, "5 (default)");
-						continue;
-					}
-					dropdown.addOption(`${i}`, `${i}`);
-				}
-
-				dropdown.setValue(`${this.plugin.settings.temperature}`);
-				dropdown.onChange((change) => {
-					this.plugin.settings.temperature = parseInt(change);
+			.setDesc("Higher temperatures (eg., 1.2) increase randomness, resulting in more imaginative and diverse text. Lower temperatures (eg., 0.5) make the output more focused, predictable, and conservative. A safe range would be around 0.6 - 0.85")
+			.addText((text) => {
+				text.setValue(`${this.plugin.settings.temperature}`);
+				text.inputEl.type = "number";
+				text.onChange((change) => {
+					this.plugin.settings.temperature = parseFloat(change);
 					this.plugin.saveSettings();
 				});
 			});
-		tempSetting.controlEl.className = "model_temperature";
 
 		const tokenSetting = new Setting(container)
 			.setName("Tokens")
-			.setDesc("The number of tokens the model should generate.")
+			.setDesc("The number of tokens used in the completion.")
 			.addText((text) => {
 				text.setValue(`${this.plugin.settings.tokens}`);
 				text.inputEl.type = "number";
@@ -170,43 +89,53 @@ export class ChatModal extends Modal {
 				});
 			});
 
+		const history_toggle_container = container.createDiv({
+			cls: "history_container",
+			text: "Replace prompt in history.",
+		});
+		const history_toggle = new ToggleComponent(history_toggle_container);
+
+		const history_dropdown = new DropdownComponent(container);
+		history_dropdown.selectEl.className = "history_dropdown";
+
+		let history = this.plugin.settings.promptHistory;
+
+		this.generateHistoryOptions(history_dropdown, history);
+		history_toggle.onChange((change) => {
+			this.replaceTokensInHistory = change;
+		});
+
+		history_dropdown.onChange((change) => {
+			try {
+				const index = parseInt(change);
+				this.useHistoryItem(history[index]);
+				history_dropdown.setValue("History");
+				this.historyIndex = index
+			} catch (e: any) {}
+		});
+
+		this.promptField = new TextAreaComponent(container);
+		this.promptField.inputEl.className = "chat_prompt_textarea";
+		this.promptField.setPlaceholder("Enter your prompt...");
+		this.promptField.onChange((change) => {
+			this.prompt = change;
+		});
+
 		const buttonContainer = container.createDiv();
 		buttonContainer.className = "chatModal_button_container";
 
 		const cancelButton = new ButtonComponent(buttonContainer);
-		cancelButton.buttonEl.className = "cancel_button";
-		cancelButton.buttonEl.style.backgroundColor = "#b33939";
 		cancelButton.setButtonText("Cancel").onClick(() => {
 			this.close();
 		});
 
 		this.generateButton = new ButtonComponent(buttonContainer);
-		this.generateButton.buttonEl.className = "generate-button";
-		this.generateButton.buttonEl.style.backgroundColor = "#218c74";
+		this.generateButton.buttonEl.className = "mod-cta";
 		this.generateButton.setButtonText("Generate Notes").onClick(() => {
 			this.generateButton.setButtonText("Loading...");
 			this.generateButton.setDisabled(true);
-			this.generateButton.buttonEl.style.backgroundColor =
-				"rbga(33, 140, 116, 0.5)";
 			this.handleGenerateClick();
 		});
-	}
-
-	tokenSection(container: HTMLDivElement, label: string, options: string[]) {
-		const dropdown = new DropdownComponent(container);
-		dropdown.addOption(label, label);
-		for (let i in options) {
-			dropdown.addOption(options[i], options[i]);
-		}
-		dropdown.onChange((change) => {
-			const newValue = this.promptField.getValue() + change + " ";
-
-			this.promptField.setValue(newValue);
-			this.promptField.inputEl.focus();
-			this.prompt = newValue;
-			dropdown.setValue(label);
-		});
-		return dropdown;
 	}
 
 	generateHistoryOptions(
@@ -214,11 +143,8 @@ export class ChatModal extends Modal {
 		history: ChatHistoryItem[]
 	) {
 		history_dropdown.addOption("History", "History");
-		for (let i = history.length - 1; i >= 0; i--) {
-			const prompt =
-				(this.replaceTokensInHistory
-					? history[i].processedPrompt
-					: history[i].prompt) || history[i].prompt;
+		for (let i = 0; i < history.length - 1; i++) {
+			const prompt = history[i].prompt;
 			if (prompt.length > 80) {
 				history_dropdown.addOption(`${i}`, prompt.slice(0, 80) + "...");
 				continue;
@@ -235,67 +161,12 @@ export class ChatModal extends Modal {
 		this.prompt = prompt;
 	}
 
-	replaceToken(
-		match: RegExpMatchArray,
-		prompt: string,
-		replacementText: string
-	) {
-		const matchIndex = match.index || 0;
-		return (
-			prompt.substring(0, matchIndex) +
-			replacementText +
-			prompt.substring(matchIndex + match[0].length)
-		);
-	}
-
-	moveCursorToEndOfFile(editor: Editor) {
-		try {
-			const length = editor.lastLine();
-
-			const newCursor = {
-				line: length + 1,
-				ch: 0,
-			};
-			editor.setCursor(newCursor);
-
-			return newCursor;
-		} catch (err) {
-			throw new Error("Error moving cursor to end of file" + err);
-		}
-	}
-
-	appendMessage(editor: Editor, message: string, type: string) {
-		let newLine;
-		this.moveCursorToEndOfFile(editor!);
-
-		if (type === "prompt") {
-			newLine = `\n\n<hr class="__chatgpt_plugin">\n\nPrompt: ${message}\n\n`;
-			editor.replaceRange(newLine, editor.getCursor());
-		} else {
-			newLine = `${message}\n\n<hr class="__chatgpt_plugin">\n\n`;
-			editor.replaceRange(newLine, editor.getCursor());
-		}
-		this.moveCursorToEndOfFile(editor!);
-	}
-
-
-
 	async handleGenerateClick() {
 		const view =
 			this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-		const editor = this.app.workspace.activeEditor?.editor;
 		this.processedPrompt = processReplacementTokens(this.prompt);
 
 		if (!view) {
-			// const newFile = await this.app.vault.create("gpt-4all.md", "");
-			// console.log(
-			// 	await this.app.workspace.openLinkText(
-			// 		newFile.basename,
-			// 		newFile.path,
-			// 		true,
-			// 		{ state: { mode: "source" } }
-			// 	)
-			// );
 			new Notice(
 				"You must have a markdown file open to complete this action."
 			);
@@ -305,26 +176,43 @@ export class ChatModal extends Modal {
 		}
 
 		const params: GPT4AllParams = {
-			messages: [{role: 'user', content: this.processedPrompt}],
+			messages: [{ role: "user", content: this.processedPrompt }],
 			temperature: this.plugin.settings.temperature / 10,
 			tokens: this.plugin.settings.tokens,
-			// model: "mistral-7b-openorca.Q4_0.gguf",
 			model: this.plugin.settings.model,
-			// model: "mistral-7b-instruct-v0.1.Q4_0.gguf",
 		};
 
-		// this.appendMessage(editor!, params.prompt, "prompt");
-		
-		const response = await messageGPT4AllServer(params);
-		this.close();
+		if (!modelLookup(this.plugin.settings.model)) {
+			new Notice(
+				"You must first install the selected model from the GPT4All Chat Client"
+			);
+			return;
+		}
 
-		// if (!response) {
-		// 	this.generateButton.setDisabled(false);
-		// 	this.generateButton.setButtonText("Generate Notes");
-		// 	return;
-		// }
-		this.plugin.showConversationalModel(params, response)
+		try {
+			const response = await messageGPT4AllServer(params);
+			if (!response) {
+				throw new Error(response);
+			}
+			this.close();
+			this.plugin.showConversationalModel(params, response);
+		} catch (err) {
+			if (err.message === "Failed to fetch") {
+				new Notice(
+					"You must have GPT4All open with the API Server enabled"
+				);
+			}
+			this.generateButton.setDisabled(false);
+			this.generateButton.setButtonText("Generate Notes");
+			return;
+		}
 
-		// this.appendMessage(editor!, response, "response");
+		this.plugin.history.push({
+			prompt: this.prompt,
+			processedPrompt: this.processedPrompt,
+			messages: params.messages,
+			temperature: params.temperature,
+			tokens: params.tokens,
+		});
 	}
 }

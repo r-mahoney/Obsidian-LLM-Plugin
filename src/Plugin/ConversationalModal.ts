@@ -6,16 +6,23 @@ import {
 	TextAreaComponent,
 	TextComponent,
 } from "obsidian";
-import { messageGPT4AllServer, processReplacementTokens } from "utils/utils";
+import {
+	appendMessage,
+	messageGPT4AllServer,
+	processReplacementTokens,
+} from "utils/utils";
 
 export class ConversationalModal extends Modal {
 	prompt: string;
 	processedPrompt: string;
 	answerText: string;
-	generateButton: ButtonComponent;
 	answerTextArea: TextAreaComponent;
+	generateButton: ButtonComponent;
+	addHiglightedButton: ButtonComponent;
+	addTextButton: ButtonComponent;
 	promptText: TextComponent;
 	messages: Message[];
+	selectedText: string;
 
 	constructor(
 		private plugin: LocalLLMPlugin,
@@ -31,6 +38,7 @@ export class ConversationalModal extends Modal {
 	}
 
 	async handleGenerateClick() {
+		this.promptText.setValue("");
 		this.processedPrompt = processReplacementTokens(this.prompt);
 		this.messages.push({ role: "user", content: this.processedPrompt });
 		const params: GPT4AllParams = this.modelParams;
@@ -40,15 +48,30 @@ export class ConversationalModal extends Modal {
 		this.answerTextArea.inputEl.setText(
 			`${responseText}\n\nPrompt: ${this.processedPrompt}`
 		);
-		const reponse: Message = await messageGPT4AllServer(params);
-		this.promptText.setValue("");
+		const response: Message = await messageGPT4AllServer(params);
 		this.promptText.setPlaceholder("Ask a follow-up question");
 		this.generateButton.setDisabled(false);
 		this.generateButton.setButtonText("Generate Notes");
 		responseText = this.answerTextArea.inputEl.getText();
 		this.answerTextArea.inputEl.setText(
-			`${responseText}\n\nResponse: ${reponse.content}`
+			`${responseText}\n\nResponse: ${response.content}`
 		);
+		let history = this.messages;
+		history.push({ role: response.role, content: response.content });
+		this.plugin.history.addContext(history);
+	}
+
+	handleAddHiglightedClick() {
+		const editor = this.app.workspace.activeEditor?.editor;
+		const selectionStart = this.answerTextArea.inputEl.selectionStart;
+		const selectionEnd = this.answerTextArea.inputEl.selectionEnd;
+		const selection = this.answerTextArea.inputEl.value.substring(
+			selectionStart,
+			selectionEnd
+		);
+		this.selectedText = selection;
+		appendMessage(editor!, this.selectedText);
+		this.close();
 	}
 
 	onOpen() {
@@ -58,7 +81,6 @@ export class ConversationalModal extends Modal {
 			content: this.response.content,
 		});
 		const { contentEl } = this;
-
 		const container = contentEl.createDiv();
 		container.className = "chat_container";
 
@@ -78,21 +100,48 @@ export class ConversationalModal extends Modal {
 		buttonContainer.className = "chatModal_button_container";
 
 		const cancelButton = new ButtonComponent(buttonContainer);
-		cancelButton.buttonEl.className = "cancel_button";
-		cancelButton.buttonEl.style.backgroundColor = "#b33939";
+		cancelButton.buttonEl.className = "mod-warning";
 		cancelButton.setButtonText("Cancel").onClick(() => {
 			this.close();
 		});
 
+		const undoButton = new ButtonComponent(buttonContainer);
+		undoButton.buttonEl.addClass("no-display");
+		undoButton.setButtonText("Undo").onClick(() => {
+			this.toggleTextAreaDisabled();
+			this.generateButton.buttonEl.removeClass("no-display");
+			this.addHiglightedButton.buttonEl.removeClass("no-display");
+			this.addTextButton.buttonEl.addClass("no-display");
+			cancelButton.buttonEl.removeClass("no-display");
+			undoButton.buttonEl.addClass("no-display");
+		});
+
 		this.generateButton = new ButtonComponent(buttonContainer);
-		this.generateButton.buttonEl.className = "generate-button";
-		this.generateButton.buttonEl.style.backgroundColor = "#218c74";
-		this.generateButton.setButtonText("Generate Notes").onClick(() => {
+		this.generateButton.buttonEl.className = "mod-cta";
+		this.generateButton.setButtonText("Continue Chatting").onClick(() => {
 			this.generateButton.setButtonText("Loading...");
 			this.generateButton.setDisabled(true);
-			this.generateButton.buttonEl.style.backgroundColor =
-				"rbga(33, 140, 116, 0.5)";
 			this.handleGenerateClick();
 		});
+
+		this.addTextButton = new ButtonComponent(buttonContainer);
+		this.addTextButton.buttonEl.addClass("no-display");
+		this.addTextButton.setButtonText("Add Text to Note").onClick(() => {
+			this.handleAddHiglightedClick();
+		});
+
+		this.addHiglightedButton = new ButtonComponent(buttonContainer);
+		this.addHiglightedButton.buttonEl.className = "select-text";
+		this.addHiglightedButton
+			.setButtonText("Select Text to Add")
+			.onClick(() => {
+				this.toggleTextAreaDisabled();
+				this.answerTextArea.inputEl.focus();
+				this.generateButton.buttonEl.addClass("no-display");
+				this.addHiglightedButton.buttonEl.addClass("no-display");
+				this.addTextButton.buttonEl.removeClass("no-display");
+				cancelButton.buttonEl.addClass("no-display");
+				undoButton.buttonEl.removeClass("no-display");
+			});
 	}
 }
