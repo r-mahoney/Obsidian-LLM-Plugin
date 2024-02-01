@@ -1,4 +1,4 @@
-import { GPT4AllParams } from "Types/types";
+import { GPT4AllParams, Message } from "Types/types";
 import { existsSync } from "fs";
 import { Editor } from "obsidian";
 
@@ -6,7 +6,7 @@ const path = require("path");
 const homeDir = require("os").homedir();
 export const DEFAULT_DIRECTORY = path.resolve(
 	homeDir,
-	"AppData/Local/nomic.ai/GPT4All/"
+	navigator.platform.indexOf("Win") > -1 ? "AppData/Local/nomic.ai/GPT4All/" : "Library/Application Support/nomic.ai/GPT4All"
 );
 
 export function modelLookup(modelName: string) {
@@ -26,67 +26,6 @@ export async function messageGPT4AllServer(params: GPT4AllParams) {
 	}).then((res) => res.json());
 	return response.choices[0].message;
 }
-
-// function readChunks(reader: any) {
-// 	return {
-// 		async *[Symbol.asyncIterator]() {
-// 			let readResult = await reader.read();
-// 			while (!readResult.done) {
-// 				yield readResult.value;
-// 				readResult = await reader.read();
-// 			}
-// 		},
-// 	};
-// }
-
-// export function dowloadModel(modelName: string, options = {}) {
-// 	const modelUrl = `https://gpt4all.io/models/gguf/${modelName}`;
-// 	const finalModelPath = path.join(DEFAULT_DIRECTORY, modelName);
-// 	if (existsSync(finalModelPath)) {
-// 		console.log(`Model already exists at ${finalModelPath}`);
-// 	}
-
-// 	const abortController = new AbortController();
-// 	const signal = abortController.signal;
-// 	const headers = {
-// 		"Accept-Ranges": "arraybuffer",
-// 		"Response-Type": "arraybuffer",
-// 	};
-
-// 	const downloadPromise = new Promise((res, rej) => {
-// 		const writeStream = createWriteStream(modelName);
-
-// 		writeStream.on("error", (e) => {
-// 			writeStream.close();
-// 			rej(e);
-// 		});
-
-// 		fetch(modelUrl, {
-// 			signal,
-// 			headers,
-// 			mode: "no-cors"
-// 		})
-// 			.then((res) => {
-// 				if (!res.ok) {
-// 					const message = `Failed to download model from ${modelUrl} - ${res.status} ${res.statusText}`;
-// 					rej(Error(message));
-// 				}
-// 				return res.body?.getReader();
-// 			})
-// 			.then(async (reader) => {
-// 				for await (const chunk of readChunks(reader)) {
-// 					writeStream.write(chunk);
-// 				}
-// 				writeStream.end();
-// 			})
-// 			.catch(rej);
-// 	});
-
-// 	return {
-// 		cancel: () => abortController.abort(),
-// 		promis: downloadPromise,
-// 	};
-// }
 
 export function processReplacementTokens(prompt: string) {
 	const tokenRegex = /\{\{(.*?)\}\}/g;
@@ -132,4 +71,13 @@ export function appendMessage(editor: Editor, message: string, type?: string) {
 		editor.replaceRange(newLine, editor.getCursor());
 	}
 	moveCursorToEndOfFile(editor!);
+}
+
+export function serializeMessages(messages: Message[]) {
+	let response = "";
+	messages.forEach((message: Message) => {
+		response += `${message.role} : ${message.content}\n\n`;
+	});
+
+	return response
 }

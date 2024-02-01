@@ -1,7 +1,7 @@
 {
 	"id": "gpt4all-local-llm-plugin",
 	"name": "GPT4All Local LLM Plugin",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"minAppVersion": "0.15.0",
 	"description": "Demonstrates some of the capabilities of the Obsidian API.",
 	"author": "Ryan Mahoney",

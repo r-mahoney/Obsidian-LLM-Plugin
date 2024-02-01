@@ -11,6 +11,7 @@ import {
 	messageGPT4AllServer,
 	processReplacementTokens,
 } from "utils/utils";
+import { ChatModal } from "./ChatModal";
 
 export class ConversationalModal extends Modal {
 	prompt: string;
@@ -101,8 +102,9 @@ export class ConversationalModal extends Modal {
 
 		const cancelButton = new ButtonComponent(buttonContainer);
 		cancelButton.buttonEl.className = "mod-warning";
-		cancelButton.setButtonText("Cancel").onClick(() => {
+		cancelButton.setButtonText("Go Back").onClick(() => {
 			this.close();
+			new ChatModal(this.plugin, this.messages[this.messages.length-2]).open()
 		});
 
 		const undoButton = new ButtonComponent(buttonContainer);

@@ -63,22 +63,22 @@ export default class LocalLLMPlugin extends Plugin {
 			}
 		);
 
-		// const conversationalModalIcon = this.addRibbonIcon(
-		// 	"lines-of-text",
-		// 	"test",
-		// 	(evt: MouseEvent) => {
-		// 		new ConversationalModal(
-		// 			this,
-		// 			{
-		// 				model: "",
-		// 				messages: [{ role: "user", content: "what is 1 + 1" }],
-		// 				temperature: 0.7,
-		// 				tokens: 10,
-		// 			},
-		// 			{ role: "assistant", content: "Response" }
-		// 		).open();
-		// 	}
-		// );
+		const conversationalModalIcon = this.addRibbonIcon(
+			"lines-of-text",
+			"test",
+			(evt: MouseEvent) => {
+				new ConversationalModal(
+					this,
+					{
+						model: "",
+						messages: [{ role: "user", content: "what is 1 + 1" }],
+						temperature: 0.7,
+						tokens: 10,
+					},
+					{ role: "assistant", content: "Response" }
+				).open();
+			}
+		);
 	}
 
 	showConversationalModel(modelParams: GPT4AllParams, response: Message) {

@@ -1,4 +1,4 @@
-import { ChatHistoryItem, GPT4AllParams } from "Types/types";
+import { ChatHistoryItem, GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
 import {
 	ButtonComponent,
@@ -14,19 +14,19 @@ import {
 	messageGPT4AllServer,
 	modelLookup,
 	processReplacementTokens,
+	serializeMessages,
 } from "utils/utils";
 
 export class ChatModal extends Modal {
 	prompt: string;
 	processedPrompt: string;
-	replaceTokensInHistory: boolean;
+	replaceChatHistory: boolean;
 	generateButton: ButtonComponent;
 	promptField: TextAreaComponent;
 	historyIndex: number;
+	messages: Message[];
 
-	constructor(
-		private plugin: LocalLLMPlugin,
-	) {
+	constructor(private plugin: LocalLLMPlugin, private lastPrompt?: Message) {
 		super(plugin.app);
 	}
 
@@ -37,8 +37,13 @@ export class ChatModal extends Modal {
 			"Mistral Instruct": "mistral-7b-instruct-v0.1.Q4_0.gguf",
 			"GPT4All Falcon": "gpt4all-falcon-newbpe-q4_0.gguf",
 			"Orca 2 (Medium)": "orca-2-7b.Q4_0.gguf",
-			SBert: "all-MiniLM-L6-v2-f16.gguf",
+			"Orca 2 (Full)": "orca-2-13b.Q4_0.gguf",
+			"Mini Orca (Small)": "orca-mini-3b-gguf2-q4_0.gguf",
 			"MPT Chat": "mpt-7b-chat-newbpe-q4_0.gguf",
+			"Wizard v1.2": "wizardlm-13b-v1.2.Q4_0.gguf",
+			Hermes: "nous-hermes-llama2-13b.Q4_0.gguf",
+			Snoozy: "gpt4all-13b-snoozy-q4_0.gguf",
+			"EM German Mistral": "em_german_mistral_v01.Q4_0.gguf",
 		};
 		const titleDiv = contentEl.createDiv();
 		titleDiv.className = "setting-item setting-item-heading";
@@ -67,7 +72,9 @@ export class ChatModal extends Modal {
 
 		const tempSetting = new Setting(container)
 			.setName("Temperature")
-			.setDesc("Higher temperatures (eg., 1.2) increase randomness, resulting in more imaginative and diverse text. Lower temperatures (eg., 0.5) make the output more focused, predictable, and conservative. A safe range would be around 0.6 - 0.85")
+			.setDesc(
+				"Higher temperatures (eg., 1.2) increase randomness, resulting in more imaginative and diverse text. Lower temperatures (eg., 0.5) make the output more focused, predictable, and conservative. A safe range would be around 0.6 - 0.85"
+			)
 			.addText((text) => {
 				text.setValue(`${this.plugin.settings.temperature}`);
 				text.inputEl.type = "number";
@@ -102,7 +109,7 @@ export class ChatModal extends Modal {
 
 		this.generateHistoryOptions(history_dropdown, history);
 		history_toggle.onChange((change) => {
-			this.replaceTokensInHistory = change;
+			this.replaceChatHistory = change;
 		});
 
 		history_dropdown.onChange((change) => {
@@ -110,13 +117,17 @@ export class ChatModal extends Modal {
 				const index = parseInt(change);
 				this.useHistoryItem(history[index]);
 				history_dropdown.setValue("History");
-				this.historyIndex = index
+				this.historyIndex = index;
 			} catch (e: any) {}
 		});
 
 		this.promptField = new TextAreaComponent(container);
 		this.promptField.inputEl.className = "chat_prompt_textarea";
 		this.promptField.setPlaceholder("Enter your prompt...");
+		if (this.lastPrompt) {
+			this.promptField.inputEl.setText(this.lastPrompt.content);
+			this.prompt = this.lastPrompt.content;
+		}
 		this.promptField.onChange((change) => {
 			this.prompt = change;
 		});
@@ -136,6 +147,7 @@ export class ChatModal extends Modal {
 			this.generateButton.setDisabled(true);
 			this.handleGenerateClick();
 		});
+		console.log(history.length);
 	}
 
 	generateHistoryOptions(
@@ -143,7 +155,7 @@ export class ChatModal extends Modal {
 		history: ChatHistoryItem[]
 	) {
 		history_dropdown.addOption("History", "History");
-		for (let i = 0; i < history.length - 1; i++) {
+		for (let i = 0; i < history.length; i++) {
 			const prompt = history[i].prompt;
 			if (prompt.length > 80) {
 				history_dropdown.addOption(`${i}`, prompt.slice(0, 80) + "...");
@@ -154,11 +166,10 @@ export class ChatModal extends Modal {
 	}
 
 	useHistoryItem(item: ChatHistoryItem) {
-		const prompt = this.replaceTokensInHistory
-			? item.processedPrompt
-			: item.prompt;
-		this.promptField.setValue(prompt);
-		this.prompt = prompt;
+		const messages = item.messages;
+		const field = serializeMessages(messages);
+		this.promptField.setValue(field);
+		this.messages = messages;
 	}
 
 	async handleGenerateClick() {
@@ -175,21 +186,24 @@ export class ChatModal extends Modal {
 			return;
 		}
 
+		if (this.replaceChatHistory) {
+			let history = this.plugin.settings.promptHistory;
+			this.messages = history[this.historyIndex].messages;
+		} else {
+			this.messages = [{ role: "user", content: this.processedPrompt }];
+		}
+
 		const params: GPT4AllParams = {
-			messages: [{ role: "user", content: this.processedPrompt }],
+			messages: this.messages,
 			temperature: this.plugin.settings.temperature / 10,
 			tokens: this.plugin.settings.tokens,
 			model: this.plugin.settings.model,
 		};
 
-		if (!modelLookup(this.plugin.settings.model)) {
-			new Notice(
-				"You must first install the selected model from the GPT4All Chat Client"
-			);
-			return;
-		}
-
 		try {
+			if (!modelLookup(this.plugin.settings.model)) {
+				throw new Error("You must first install the selected model from the GPT4All Chat Client")
+			}
 			const response = await messageGPT4AllServer(params);
 			if (!response) {
 				throw new Error(response);
@@ -201,6 +215,9 @@ export class ChatModal extends Modal {
 				new Notice(
 					"You must have GPT4All open with the API Server enabled"
 				);
+			}
+			else {
+				new Notice (err)
 			}
 			this.generateButton.setDisabled(false);
 			this.generateButton.setButtonText("Generate Notes");
