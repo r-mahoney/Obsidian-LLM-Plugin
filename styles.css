@@ -59,3 +59,91 @@
 	background-color: #218c74;
 	color: #ffffff;
 }
+
+/* Chat Modal 2*/
+.title-div {
+	display: flex;
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 20px;
+}
+
+.title-border {
+	border-bottom: 1px solid var(--background-modifier-border);
+	margin-left: -16px;
+	width: calc(100% + 32px);
+}
+
+.title {
+	font-weight: bold;
+	margin-top: -10px;
+}
+
+.left-buttons-div {
+	display: flex;
+	justify-self: flex-start;
+}
+
+.right-buttons-div {
+	display: flex;
+	justify-content: space-evenly;
+	padding-right: 10px;
+}
+
+.title-buttons {
+	padding: 2px 4px;
+}
+
+.new-chat-button {
+	justify-self: flex-start;
+}
+
+.one {
+	flex: 1;
+}
+
+.four {
+	flex: 4;
+}
+
+/* Chat Container */
+.chat-container, .chat-history-container, .settings-container {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	margin-top: 20px;
+	min-height: 50vh;
+	max-height: var(--dialog-max-height);
+	overflow: auto;
+}
+
+.chat-container {
+	justify-content: space-between;
+}
+
+.messages-div {
+	min-height: 15rem;
+	margin-bottom: 15px;
+}
+
+.prompt-container {
+	position: relative;
+	width: 100%;
+}
+
+#chat-prompt-text-area {
+	padding: 10px 60px 10px 10px;
+	font-size: 16px;
+}
+
+.chat-prompt-text-area {
+	width: 100%;
+	min-height: 3rem;
+	font-size: 16px;
+}
+
+.send-button {
+	position: absolute;
+	top: 9px;
+	right: 9px;
+}

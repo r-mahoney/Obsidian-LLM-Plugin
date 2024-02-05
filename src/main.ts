@@ -1,14 +1,14 @@
-import { App, Modal, Plugin } from "obsidian";
+import { Plugin } from "obsidian";
 import {
 	ChatHistoryItem,
 	GPT4AllParams,
-	Message,
-	TokenParams,
+	Message
 } from "./Types/types";
 
+import { History } from "History/HistoryHandler";
 import { ChatModal } from "Plugin/ChatModal";
 import { ConversationalModal } from "Plugin/ConversationalModal";
-import { History } from "History/HistoryHandler";
+import { ChatModal2 } from "Plugin/ChatModal2";
 import SettingsView from "Settings/SettingsView";
 
 interface LocalLLMPluginSettings {
@@ -67,16 +67,17 @@ export default class LocalLLMPlugin extends Plugin {
 			"lines-of-text",
 			"test",
 			(evt: MouseEvent) => {
-				new ConversationalModal(
-					this,
-					{
-						model: "",
-						messages: [{ role: "user", content: "what is 1 + 1" }],
-						temperature: 0.7,
-						tokens: 10,
-					},
-					{ role: "assistant", content: "Response" }
-				).open();
+				new ChatModal2(this).open();
+				// new ConversationalModal(
+				// 	this,
+				// 	{
+				// 		model: "",
+				// 		messages: [{ role: "user", content: "what is 1 + 1" }],
+				// 		temperature: 0.7,
+				// 		tokens: 10,
+				// 	},
+				// 	{ role: "assistant", content: "Response" }
+				// ).open();
 			}
 		);
 	}
