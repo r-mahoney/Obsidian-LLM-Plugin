@@ -21,6 +21,7 @@ export class HistoryContainer {
 			const item = parentElement.createDiv();
 			item.innerHTML = historyItem.prompt;
 			const buttonsDiv = item.createDiv();
+            buttonsDiv.addClass("history-buttons-div")
 			const setHistory = new ButtonComponent(buttonsDiv);
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 
@@ -41,6 +42,7 @@ export class HistoryContainer {
 				chat.generateIMLikeMessgaes(messages);
 			});
 
+            deleteHistory.setIcon("trash")
 			deleteHistory.onClick(() => {
                 this.resetHistory(parentElement)
 				let updatedHistory = this.plugin.settings.promptHistory.filter(

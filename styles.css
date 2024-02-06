@@ -185,6 +185,11 @@
 	justify-content: space-between;
 }
 
+.history-buttons-div {
+	display: flex;
+	align-items: center;
+}
+
 .set-history-button,
 .delete-history-button {
 	margin-left: 10px;
@@ -192,8 +197,8 @@
 
 /* #set-history-button {
 	
-}
+} */
 
 #delete-history-button {
-
-} */
+	padding: 4px;
+}
