@@ -9,12 +9,10 @@ import {
 } from "obsidian";
 import LocalLLMPlugin from "main";
 import { ChatHistoryItem, Model } from "Types/types";
-import { DEFAULT_DIRECTORY } from "utils/utils";
-const fs = require("fs");
+import { HistoryContainer } from "./HistoryContainer";
 
 export class ChatModal2 extends Modal {
 	prompt: string;
-	downloadedModels: Record<string, string>;
 	constructor(private plugin: LocalLLMPlugin) {
 		super(plugin.app);
 	}
@@ -35,23 +33,13 @@ export class ChatModal2 extends Modal {
 		item.innerHTML = historyItem.prompt;
 	}
 
-	// checkModelsExist(models: Record<string, string>) {
-	// 	let keys = Object.keys(models);
-	// 	keys.map((model: string) => {
-	// 		fs.exists(
-	// 			`${DEFAULT_DIRECTORY}/${models[model]}`,
-	// 			(exists: boolean) => {
-	// 				if (exists) {
-	// 					this.downloadedModels[model] = models[model];
-	// 				}
-	// 			}
-	// 		);
-	// 	});
-	// }
-
 	onOpen() {
+		console.log(
+			this.modalEl
+				.getElementsByClassName("modal-close-button")[0]
+				.setAttr("style", "display: none")
+		);
 		const { contentEl } = this;
-		this.downloadedModels = {};
 		let history = this.plugin.settings.promptHistory;
 		const models = {
 			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
@@ -66,12 +54,13 @@ export class ChatModal2 extends Modal {
 			Snoozy: "gpt4all-13b-snoozy-q4_0.gguf",
 			"EM German Mistral": "em_german_mistral_v01.Q4_0.gguf",
 		};
-		// this.checkModelsExist(models);
 
 		const titleDiv = contentEl.createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
 		const title = titleDiv.createDiv();
 		const rightButtonsDiv = titleDiv.createDiv();
+		const rightA = rightButtonsDiv.createDiv();
+		const rightB = rightButtonsDiv.createDiv();
 
 		titleDiv.className = "title-div";
 		title.innerHTML = "LocalLLM Plugin";
@@ -82,13 +71,13 @@ export class ChatModal2 extends Modal {
 			this.hideContainer(settingsContainer);
 			this.hideContainer(chatContainer);
 		});
-		const settingsButton = new ButtonComponent(rightButtonsDiv);
+		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
 			this.showContainer(settingsContainer);
 			this.hideContainer(chatContainer);
 			this.hideContainer(chatHistoryContainer);
 		});
-		const newChatButton = new ButtonComponent(rightButtonsDiv);
+		const newChatButton = new ButtonComponent(rightB);
 		newChatButton.onClick(() => {
 			this.showContainer(chatContainer);
 			this.hideContainer(settingsContainer);
@@ -126,6 +115,8 @@ export class ChatModal2 extends Modal {
 		chatHistoryButton.buttonEl.className = "title-buttons";
 		settingsButton.buttonEl.className = "title-buttons";
 		newChatButton.buttonEl.className = "title-buttons";
+		rightA.className = "flex-end"
+		rightB.className = "flex-end"
 
 		chatHistoryButton.setIcon("bullet-list");
 		settingsButton.setIcon("wrench-screwdriver-glyph");
@@ -141,57 +132,6 @@ export class ChatModal2 extends Modal {
 			this.prompt = "";
 		});
 
-		const modelOptions = new Setting(settingsContainer)
-			.setName("Models")
-			.setDesc("The model you want to use to generate a chat response.")
-			.addDropdown((dropdown: DropdownComponent) => {
-				let keys = Object.keys(models);
-				for (let model of keys) {
-					fs.exists(
-                        //@ts-ignore
-						`${DEFAULT_DIRECTORY}/${models[model]}`,
-						(exists: boolean) => {
-							if (exists) {
-								dropdown.addOption(
-									this.downloadedModels[model],
-									model
-								);
-							}
-						}
-					);
-				}
-				dropdown.onChange((change) => {
-					this.plugin.settings.model = change;
-					this.plugin.saveSettings();
-                    console.log(this.plugin.settings.model)
-				});
-				dropdown.setValue(this.plugin.settings.model);
-			});
-
-		const tempSetting = new Setting(settingsContainer)
-			.setName("Temperature")
-			.setDesc(
-				"Higher temperatures (eg., 1.2) increase randomness, resulting in more imaginative and diverse text. Lower temperatures (eg., 0.5) make the output more focused, predictable, and conservative. A safe range would be around 0.6 - 0.85"
-			)
-			.addText((text) => {
-				text.setValue(`${this.plugin.settings.temperature}`);
-				text.inputEl.type = "number";
-				text.onChange((change) => {
-					this.plugin.settings.temperature = parseFloat(change);
-					this.plugin.saveSettings();
-				});
-			});
-
-		const tokenSetting = new Setting(settingsContainer)
-			.setName("Tokens")
-			.setDesc("The number of tokens used in the completion.")
-			.addText((text) => {
-				text.setValue(`${this.plugin.settings.tokens}`);
-				text.inputEl.type = "number";
-				text.onChange((change) => {
-					this.plugin.settings.tokens = parseInt(change);
-					this.plugin.saveSettings();
-				});
-			});
+		new HistoryContainer(this.plugin).generateSettingsContainer(settingsContainer, models)
 	}
 }
