@@ -9,10 +9,11 @@ import {
 } from "obsidian";
 import LocalLLMPlugin from "main";
 import { ChatHistoryItem, Model } from "Types/types";
+import { SettingsContainer } from "./SettingsContainer";
 import { HistoryContainer } from "./HistoryContainer";
+import { ChatContainer } from "./ChatContainer";
 
 export class ChatModal2 extends Modal {
-	prompt: string;
 	constructor(private plugin: LocalLLMPlugin) {
 		super(plugin.app);
 	}
@@ -22,15 +23,6 @@ export class ChatModal2 extends Modal {
 	}
 	showContainer(container: HTMLElement) {
 		container.setAttr("style", "display: flex");
-	}
-
-	generateHistoryItems(
-		historyItem: ChatHistoryItem,
-		parentElement: HTMLElement
-	) {
-		const item = parentElement.createDiv();
-		item.className = "setting-item";
-		item.innerHTML = historyItem.prompt;
 	}
 
 	onOpen() {
@@ -88,16 +80,7 @@ export class ChatModal2 extends Modal {
 		const chatContainer = contentEl.createDiv();
 		const chatHistoryContainer = contentEl.createDiv();
 		const settingsContainer = contentEl.createDiv();
-
-		history.map((historyItem) => {
-			this.generateHistoryItems(historyItem, chatHistoryContainer);
-		});
-
-		const historyMessages = new TextAreaComponent(chatContainer);
-		const promptContainer = chatContainer.createDiv();
-		const promptField = new TextComponent(promptContainer);
-		const sendButton = new ButtonComponent(promptContainer);
-
+		
 		settingsContainer.setAttr("style", "display: none");
 		settingsContainer.className = "settings-container";
 		chatHistoryContainer.setAttr("style", "display: none");
@@ -107,31 +90,18 @@ export class ChatModal2 extends Modal {
 		rightButtonsDiv.className = "one right-buttons-div";
 		title.className = "four title";
 		chatContainer.className = "chat-container";
-		historyMessages.inputEl.className = "messages-div";
-		promptContainer.className = "prompt-container";
-		promptField.inputEl.className = "chat-prompt-text-area";
-		promptField.inputEl.id = "chat-prompt-text-area";
-		sendButton.buttonEl.className = "send-button";
 		chatHistoryButton.buttonEl.className = "title-buttons";
 		settingsButton.buttonEl.className = "title-buttons";
 		newChatButton.buttonEl.className = "title-buttons";
 		rightA.className = "flex-end"
 		rightB.className = "flex-end"
-
+		
 		chatHistoryButton.setIcon("bullet-list");
 		settingsButton.setIcon("wrench-screwdriver-glyph");
 		newChatButton.setIcon("plus");
-		sendButton.setIcon("up-arrow-with-tail");
 
-		promptField.onChange((change: string) => {
-			this.prompt = change;
-		});
-		sendButton.onClick((e: MouseEvent) => {
-			promptField.inputEl.setText("");
-			promptField.setValue("");
-			this.prompt = "";
-		});
-
-		new HistoryContainer(this.plugin).generateSettingsContainer(settingsContainer, models)
+		new ChatContainer(this.plugin).generateChatContainer(chatContainer)
+		new HistoryContainer(this.plugin).generateHistoryContainer(chatHistoryContainer, history)
+		new SettingsContainer(this.plugin).generateSettingsContainer(settingsContainer, models)
 	}
 }
