@@ -60,6 +60,8 @@
 	color: #ffffff;
 }
 
+/********************************************************/
+
 /* Chat Modal 2*/
 .title-div {
 	display: flex;
@@ -126,6 +128,8 @@
 
 .messages-div {
 	min-height: 10rem;
+	max-height: 40vh;
+	overflow-y: auto;
 	margin-bottom: 15px;
 }
 
@@ -134,6 +138,12 @@
 	flex-direction: row;
 	justify-content: flex-end;
 	flex: 1;
+}
+
+.flex-start {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
 }
 
 .prompt-container {
@@ -157,3 +167,33 @@
 	top: 9px;
 	right: 9px;
 }
+
+/* IM LIKE MESSAGE*/
+.im-message {
+	border: 1px solid lime;
+	max-width: 50%;
+	width: fit-content;
+}
+
+.im-message:nth-child(2n) {
+	margin-left: auto;
+}
+
+/* HISTORY CONTAINER */
+.history-item {
+	display: flex;
+	justify-content: space-between;
+}
+
+.set-history-button,
+.delete-history-button {
+	margin-left: 10px;
+}
+
+/* #set-history-button {
+	
+}
+
+#delete-history-button {
+
+} */

@@ -147,7 +147,6 @@ export class ChatModal extends Modal {
 			this.generateButton.setDisabled(true);
 			this.handleGenerateClick();
 		});
-		console.log(history.length);
 	}
 
 	generateHistoryOptions(

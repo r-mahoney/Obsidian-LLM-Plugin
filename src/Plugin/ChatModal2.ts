@@ -1,17 +1,8 @@
-import {
-	ButtonComponent,
-	DropdownComponent,
-	Modal,
-	Setting,
-	TextAreaComponent,
-	TextComponent,
-	addIcon,
-} from "obsidian";
 import LocalLLMPlugin from "main";
-import { ChatHistoryItem, Model } from "Types/types";
-import { SettingsContainer } from "./SettingsContainer";
-import { HistoryContainer } from "./HistoryContainer";
+import { ButtonComponent, Modal } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
+import { HistoryContainer } from "./HistoryContainer";
+import { SettingsContainer } from "./SettingsContainer";
 
 export class ChatModal2 extends Modal {
 	constructor(private plugin: LocalLLMPlugin) {
@@ -26,11 +17,9 @@ export class ChatModal2 extends Modal {
 	}
 
 	onOpen() {
-		console.log(
-			this.modalEl
-				.getElementsByClassName("modal-close-button")[0]
-				.setAttr("style", "display: none")
-		);
+		this.modalEl
+			.getElementsByClassName("modal-close-button")[0]
+			.setAttr("style", "display: none");
 		const { contentEl } = this;
 		let history = this.plugin.settings.promptHistory;
 		const models = {
@@ -63,12 +52,14 @@ export class ChatModal2 extends Modal {
 			this.hideContainer(settingsContainer);
 			this.hideContainer(chatContainer);
 		});
+
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
 			this.showContainer(settingsContainer);
 			this.hideContainer(chatContainer);
 			this.hideContainer(chatHistoryContainer);
 		});
+
 		const newChatButton = new ButtonComponent(rightB);
 		newChatButton.onClick(() => {
 			this.showContainer(chatContainer);
@@ -80,7 +71,7 @@ export class ChatModal2 extends Modal {
 		const chatContainer = contentEl.createDiv();
 		const chatHistoryContainer = contentEl.createDiv();
 		const settingsContainer = contentEl.createDiv();
-		
+
 		settingsContainer.setAttr("style", "display: none");
 		settingsContainer.className = "settings-container";
 		chatHistoryContainer.setAttr("style", "display: none");
@@ -93,15 +84,25 @@ export class ChatModal2 extends Modal {
 		chatHistoryButton.buttonEl.className = "title-buttons";
 		settingsButton.buttonEl.className = "title-buttons";
 		newChatButton.buttonEl.className = "title-buttons";
-		rightA.className = "flex-end"
-		rightB.className = "flex-end"
-		
+		rightA.className = "flex-end";
+		rightB.className = "flex-end";
+
 		chatHistoryButton.setIcon("bullet-list");
 		settingsButton.setIcon("wrench-screwdriver-glyph");
 		newChatButton.setIcon("plus");
 
-		new ChatContainer(this.plugin).generateChatContainer(chatContainer)
-		new HistoryContainer(this.plugin).generateHistoryContainer(chatHistoryContainer, history)
-		new SettingsContainer(this.plugin).generateSettingsContainer(settingsContainer, models)
+		const chat = new ChatContainer(this.plugin);
+		chat.generateChatContainer(chatContainer);
+		const historyContainer = new HistoryContainer(this.plugin);
+		historyContainer.generateHistoryContainer(
+			chatHistoryContainer,
+			history,
+			this.hideContainer,
+			this.showContainer,
+			chatContainer,
+			chat
+		);
+		const settingsContain = new SettingsContainer(this.plugin);
+		settingsContain.generateSettingsContainer(settingsContainer, models);
 	}
 }

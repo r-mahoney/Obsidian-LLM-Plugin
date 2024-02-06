@@ -31,7 +31,6 @@ export class SettingsContainer {
 				dropdown.onChange((change) => {
 					this.plugin.settings.model = change;
 					this.plugin.saveSettings();
-					console.log(this.plugin.settings.model);
 				});
 				dropdown.setValue(this.plugin.settings.model);
 			});
