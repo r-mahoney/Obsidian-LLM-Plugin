@@ -110,7 +110,8 @@
 .chat-container, .chat-history-container, .settings-container {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
+	width: calc(100% - 4px);
+	padding: 0 2px 0 2px;
 	margin-top: 20px;
 	min-height: 50vh;
 	max-height: var(--dialog-max-height);
@@ -119,10 +120,12 @@
 
 .chat-container {
 	justify-content: space-between;
+	padding: 2px;
+	width: 100%;
 }
 
 .messages-div {
-	min-height: 15rem;
+	min-height: 10rem;
 	margin-bottom: 15px;
 }
 

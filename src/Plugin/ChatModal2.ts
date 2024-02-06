@@ -8,9 +8,13 @@ import {
 	addIcon,
 } from "obsidian";
 import LocalLLMPlugin from "main";
+import { ChatHistoryItem, Model } from "Types/types";
+import { DEFAULT_DIRECTORY } from "utils/utils";
+const fs = require("fs");
 
 export class ChatModal2 extends Modal {
 	prompt: string;
+	downloadedModels: Record<string, string>;
 	constructor(private plugin: LocalLLMPlugin) {
 		super(plugin.app);
 	}
@@ -22,8 +26,32 @@ export class ChatModal2 extends Modal {
 		container.setAttr("style", "display: flex");
 	}
 
+	generateHistoryItems(
+		historyItem: ChatHistoryItem,
+		parentElement: HTMLElement
+	) {
+		const item = parentElement.createDiv();
+		item.className = "setting-item";
+		item.innerHTML = historyItem.prompt;
+	}
+
+	// checkModelsExist(models: Record<string, string>) {
+	// 	let keys = Object.keys(models);
+	// 	keys.map((model: string) => {
+	// 		fs.exists(
+	// 			`${DEFAULT_DIRECTORY}/${models[model]}`,
+	// 			(exists: boolean) => {
+	// 				if (exists) {
+	// 					this.downloadedModels[model] = models[model];
+	// 				}
+	// 			}
+	// 		);
+	// 	});
+	// }
+
 	onOpen() {
 		const { contentEl } = this;
+		this.downloadedModels = {};
 		let history = this.plugin.settings.promptHistory;
 		const models = {
 			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
@@ -38,6 +66,7 @@ export class ChatModal2 extends Modal {
 			Snoozy: "gpt4all-13b-snoozy-q4_0.gguf",
 			"EM German Mistral": "em_german_mistral_v01.Q4_0.gguf",
 		};
+		// this.checkModelsExist(models);
 
 		const titleDiv = contentEl.createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
@@ -70,15 +99,20 @@ export class ChatModal2 extends Modal {
 		const chatContainer = contentEl.createDiv();
 		const chatHistoryContainer = contentEl.createDiv();
 		const settingsContainer = contentEl.createDiv();
-		settingsContainer.setAttr("style", "display: none");
-		settingsContainer.className = "settings-container";
-		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.className = "chat-history-container";
+
+		history.map((historyItem) => {
+			this.generateHistoryItems(historyItem, chatHistoryContainer);
+		});
+
 		const historyMessages = new TextAreaComponent(chatContainer);
 		const promptContainer = chatContainer.createDiv();
 		const promptField = new TextComponent(promptContainer);
 		const sendButton = new ButtonComponent(promptContainer);
 
+		settingsContainer.setAttr("style", "display: none");
+		settingsContainer.className = "settings-container";
+		chatHistoryContainer.setAttr("style", "display: none");
+		chatHistoryContainer.className = "chat-history-container";
 		lineBreak.className = "title-border";
 		leftButtonDiv.className = "one left-buttons-div";
 		rightButtonsDiv.className = "one right-buttons-div";
@@ -102,7 +136,6 @@ export class ChatModal2 extends Modal {
 			this.prompt = change;
 		});
 		sendButton.onClick((e: MouseEvent) => {
-			console.log(this.plugin.settings);
 			promptField.inputEl.setText("");
 			promptField.setValue("");
 			this.prompt = "";
@@ -114,12 +147,23 @@ export class ChatModal2 extends Modal {
 			.addDropdown((dropdown: DropdownComponent) => {
 				let keys = Object.keys(models);
 				for (let model of keys) {
-					//@ts-ignore
-					dropdown.addOption(models[model], model);
+					fs.exists(
+                        //@ts-ignore
+						`${DEFAULT_DIRECTORY}/${models[model]}`,
+						(exists: boolean) => {
+							if (exists) {
+								dropdown.addOption(
+									this.downloadedModels[model],
+									model
+								);
+							}
+						}
+					);
 				}
 				dropdown.onChange((change) => {
 					this.plugin.settings.model = change;
 					this.plugin.saveSettings();
+                    console.log(this.plugin.settings.model)
 				});
 				dropdown.setValue(this.plugin.settings.model);
 			});
