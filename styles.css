@@ -64,7 +64,6 @@
 .title-div {
 	display: flex;
 	text-align: center;
-	padding-top: 10px;
 	padding-bottom: 20px;
 }
 
@@ -76,7 +75,7 @@
 
 .title {
 	font-weight: bold;
-	margin-top: -10px;
+	margin-top: -5px;
 }
 
 .left-buttons-div {
@@ -87,7 +86,6 @@
 .right-buttons-div {
 	display: flex;
 	justify-content: space-evenly;
-	padding-right: 10px;
 }
 
 .title-buttons {
@@ -107,7 +105,9 @@
 }
 
 /* Chat Container */
-.chat-container, .chat-history-container, .settings-container {
+.chat-container,
+.chat-history-container,
+.settings-container {
 	display: flex;
 	flex-direction: column;
 	width: calc(100% - 4px);
@@ -127,6 +127,13 @@
 .messages-div {
 	min-height: 10rem;
 	margin-bottom: 15px;
+}
+
+.flex-end {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	flex: 1;
 }
 
 .prompt-container {
