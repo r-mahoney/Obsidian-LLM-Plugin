@@ -169,14 +169,15 @@
 }
 
 /* IM LIKE MESSAGE*/
-.im-message {
-	border: 1px solid lime;
-	max-width: 50%;
+.im-like-message-container {
+	display: flex;
 	width: fit-content;
+	margin-bottom: 5px;
 }
 
-.im-message:nth-child(2n) {
-	margin-left: auto;
+.im-like-message-container:nth-child(2n) {
+	padding: 5px 5px 5px 50%;
+	background: var(--background-modifier-form-field);
 }
 
 /* HISTORY CONTAINER */
@@ -193,6 +194,24 @@
 .set-history-button,
 .delete-history-button {
 	margin-left: 10px;
+}
+
+.message-icon {
+	height: 35px;
+	width: 35px;
+	margin-right: auto;
+	border-radius: 10%;
+	border: 1px solid var(--background-modifier-border);
+	text-align: center;
+	line-height: 30px;
+	text-transform: capitalize;
+	font-size: 18pt;
+	box-shadow: 1px 1px 2px var(--background-modifier-border);
+}
+
+.im-like-message {
+	/* border: 1px solid lime; */
+	width: calc(100% - 40px);
 }
 
 /* #set-history-button {

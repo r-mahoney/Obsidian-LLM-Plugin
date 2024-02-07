@@ -21,6 +21,11 @@ export class ChatModal2 extends Modal {
 			.getElementsByClassName("modal-close-button")[0]
 			.setAttr("style", "display: none");
 		const { contentEl } = this;
+
+		const chatContainer = new ChatContainer(this.plugin);
+		const historyContainer = new HistoryContainer(this.plugin);
+		const settingsContainer = new SettingsContainer(this.plugin);
+
 		let history = this.plugin.settings.promptHistory;
 		const models = {
 			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
@@ -49,38 +54,39 @@ export class ChatModal2 extends Modal {
 		const chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		chatHistoryButton.onClick(() => {
 			this.showContainer(chatHistoryContainer);
-			this.hideContainer(settingsContainer);
-			this.hideContainer(chatContainer);
+			this.hideContainer(settingsContainerDiv);
+			this.hideContainer(chatContainerDiv);
 		});
 
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
-			this.showContainer(settingsContainer);
-			this.hideContainer(chatContainer);
+			this.showContainer(settingsContainerDiv);
+			this.hideContainer(chatContainerDiv);
 			this.hideContainer(chatHistoryContainer);
 		});
 
 		const newChatButton = new ButtonComponent(rightB);
 		newChatButton.onClick(() => {
-			this.showContainer(chatContainer);
-			this.hideContainer(settingsContainer);
+			this.showContainer(chatContainerDiv);
+			this.hideContainer(settingsContainerDiv);
 			this.hideContainer(chatHistoryContainer);
+			chatContainer.resetChat();
 		});
 		const lineBreak = contentEl.createDiv();
 
-		const chatContainer = contentEl.createDiv();
+		const chatContainerDiv = contentEl.createDiv();
 		const chatHistoryContainer = contentEl.createDiv();
-		const settingsContainer = contentEl.createDiv();
+		const settingsContainerDiv = contentEl.createDiv();
 
-		settingsContainer.setAttr("style", "display: none");
-		settingsContainer.className = "settings-container";
+		settingsContainerDiv.setAttr("style", "display: none");
+		settingsContainerDiv.className = "settings-container";
 		chatHistoryContainer.setAttr("style", "display: none");
 		chatHistoryContainer.className = "chat-history-container";
 		lineBreak.className = "title-border";
 		leftButtonDiv.className = "one left-buttons-div";
 		rightButtonsDiv.className = "one right-buttons-div";
 		title.className = "four title";
-		chatContainer.className = "chat-container";
+		chatContainerDiv.className = "chat-container";
 		chatHistoryButton.buttonEl.className = "title-buttons";
 		settingsButton.buttonEl.className = "title-buttons";
 		newChatButton.buttonEl.className = "title-buttons";
@@ -91,18 +97,15 @@ export class ChatModal2 extends Modal {
 		settingsButton.setIcon("wrench-screwdriver-glyph");
 		newChatButton.setIcon("plus");
 
-		const chat = new ChatContainer(this.plugin);
-		chat.generateChatContainer(chatContainer);
-		const historyContainer = new HistoryContainer(this.plugin);
+		chatContainer.generateChatContainer(chatContainerDiv);
 		historyContainer.generateHistoryContainer(
 			chatHistoryContainer,
 			history,
 			this.hideContainer,
 			this.showContainer,
-			chatContainer,
-			chat
+			chatContainerDiv,
+			chatContainer
 		);
-		const settingsContain = new SettingsContainer(this.plugin);
-		settingsContain.generateSettingsContainer(settingsContainer, models);
+		settingsContainer.generateSettingsContainer(settingsContainerDiv, models);
 	}
 }

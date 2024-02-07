@@ -1,4 +1,4 @@
-import { Message } from "Types/types";
+import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
 import {
 	ButtonComponent,
@@ -53,19 +53,28 @@ export class ChatContainer {
 			promptField.setValue(change);
 		});
 		sendButton.onClick((e: MouseEvent) => {
-			console.log(this.prompt);
+			const params: GPT4AllParams = {
+				messages: this.messages,
+				temperature: this.plugin.settings.temperature / 10,
+				tokens: this.plugin.settings.tokens,
+				model: this.plugin.settings.model,
+			};
+
+			this.setMessages();
 			promptField.inputEl.setText("");
+			this.generateIMLikeMessgaes(this.messages);
 			promptField.setValue("");
 			this.prompt = "";
 		});
 	}
 
-	setMessages(replaceChatHistory: boolean) {
+	setMessages(replaceChatHistory: boolean = false) {
 		if (replaceChatHistory) {
 			let history = this.plugin.settings.promptHistory;
 			this.messages = history[this.plugin.settings.historyIndex].messages;
 		} else {
-			this.messages = [{ role: "user", content: this.processedPrompt }];
+			this.messages = [{ role: "user", content: this.prompt }];
+			// this.messages = [{ role: "user", content: this.processedPrompt }];
 		}
 	}
 
@@ -75,16 +84,22 @@ export class ChatContainer {
 
 	generateIMLikeMessgaes(messages: Message[]) {
 		messages.map(({ role, content }, index) => {
-			const imLikeMessage = this.historyMessages.createDiv();
+			const imLikeMessageContainer = this.historyMessages.createDiv();
+			const icon = imLikeMessageContainer.createDiv();
+			icon.innerHTML = role[0];
+			const imLikeMessage = imLikeMessageContainer.createDiv();
 			imLikeMessage.innerHTML = content;
 			index % 2 === 0
-				? (imLikeMessage.className = "flex-start")
-				: (imLikeMessage.className = "flex-end");
-            imLikeMessage.addClass("im-message")
+				? (imLikeMessageContainer.className = "flex-start")
+				: (imLikeMessageContainer.className = "flex-end");
+
+			imLikeMessageContainer.addClass("im-like-message-container");
+			icon.addClass("message-icon");
+			imLikeMessage.addClass("im-like-message");
 		});
 	}
 
-    resetChat() {
-        this.historyMessages.innerHTML  = ""
-    }
+	resetChat() {
+		this.historyMessages.innerHTML = "";
+	}
 }
