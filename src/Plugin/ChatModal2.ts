@@ -53,6 +53,9 @@ export class ChatModal2 extends Modal {
 
 		const chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		chatHistoryButton.onClick(() => {
+			newChatButton.buttonEl.id = "";
+			settingsButton.buttonEl.id = "";
+			chatHistoryButton.buttonEl.id = "active-button";
 			this.showContainer(chatHistoryContainer);
 			this.hideContainer(settingsContainerDiv);
 			this.hideContainer(chatContainerDiv);
@@ -60,13 +63,20 @@ export class ChatModal2 extends Modal {
 
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
+			newChatButton.buttonEl.id = "";
+			settingsButton.buttonEl.id = "active-button";
+			chatHistoryButton.buttonEl.id = "";
 			this.showContainer(settingsContainerDiv);
 			this.hideContainer(chatContainerDiv);
 			this.hideContainer(chatHistoryContainer);
 		});
 
 		const newChatButton = new ButtonComponent(rightB);
+		newChatButton.buttonEl.id = "active-button";
 		newChatButton.onClick(() => {
+			newChatButton.buttonEl.id = "active-button";
+			settingsButton.buttonEl.id = "";
+			chatHistoryButton.buttonEl.id = "";
 			this.showContainer(chatContainerDiv);
 			this.hideContainer(settingsContainerDiv);
 			this.hideContainer(chatHistoryContainer);
@@ -88,7 +98,7 @@ export class ChatModal2 extends Modal {
 		title.className = "four title";
 		chatContainerDiv.className = "chat-container";
 		chatHistoryButton.buttonEl.className = "title-buttons";
-		settingsButton.buttonEl.className = "title-buttons";
+		settingsButton.buttonEl.addClass("title-buttons");
 		newChatButton.buttonEl.className = "title-buttons";
 		rightA.className = "flex-end";
 		rightB.className = "flex-end";
@@ -106,6 +116,9 @@ export class ChatModal2 extends Modal {
 			chatContainerDiv,
 			chatContainer
 		);
-		settingsContainer.generateSettingsContainer(settingsContainerDiv, models);
+		settingsContainer.generateSettingsContainer(
+			settingsContainerDiv,
+			models
+		);
 	}
 }
