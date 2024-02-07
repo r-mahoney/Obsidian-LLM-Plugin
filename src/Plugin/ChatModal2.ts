@@ -20,6 +20,7 @@ export class ChatModal2 extends Modal {
 		this.modalEl
 			.getElementsByClassName("modal-close-button")[0]
 			.setAttr("style", "display: none");
+		this.plugin.settings.historyIndex = -1;
 		const { contentEl } = this;
 
 		const chatContainer = new ChatContainer(this.plugin);
@@ -81,6 +82,8 @@ export class ChatModal2 extends Modal {
 			this.hideContainer(settingsContainerDiv);
 			this.hideContainer(chatHistoryContainer);
 			chatContainer.resetChat();
+			chatContainer.resetMessages();
+			this.plugin.settings.historyIndex = -1;
 		});
 		const lineBreak = contentEl.createDiv();
 

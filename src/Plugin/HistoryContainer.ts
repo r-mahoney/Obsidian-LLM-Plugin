@@ -49,6 +49,7 @@ export class HistoryContainer {
 					(item, idx) => idx !== index
 				);
 				this.plugin.settings.promptHistory = updatedHistory;
+				this.plugin.saveSettings()
 				this.generateHistoryContainer(
 					parentElement,
 					this.plugin.settings.promptHistory,
