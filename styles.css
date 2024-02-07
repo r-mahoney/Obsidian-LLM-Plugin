@@ -126,6 +126,11 @@
 	width: 100%;
 }
 
+#active-button {
+	color: #743BEF;
+	background: #b896fc ;
+}
+
 .messages-div {
 	min-height: 10rem;
 	max-height: 40vh;
