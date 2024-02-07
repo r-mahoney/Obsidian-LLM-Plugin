@@ -127,8 +127,8 @@
 }
 
 #active-button {
-	color: #743BEF;
-	background: #b896fc ;
+	color: #743bef;
+	background: #b896fc;
 }
 
 .messages-div {
@@ -177,12 +177,21 @@
 .im-like-message-container {
 	display: flex;
 	width: fit-content;
-	margin-bottom: 5px;
+	padding-top: 5px;
+	margin-bottom: 10px;
+		.message-icon {
+			margin-right: auto;
+		}
 }
 
 .im-like-message-container:nth-child(2n) {
-	padding: 5px 5px 5px 50%;
+	padding-left: 5px;
+	flex-direction: row-reverse;
 	background: var(--background-modifier-form-field);
+		.message-icon {
+			margin-left: 2px;
+			margin-right: 3px;
+		}
 }
 
 /* HISTORY CONTAINER */
@@ -204,7 +213,6 @@
 .message-icon {
 	height: 35px;
 	width: 35px;
-	margin-right: auto;
 	border-radius: 10%;
 	border: 1px solid var(--background-modifier-border);
 	text-align: center;

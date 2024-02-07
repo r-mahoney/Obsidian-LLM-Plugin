@@ -1,13 +1,7 @@
 import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
-import {
-	ButtonComponent,
-	MarkdownView,
-	Notice,
-	TextAreaComponent,
-	TextComponent,
-} from "obsidian";
-import { processReplacementTokens } from "utils/utils";
+import { ButtonComponent, MarkdownView, Notice, TextComponent } from "obsidian";
+import { messageGPT4AllServer, processReplacementTokens } from "utils/utils";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -19,20 +13,44 @@ export class ChatContainer {
 	constructor(private plugin: LocalLLMPlugin) {}
 
 	private handleGenerateClick() {
-		const view =
-			this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-		this.processedPrompt = processReplacementTokens(this.prompt);
+		this.messages.push({ role: "user", content: this.prompt });
+			this.appendNewMessage({ role: "user", content: this.prompt });
 
-		if (!view) {
-			new Notice(
-				"You must have a markdown file open to complete this action."
-			);
-			return;
-		}
-		this.setMessages(this.replaceChatHistory);
+			const params: GPT4AllParams = {
+				messages: this.messages,
+				temperature: this.plugin.settings.temperature / 10,
+				tokens: this.plugin.settings.tokens,
+				model: this.plugin.settings.model,
+			};
+
+			messageGPT4AllServer(params)
+				.then((response: Message) => {
+					this.messages.push(response);
+					this.appendNewMessage(response);
+					if (this.plugin.settings.historyIndex > -1) {
+						this.plugin.history.overwriteHistory(
+							this.messages,
+							this.plugin.settings.historyIndex
+						);
+					} else {
+						this.plugin.history.push({
+							prompt: this.prompt,
+							processedPrompt: this.processedPrompt,
+							messages: params.messages,
+							temperature: params.temperature,
+							tokens: params.tokens,
+						});
+					const length = this.plugin.settings.promptHistory.length
+					this.plugin.settings.historyIndex = length - 1;
+					this.plugin.saveSettings()
+					this.prompt = "";
+					}
+				})
+				.catch((err) => console.log(err));
 	}
 
 	generateChatContainer(parentElement: HTMLElement) {
+		this.messages = [];
 		// this.historyMessages = new TextAreaComponent(parentElement);
 		this.historyMessages = parentElement.createDiv();
 		this.historyMessages.className = "messages-div";
@@ -52,19 +70,10 @@ export class ChatContainer {
 			this.prompt = change;
 			promptField.setValue(change);
 		});
-		sendButton.onClick((e: MouseEvent) => {
-			const params: GPT4AllParams = {
-				messages: this.messages,
-				temperature: this.plugin.settings.temperature / 10,
-				tokens: this.plugin.settings.tokens,
-				model: this.plugin.settings.model,
-			};
-
-			this.setMessages();
+		sendButton.onClick(() => {
+			this.handleGenerateClick();
 			promptField.inputEl.setText("");
-			this.generateIMLikeMessgaes(this.messages);
 			promptField.setValue("");
-			this.prompt = "";
 		});
 	}
 
@@ -73,13 +82,17 @@ export class ChatContainer {
 			let history = this.plugin.settings.promptHistory;
 			this.messages = history[this.plugin.settings.historyIndex].messages;
 		} else {
-			this.messages = [{ role: "user", content: this.prompt }];
-			// this.messages = [{ role: "user", content: this.processedPrompt }];
+			this.messages.push({ role: "user", content: this.prompt });
+			// this.messages.push({ role: "user", content: this.processedPrompt });
 		}
 	}
 
 	getMessages() {
 		return this.messages;
+	}
+
+	resetMessages() {
+		this.messages = [];
 	}
 
 	generateIMLikeMessgaes(messages: Message[]) {
@@ -89,14 +102,36 @@ export class ChatContainer {
 			icon.innerHTML = role[0];
 			const imLikeMessage = imLikeMessageContainer.createDiv();
 			imLikeMessage.innerHTML = content;
-			index % 2 === 0
-				? (imLikeMessageContainer.className = "flex-start")
-				: (imLikeMessageContainer.className = "flex-end");
-
 			imLikeMessageContainer.addClass("im-like-message-container");
 			icon.addClass("message-icon");
 			imLikeMessage.addClass("im-like-message");
+			// let width = imLikeMessage.offsetWidth
+			if (index % 2 === 0) {
+				imLikeMessageContainer.addClass("flex-start");
+			} else {
+				imLikeMessageContainer.addClass("flex-end");
+				// imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
+			}
 		});
+	}
+
+	appendNewMessage(message: Message) {
+		const length = this.historyMessages.childNodes.length;
+		const { role, content } = message;
+
+		const imLikeMessageContainer = this.historyMessages.createDiv();
+		const icon = imLikeMessageContainer.createDiv();
+		icon.innerHTML = role[0];
+		const imLikeMessage = imLikeMessageContainer.createDiv();
+		imLikeMessage.innerHTML = content;
+		imLikeMessageContainer.addClass("im-like-message-container");
+		icon.addClass("message-icon");
+		imLikeMessage.addClass("im-like-message");
+		if (length % 2 === 0) {
+			imLikeMessageContainer.addClass("flex-start");
+		} else {
+			imLikeMessageContainer.addClass("flex-end"); // imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
+		}
 	}
 
 	resetChat() {
