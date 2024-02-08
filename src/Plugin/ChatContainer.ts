@@ -1,7 +1,7 @@
 import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
-import { ButtonComponent, MarkdownView, Notice, TextComponent } from "obsidian";
-import { messageGPT4AllServer, processReplacementTokens } from "utils/utils";
+import { ButtonComponent, TextComponent } from "obsidian";
+import { messageGPT4AllServer } from "utils/utils";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -14,39 +14,39 @@ export class ChatContainer {
 
 	private handleGenerateClick() {
 		this.messages.push({ role: "user", content: this.prompt });
-			this.appendNewMessage({ role: "user", content: this.prompt });
+		this.appendNewMessage({ role: "user", content: this.prompt });
 
-			const params: GPT4AllParams = {
-				messages: this.messages,
-				temperature: this.plugin.settings.temperature / 10,
-				tokens: this.plugin.settings.tokens,
-				model: this.plugin.settings.model,
-			};
+		const params: GPT4AllParams = {
+			messages: this.messages,
+			temperature: this.plugin.settings.temperature / 10,
+			tokens: this.plugin.settings.tokens,
+			model: this.plugin.settings.model,
+		};
 
-			messageGPT4AllServer(params)
-				.then((response: Message) => {
-					this.messages.push(response);
-					this.appendNewMessage(response);
-					if (this.plugin.settings.historyIndex > -1) {
-						this.plugin.history.overwriteHistory(
-							this.messages,
-							this.plugin.settings.historyIndex
-						);
-					} else {
-						this.plugin.history.push({
-							prompt: this.prompt,
-							processedPrompt: this.processedPrompt,
-							messages: params.messages,
-							temperature: params.temperature,
-							tokens: params.tokens,
-						});
-					const length = this.plugin.settings.promptHistory.length
+		messageGPT4AllServer(params)
+			.then((response: Message) => {
+				this.messages.push(response);
+				this.appendNewMessage(response);
+				if (this.plugin.settings.historyIndex > -1) {
+					this.plugin.history.overwriteHistory(
+						this.messages,
+						this.plugin.settings.historyIndex
+					);
+				} else {
+					this.plugin.history.push({
+						prompt: this.prompt,
+						processedPrompt: this.processedPrompt,
+						messages: params.messages,
+						temperature: params.temperature,
+						tokens: params.tokens,
+					});
+					const length = this.plugin.settings.promptHistory.length;
 					this.plugin.settings.historyIndex = length - 1;
-					this.plugin.saveSettings()
+					this.plugin.saveSettings();
 					this.prompt = "";
-					}
-				})
-				.catch((err) => console.log(err));
+				}
+			})
+			.catch((err) => console.log(err));
 	}
 
 	generateChatContainer(parentElement: HTMLElement) {
@@ -69,6 +69,13 @@ export class ChatContainer {
 		promptField.onChange((change: string) => {
 			this.prompt = change;
 			promptField.setValue(change);
+		});
+		promptField.inputEl.addEventListener("keydown", (event) => {
+			if (event.code == "Enter") {
+				this.handleGenerateClick();
+				promptField.inputEl.setText("");
+				promptField.setValue("");
+			}
 		});
 		sendButton.onClick(() => {
 			this.handleGenerateClick();
@@ -121,7 +128,8 @@ export class ChatContainer {
 
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const icon = imLikeMessageContainer.createDiv();
-		icon.innerHTML = role[0];
+		const firstLetter = 0;
+		icon.innerHTML = role[firstLetter];
 		const imLikeMessage = imLikeMessageContainer.createDiv();
 		imLikeMessage.innerHTML = content;
 		imLikeMessageContainer.addClass("im-like-message-container");

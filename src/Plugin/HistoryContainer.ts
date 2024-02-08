@@ -40,6 +40,12 @@ export class HistoryContainer {
 				chat.setMessages(true);
 				const messages = chat.getMessages();
 				chat.generateIMLikeMessgaes(messages);
+				const titleDiv = parentElement.parentNode?.querySelector(".title-div")
+				const buttons = titleDiv?.querySelectorAll(".title-buttons")
+				const settingsIndex = 0;
+				const newChatIndex = 2;
+				buttons![newChatIndex].id = "active-button"
+				buttons![settingsIndex].id = ""
 			});
 
             deleteHistory.setIcon("trash")

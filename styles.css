@@ -178,20 +178,24 @@
 	display: flex;
 	width: fit-content;
 	padding-top: 5px;
+	min-width: 100%;
 	margin-bottom: 10px;
-		.message-icon {
-			margin-right: auto;
-		}
+	.message-icon {
+		margin-right: auto;
+	}
 }
 
 .im-like-message-container:nth-child(2n) {
 	padding-left: 5px;
 	flex-direction: row-reverse;
 	background: var(--background-modifier-form-field);
-		.message-icon {
-			margin-left: 2px;
-			margin-right: 3px;
-		}
+	.message-icon {
+		margin-right: 5px;
+	}
+	.im-like-message {
+		text-align: right;
+		padding-right: 5px;
+	}
 }
 
 /* HISTORY CONTAINER */
