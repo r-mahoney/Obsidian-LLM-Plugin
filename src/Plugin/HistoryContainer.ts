@@ -21,14 +21,17 @@ export class HistoryContainer {
 			const item = parentElement.createDiv();
 			item.innerHTML = historyItem.prompt;
 			const buttonsDiv = item.createDiv();
-            buttonsDiv.addClass("history-buttons-div")
+			buttonsDiv.addClass("history-buttons-div");
 			const setHistory = new ButtonComponent(buttonsDiv);
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 
 			item.className = "setting-item";
 			item.addClass("history-item");
 			setHistory.buttonEl.addClass("set-history-button", "mod-cta");
-			deleteHistory.buttonEl.addClass("delete-history-button", "mod-warning");
+			deleteHistory.buttonEl.addClass(
+				"delete-history-button",
+				"mod-warning"
+			);
 			setHistory.buttonEl.id = "set-history-button";
 			deleteHistory.buttonEl.id = "delete-history-button";
 
@@ -40,22 +43,24 @@ export class HistoryContainer {
 				chat.setMessages(true);
 				const messages = chat.getMessages();
 				chat.generateIMLikeMessgaes(messages);
-				const titleDiv = parentElement.parentNode?.querySelector(".title-div")
-				const buttons = titleDiv?.querySelectorAll(".title-buttons")
+				containerToShow.querySelector(".messages-div")?.scroll(0, 9999)
+				const titleDiv =
+					parentElement.parentNode?.querySelector(".title-div");
+				const buttons = titleDiv?.querySelectorAll(".title-buttons");
 				const settingsIndex = 0;
 				const newChatIndex = 2;
-				buttons![newChatIndex].id = "active-button"
-				buttons![settingsIndex].id = ""
+				buttons![newChatIndex].id = "active-button";
+				buttons![settingsIndex].id = "";
 			});
 
-            deleteHistory.setIcon("trash")
+			deleteHistory.setIcon("trash");
 			deleteHistory.onClick(() => {
-                this.resetHistory(parentElement)
+				this.resetHistory(parentElement);
 				let updatedHistory = this.plugin.settings.promptHistory.filter(
 					(item, idx) => idx !== index
 				);
 				this.plugin.settings.promptHistory = updatedHistory;
-				this.plugin.saveSettings()
+				this.plugin.saveSettings();
 				this.generateHistoryContainer(
 					parentElement,
 					this.plugin.settings.promptHistory,
@@ -68,7 +73,7 @@ export class HistoryContainer {
 		});
 	}
 
-    resetHistory(parentContainer: HTMLElement) {
-        parentContainer.innerHTML  = ""
-    }
+	resetHistory(parentContainer: HTMLElement) {
+		parentContainer.innerHTML = "";
+	}
 }

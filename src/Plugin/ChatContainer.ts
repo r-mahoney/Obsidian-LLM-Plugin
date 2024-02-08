@@ -140,6 +140,8 @@ export class ChatContainer {
 		} else {
 			imLikeMessageContainer.addClass("flex-end"); // imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
 		}
+
+		this.historyMessages.scroll(0, 9999)
 	}
 
 	resetChat() {
