@@ -107,6 +107,15 @@
 }
 
 /* Chat Container */
+.chat-history-container {
+	margin-top: 10px;
+}
+
+.chat-container,
+.settings-container {
+	margin-top: 20px;
+}
+
 .chat-container,
 .chat-history-container,
 .settings-container {
@@ -114,7 +123,6 @@
 	flex-direction: column;
 	width: calc(100% - 4px);
 	padding: 0 2px 0 2px;
-	margin-top: 20px;
 	min-height: 50vh;
 	max-height: var(--dialog-max-height);
 	overflow: auto;
@@ -180,6 +188,7 @@
 	padding-top: 5px;
 	min-width: 100%;
 	margin-bottom: 10px;
+	border-radius: 5px;
 	.message-icon {
 		margin-right: auto;
 	}
@@ -198,10 +207,24 @@
 	}
 }
 
+.im-like-message {
+	padding: 5px 0;
+}
+
 /* HISTORY CONTAINER */
 .history-item {
 	display: flex;
 	justify-content: space-between;
+	padding-left: 10px;
+	border-radius: 5px;
+}
+
+.history-item:first-child {
+	padding-top: 10px;
+}
+
+.history-item:hover {
+	box-shadow: var(--input-shadow-hover);
 }
 
 .history-buttons-div {
@@ -209,9 +232,13 @@
 	align-items: center;
 }
 
-.set-history-button,
 .delete-history-button {
-	margin-left: 10px;
+	margin: 0 10px;
+}
+
+.edit-prompt-button,
+.save-prompt-button {
+	padding: 4px;
 }
 
 .message-icon {
@@ -230,10 +257,6 @@
 	/* border: 1px solid lime; */
 	width: calc(100% - 40px);
 }
-
-/* #set-history-button {
-	
-} */
 
 #delete-history-button {
 	padding: 4px;
