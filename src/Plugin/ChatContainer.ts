@@ -51,6 +51,7 @@ export class ChatContainer {
 					new Notice(
 						"You must have GPT4All open with the API Server enabled"
 					);
+					this.removeMessage()
 				}
 			});
 	}
@@ -108,23 +109,27 @@ export class ChatContainer {
 		this.messages = [];
 	}
 
+	private createMessage(role: string, content: string, index: number) {
+		const imLikeMessageContainer = this.historyMessages.createDiv();
+		const icon = imLikeMessageContainer.createDiv();
+		icon.innerHTML = role[0];
+		const imLikeMessage = imLikeMessageContainer.createDiv();
+		imLikeMessage.innerHTML = content;
+		imLikeMessageContainer.addClass("im-like-message-container");
+		icon.addClass("message-icon");
+		imLikeMessage.addClass("im-like-message");
+		// let width = imLikeMessage.offsetWidth
+		if (index % 2 === 0) {
+			imLikeMessageContainer.addClass("flex-start");
+		} else {
+			imLikeMessageContainer.addClass("flex-end");
+			// imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
+		}
+	}
+
 	generateIMLikeMessgaes(messages: Message[]) {
 		messages.map(({ role, content }, index) => {
-			const imLikeMessageContainer = this.historyMessages.createDiv();
-			const icon = imLikeMessageContainer.createDiv();
-			icon.innerHTML = role[0];
-			const imLikeMessage = imLikeMessageContainer.createDiv();
-			imLikeMessage.innerHTML = content;
-			imLikeMessageContainer.addClass("im-like-message-container");
-			icon.addClass("message-icon");
-			imLikeMessage.addClass("im-like-message");
-			// let width = imLikeMessage.offsetWidth
-			if (index % 2 === 0) {
-				imLikeMessageContainer.addClass("flex-start");
-			} else {
-				imLikeMessageContainer.addClass("flex-end");
-				// imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
-			}
+			this.createMessage(role, content, index);
 		});
 	}
 
@@ -132,22 +137,14 @@ export class ChatContainer {
 		const length = this.historyMessages.childNodes.length;
 		const { role, content } = message;
 
-		const imLikeMessageContainer = this.historyMessages.createDiv();
-		const icon = imLikeMessageContainer.createDiv();
-		const firstLetter = 0;
-		icon.innerHTML = role[firstLetter];
-		const imLikeMessage = imLikeMessageContainer.createDiv();
-		imLikeMessage.innerHTML = content;
-		imLikeMessageContainer.addClass("im-like-message-container");
-		icon.addClass("message-icon");
-		imLikeMessage.addClass("im-like-message");
-		if (length % 2 === 0) {
-			imLikeMessageContainer.addClass("flex-start");
-		} else {
-			imLikeMessageContainer.addClass("flex-end"); // imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
-		}
+		this.createMessage(role, content, length);
 
 		this.historyMessages.scroll(0, 9999);
+	}
+
+	removeMessage() {
+		this.messages.pop()
+		this.historyMessages.lastElementChild?.remove()
 	}
 
 	resetChat() {
