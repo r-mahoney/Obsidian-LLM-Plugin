@@ -1,6 +1,6 @@
 import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
-import { ButtonComponent, TextComponent } from "obsidian";
+import { ButtonComponent, Notice, TextComponent } from "obsidian";
 import { messageGPT4AllServer } from "utils/utils";
 
 export class ChatContainer {
@@ -46,7 +46,13 @@ export class ChatContainer {
 					this.prompt = "";
 				}
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => {
+				if (err.message === "Failed to fetch") {
+					new Notice(
+						"You must have GPT4All open with the API Server enabled"
+					);
+				}
+			});
 	}
 
 	generateChatContainer(parentElement: HTMLElement) {
@@ -141,7 +147,7 @@ export class ChatContainer {
 			imLikeMessageContainer.addClass("flex-end"); // imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
 		}
 
-		this.historyMessages.scroll(0, 9999)
+		this.historyMessages.scroll(0, 9999);
 	}
 
 	resetChat() {

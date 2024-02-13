@@ -45,6 +45,7 @@
 /* Chat Container */
 .chat-history-container {
 	margin-top: 10px;
+	margin-bottom: 10px;
 }
 
 .chat-container,
