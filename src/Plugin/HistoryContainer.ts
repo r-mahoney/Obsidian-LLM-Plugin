@@ -111,6 +111,7 @@ export class HistoryContainer {
 				if (item.textContent) {
 					this.plugin.settings.promptHistory[index].prompt =
 						item.textContent;
+						this.plugin.saveSettings()
 				} else {
 					new Notice("Prompt length must be greater than 0");
 					return;
