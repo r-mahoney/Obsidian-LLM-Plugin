@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 	tokens: 300,
 	temperature: 0.65,
 	promptHistory: [],
-	historyIndex: 0
+	historyIndex: -1,
 };
 
 export default class LocalLLMPlugin extends Plugin {
@@ -45,33 +45,21 @@ export default class LocalLLMPlugin extends Plugin {
 	private registerCommands() {
 		const openChat = this.addCommand({
 			id: "open-conversation-modal",
-			name: "GPT4All Chat",
+			name: "Open GPT4All Chat Modal",
 			editorCallback: () => {
-				new ChatModal(this).open();
+				new ChatModal2(this).open();
 			},
 		});
 	}
 
 	private registerRibbonIcons() {
-		const singleQuestionIcon = this.addRibbonIcon(
+		const conversationalModalIcon = this.addRibbonIcon(
 			"bot",
 			"Ask A Question",
-			(evt: MouseEvent) => {
-				new ChatModal(this).open();
-			}
-		);
-
-		const conversationalModalIcon = this.addRibbonIcon(
-			"lines-of-text",
-			"test",
 			(evt: MouseEvent) => {
 				new ChatModal2(this).open();
 			}
 		);
-	}
-
-	showConversationalModel(modelParams: GPT4AllParams, response: Message) {
-		new ConversationalModal(this, modelParams, response).open();
 	}
 
 	async loadSettings() {

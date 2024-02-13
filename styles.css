@@ -1,68 +1,4 @@
-/* Chat Modal */
-.no-display {
-	display: none;
-}
-
-.chat_container {
-	width: 100%;
-	margin-top: 20px;
-}
-
-.history_dropdown {
-	width: 100%;
-	margin: 0 0 20px 0;
-}
-
-.chat_prompt_textarea {
-	min-height: 100px;
-}
-
-.chat_prompt_textarea,
-.conversation_answer_textarea {
-	width: 100%;
-	padding: 10px;
-	font-size: 16px;
-}
-
-.chatModal_button_container {
-	display: flex;
-	justify-content: flex-end;
-	gap: 10px;
-	margin-top: 15px;
-}
-
-.history_container {
-	border-top: 1px solid var(--background-modifier-border);
-	font-size: 10px;
-	display: flex;
-	align-items: center;
-	padding: 10px 0;
-	gap: 10px;
-}
-
-/* CONVERSATIONAL MODAL */
-.conversation_answer_textarea {
-	height: min-content;
-	max-height: 60vh;
-	overflow: auto;
-	min-height: 250px;
-}
-
-.conversation_prompt_textarea {
-	width: 100%;
-	min-height: 50px;
-	padding: 10px;
-	font-size: 16px;
-}
-
-.select-text:hover {
-	background-color: #218c74;
-	color: #ffffff;
-}
-
-/********************************************************/
-
-/* Chat Modal 2*/
+/* Chat Modal*/
 .title-div {
 	display: flex;
 	text-align: center;
@@ -107,6 +43,15 @@
 }
 
 /* Chat Container */
+.chat-history-container {
+	margin-top: 10px;
+}
+
+.chat-container,
+.settings-container {
+	margin-top: 20px;
+}
+
 .chat-container,
 .chat-history-container,
 .settings-container {
@@ -114,7 +59,6 @@
 	flex-direction: column;
 	width: calc(100% - 4px);
 	padding: 0 2px 0 2px;
-	margin-top: 20px;
 	min-height: 50vh;
 	max-height: var(--dialog-max-height);
 	overflow: auto;
@@ -180,6 +124,7 @@
 	padding-top: 5px;
 	min-width: 100%;
 	margin-bottom: 10px;
+	border-radius: 5px;
 	.message-icon {
 		margin-right: auto;
 	}
@@ -198,10 +143,29 @@
 	}
 }
 
+.im-like-message {
+	padding: 5px 0;
+}
+
 /* HISTORY CONTAINER */
 .history-item {
 	display: flex;
 	justify-content: space-between;
+	padding-left: 10px;
+	border-radius: 5px;
+}
+
+.history-item:first-child {
+	padding-top: 10px;
+}
+
+.history-item > p {
+	margin: 0;
+	min-width: 1px;
+}
+
+.history-item:hover {
+	box-shadow: var(--input-shadow-hover);
 }
 
 .history-buttons-div {
@@ -209,9 +173,17 @@
 	align-items: center;
 }
 
-.set-history-button,
+.no-pointer {
+	pointer-events: none;
+}
+
 .delete-history-button {
-	margin-left: 10px;
+	margin: 0 10px;
+}
+
+.edit-prompt-button,
+.save-prompt-button {
+	padding: 4px;
 }
 
 .message-icon {
@@ -230,10 +202,6 @@
 	/* border: 1px solid lime; */
 	width: calc(100% - 40px);
 }
-
-/* #set-history-button {
-	
-} */
 
 #delete-history-button {
 	padding: 4px;
