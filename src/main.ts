@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 	tokens: 300,
 	temperature: 0.65,
 	promptHistory: [],
-	historyIndex: 0
+	historyIndex: -1
 };
 
 export default class LocalLLMPlugin extends Plugin {
