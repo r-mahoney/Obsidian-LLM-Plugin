@@ -223,6 +223,11 @@
 	padding-top: 10px;
 }
 
+.history-item > p {
+	margin: 0;
+	min-width: 1px;
+}
+
 .history-item:hover {
 	box-shadow: var(--input-shadow-hover);
 }
@@ -230,6 +235,10 @@
 .history-buttons-div {
 	display: flex;
 	align-items: center;
+}
+
+.no-pointer {
+	pointer-events: none;
 }
 
 .delete-history-button {
