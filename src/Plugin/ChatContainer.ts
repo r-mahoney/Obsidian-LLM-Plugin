@@ -1,7 +1,7 @@
 import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Notice, TextComponent } from "obsidian";
-import { messageGPT4AllServer } from "utils/utils";
+import { appendMessage, messageGPT4AllServer } from "utils/utils";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -10,7 +10,10 @@ export class ChatContainer {
 	messages: Message[];
 	replaceChatHistory: boolean;
 	historyIndex: number;
-	constructor(private plugin: LocalLLMPlugin) {}
+	closeModal: () => void;
+	constructor(private plugin: LocalLLMPlugin, closeModal: () => void) {
+		this.closeModal = closeModal;
+	}
 
 	private handleGenerateClick() {
 		this.messages.push({ role: "user", content: this.prompt });
@@ -51,7 +54,7 @@ export class ChatContainer {
 					new Notice(
 						"You must have GPT4All open with the API Server enabled"
 					);
-					this.removeMessage()
+					this.removeMessage();
 				}
 			});
 	}
@@ -112,19 +115,42 @@ export class ChatContainer {
 	private createMessage(role: string, content: string, index: number) {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const icon = imLikeMessageContainer.createDiv();
-		icon.innerHTML = role[0];
 		const imLikeMessage = imLikeMessageContainer.createDiv();
+		const addText = new ButtonComponent(imLikeMessageContainer);
+
+		addText.setIcon("files");
+		icon.innerHTML = role[0];
 		imLikeMessage.innerHTML = content;
 		imLikeMessageContainer.addClass("im-like-message-container");
+		addText.buttonEl.addClass("add-text", "hide");
 		icon.addClass("message-icon");
 		imLikeMessage.addClass("im-like-message");
-		// let width = imLikeMessage.offsetWidth
 		if (index % 2 === 0) {
 			imLikeMessageContainer.addClass("flex-start");
 		} else {
 			imLikeMessageContainer.addClass("flex-end");
-			// imLikeMessageContainer.setAttr("style", `padding: 5px 5px 5px calc(100% - ${width}px); max-width: none`)
 		}
+
+		imLikeMessageContainer.addEventListener("mouseenter", () => {
+			addText.buttonEl.removeClass("hide");
+		});
+
+		imLikeMessageContainer.addEventListener("mouseleave", () => {
+			addText.buttonEl.addClass("hide");
+		});
+
+		addText.onClick(() => {
+			const editor = this.plugin.app.workspace.activeEditor?.editor;
+			if (!editor) {
+				new Notice(
+					"You must have a Markdown File open to complete this action."
+				);
+				return;
+			}
+			appendMessage(editor, content);
+			//Use this if we want to close modal after adding any text
+			// this.closeModal();
+		});
 	}
 
 	generateIMLikeMessgaes(messages: Message[]) {
@@ -143,8 +169,8 @@ export class ChatContainer {
 	}
 
 	removeMessage() {
-		this.messages.pop()
-		this.historyMessages.lastElementChild?.remove()
+		this.messages.pop();
+		this.historyMessages.lastElementChild?.remove();
 	}
 
 	resetChat() {

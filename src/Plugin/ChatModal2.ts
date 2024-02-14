@@ -22,8 +22,11 @@ export class ChatModal2 extends Modal {
 			.setAttr("style", "display: none");
 		this.plugin.settings.historyIndex = -1;
 		const { contentEl } = this;
+		const closeModal = () => {
+			this.close();
+		};
 
-		const chatContainer = new ChatContainer(this.plugin);
+		const chatContainer = new ChatContainer(this.plugin, closeModal);
 		const historyContainer = new HistoryContainer(this.plugin);
 		const settingsContainer = new SettingsContainer(this.plugin);
 
