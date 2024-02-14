@@ -6,7 +6,9 @@ const path = require("path");
 const homeDir = require("os").homedir();
 export const DEFAULT_DIRECTORY = path.resolve(
 	homeDir,
-	navigator.platform.indexOf("Win") > -1 ? "AppData/Local/nomic.ai/GPT4All/" : "Library/Application Support/nomic.ai/GPT4All"
+	navigator.platform.indexOf("Win") > -1
+		? "AppData/Local/nomic.ai/GPT4All/"
+		: "Library/Application Support/nomic.ai/GPT4All"
 );
 
 export function modelLookup(modelName: string) {
@@ -57,19 +59,10 @@ function moveCursorToEndOfFile(editor: Editor) {
 }
 
 export function appendMessage(editor: Editor, message: string, type?: string) {
-	let newLine;
 	moveCursorToEndOfFile(editor!);
+	const newLine = `${message}\n`;
+	editor.replaceRange(newLine, editor.getCursor());
 
-	if (type === "prompt") {
-		newLine = `\n\n<hr class="__chatgpt_plugin">\n\nPrompt: ${message}\n\n`;
-		editor.replaceRange(newLine, editor.getCursor());
-	} else if (type === "response") {
-		newLine = `${message}\n\n<hr class="__chatgpt_plugin">\n\n`;
-		editor.replaceRange(newLine, editor.getCursor());
-	} else {
-		newLine = `<hr class="__chatgpt_plugin">\n\n${message}\n\n<hr class="__chatgpt_plugin">\n\n`;
-		editor.replaceRange(newLine, editor.getCursor());
-	}
 	moveCursorToEndOfFile(editor!);
 }
 
@@ -79,5 +72,5 @@ export function serializeMessages(messages: Message[]) {
 		response += `${message.role} : ${message.content}\n\n`;
 	});
 
-	return response
+	return response;
 }

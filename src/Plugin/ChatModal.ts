@@ -208,7 +208,7 @@ export class ChatModal extends Modal {
 				throw new Error(response);
 			}
 			this.close();
-			this.plugin.showConversationalModel(params, response);
+			// this.plugin.showConversationalModel(params, response);
 		} catch (err) {
 			if (err.message === "Failed to fetch") {
 				new Notice(
