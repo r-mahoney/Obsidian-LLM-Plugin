@@ -16,6 +16,10 @@ export class ChatContainer {
 	}
 
 	private handleGenerateClick() {
+		if (!this.prompt) {
+			new Notice("You need to ask a question first.");
+			return;
+		}
 		this.messages.push({ role: "user", content: this.prompt });
 		this.appendNewMessage({ role: "user", content: this.prompt });
 
