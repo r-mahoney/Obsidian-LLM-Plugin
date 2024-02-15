@@ -46,6 +46,8 @@ export class ChatContainer {
 						messages: params.messages,
 						temperature: params.temperature,
 						tokens: params.tokens,
+						modelName: this.plugin.settings.modelName,
+						model: params.model,
 					});
 					const length = this.plugin.settings.promptHistory.length;
 					this.plugin.settings.historyIndex = length - 1;

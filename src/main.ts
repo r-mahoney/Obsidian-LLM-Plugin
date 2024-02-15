@@ -10,6 +10,7 @@ import SettingsView from "Settings/SettingsView";
 interface LocalLLMPluginSettings {
 	appName: string;
 	model: string;
+	modelName: string;
 	tokens: number;
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
@@ -19,6 +20,7 @@ interface LocalLLMPluginSettings {
 export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 	appName: "Local LLM Plugin",
 	model: "mistral-7b-openorca.Q4_0.gguf",
+	modelName: "Mistral OpenOrca",
 	tokens: 300,
 	temperature: 0.65,
 	promptHistory: [],

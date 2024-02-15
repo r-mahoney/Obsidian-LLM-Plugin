@@ -201,7 +201,9 @@ export class ChatModal extends Modal {
 
 		try {
 			if (!modelLookup(this.plugin.settings.model)) {
-				throw new Error("You must first install the selected model from the GPT4All Chat Client")
+				throw new Error(
+					"You must first install the selected model from the GPT4All Chat Client"
+				);
 			}
 			const response = await messageGPT4AllServer(params);
 			if (!response) {
@@ -214,9 +216,8 @@ export class ChatModal extends Modal {
 				new Notice(
 					"You must have GPT4All open with the API Server enabled"
 				);
-			}
-			else {
-				new Notice (err)
+			} else {
+				new Notice(err);
 			}
 			this.generateButton.setDisabled(false);
 			this.generateButton.setButtonText("Generate Notes");
@@ -229,6 +230,7 @@ export class ChatModal extends Modal {
 			messages: params.messages,
 			temperature: params.temperature,
 			tokens: params.tokens,
+			modelName: params.model,
 		});
 	}
 }

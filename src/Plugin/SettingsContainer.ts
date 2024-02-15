@@ -1,22 +1,27 @@
-import LocalLLMPlugin from "main";
+import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { DropdownComponent, Setting } from "obsidian";
 import { DEFAULT_DIRECTORY } from "utils/utils";
-const fs = require('fs')
+const fs = require("fs");
 
 export class SettingsContainer {
 	downloadedModels: Record<string, string>;
-    constructor(private plugin: LocalLLMPlugin){}
+	constructor(private plugin: LocalLLMPlugin) {}
 
-    generateSettingsContainer(parentContainer: HTMLElement, models: Record<string, string>){
-        this.downloadedModels = {};
-        const modelOptions = new Setting(parentContainer)
+	generateSettingsContainer(
+		parentContainer: HTMLElement,
+		models: Record<string, string>,
+		setHeading: (modelEl: HTMLElement, modelName: string) => void,
+		modelEl: HTMLElement
+	) {
+		this.downloadedModels = {};
+		const modelOptions = new Setting(parentContainer)
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
+				dropdown.addOption(DEFAULT_SETTINGS.modelName, "---Default Model---")
 				let keys = Object.keys(models);
 				for (let model of keys) {
 					fs.exists(
-						//@ts-ignore
 						`${DEFAULT_DIRECTORY}/${models[model]}`,
 						(exists: boolean) => {
 							if (exists) {
@@ -29,8 +34,10 @@ export class SettingsContainer {
 					);
 				}
 				dropdown.onChange((change) => {
-					this.plugin.settings.model = change;
+					this.plugin.settings.model = models[change];
+					this.plugin.settings.modelName = change;
 					this.plugin.saveSettings();
+					setHeading(modelEl, change)
 				});
 				dropdown.setValue(this.plugin.settings.model);
 			});
@@ -60,5 +67,5 @@ export class SettingsContainer {
 					this.plugin.saveSettings();
 				});
 			});
-    }
+	}
 }
