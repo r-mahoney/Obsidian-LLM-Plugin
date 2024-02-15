@@ -1,5 +1,7 @@
 /* Chat Modal*/
 .title {
+	display: flex;
+	flex-direction: column;
 	font-weight: bold;
 	margin-top: -5px;
 }
@@ -8,27 +10,31 @@
 	display: flex;
 	text-align: center;
 	padding-bottom: 20px;
-}	
+}
 
 .title-border {
 	border-bottom: 1px solid var(--background-modifier-border);
 	margin-left: -16px;
 	width: calc(100% + 32px);
-}		
+}
 
 .title-buttons {
 	padding: 2px 4px;
 }
 
+.model-name {
+	font-size: 8pt;
+}
+
 .left-buttons-div {
 	display: flex;
 	justify-self: flex-start;
-}	
+}
 
 .right-buttons-div {
 	display: flex;
 	justify-content: space-evenly;
-}	
+}
 
 .new-chat-button {
 	justify-self: flex-start;

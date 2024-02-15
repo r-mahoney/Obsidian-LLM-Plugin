@@ -3,10 +3,23 @@ import { ButtonComponent, Modal } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
 import { SettingsContainer } from "./SettingsContainer";
+import { title } from "process";
 
 export class ChatModal2 extends Modal {
 	constructor(private plugin: LocalLLMPlugin) {
 		super(plugin.app);
+	}
+
+	setHeader(
+		modelEl: HTMLElement,
+		modelName: string,
+		titleEl?: HTMLElement,
+		title?: string
+	) {
+		if (titleEl && title) {
+			titleEl.textContent = title;
+		}
+		modelEl.innerHTML = modelName;
 	}
 
 	hideContainer(container: HTMLElement) {
@@ -47,13 +60,17 @@ export class ChatModal2 extends Modal {
 
 		const titleDiv = contentEl.createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
-		const title = titleDiv.createDiv();
+		const titleContainer = titleDiv.createDiv();
+		const title = titleContainer.createDiv();
 		const rightButtonsDiv = titleDiv.createDiv();
 		const rightA = rightButtonsDiv.createDiv();
 		const rightB = rightButtonsDiv.createDiv();
 
 		titleDiv.className = "title-div";
 		title.innerHTML = "LocalLLM Plugin";
+		const modelName = titleContainer.createDiv();
+		modelName.addClass("model-name")
+		modelName.innerHTML = this.plugin.settings.modelName;
 
 		const chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		chatHistoryButton.onClick(() => {
@@ -101,7 +118,7 @@ export class ChatModal2 extends Modal {
 		lineBreak.className = "title-border";
 		leftButtonDiv.className = "one left-buttons-div";
 		rightButtonsDiv.className = "one right-buttons-div";
-		title.className = "four title";
+		titleContainer.className = "four title";
 		chatContainerDiv.className = "chat-container";
 		chatHistoryButton.buttonEl.className = "title-buttons";
 		settingsButton.buttonEl.addClass("title-buttons");
@@ -120,11 +137,16 @@ export class ChatModal2 extends Modal {
 			this.hideContainer,
 			this.showContainer,
 			chatContainerDiv,
-			chatContainer
+			chatContainer,
+			this.setHeader,
+			title,
+			modelName
 		);
 		settingsContainer.generateSettingsContainer(
 			settingsContainerDiv,
-			models
+			models,
+			this.setHeader,
+			modelName
 		);
 	}
 }

@@ -12,8 +12,31 @@ export class HistoryContainer {
 		hideContainer: (container: HTMLElement) => void,
 		showContainer: (container: HTMLElement) => void,
 		containerToShow: HTMLElement,
-		chat: ChatContainer
+		chat: ChatContainer,
+		setHeading: (
+			modelEl: HTMLElement,
+			modelName: string,
+			titleEl?: HTMLElement,
+			title?: string,
+		) => void,
+		titleEl: HTMLElement,
+		modelEl: HTMLElement
 	) {
+
+		const models: Record<string, string> = {
+			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
+			"Mistral Instruct": "mistral-7b-instruct-v0.1.Q4_0.gguf",
+			"GPT4All Falcon": "gpt4all-falcon-newbpe-q4_0.gguf",
+			"Orca 2 (Medium)": "orca-2-7b.Q4_0.gguf",
+			"Orca 2 (Full)": "orca-2-13b.Q4_0.gguf",
+			"Mini Orca (Small)": "orca-mini-3b-gguf2-q4_0.gguf",
+			"MPT Chat": "mpt-7b-chat-newbpe-q4_0.gguf",
+			"Wizard v1.2": "wizardlm-13b-v1.2.Q4_0.gguf",
+			Hermes: "nous-hermes-llama2-13b.Q4_0.gguf",
+			Snoozy: "gpt4all-13b-snoozy-q4_0.gguf",
+			"EM German Mistral": "em_german_mistral_v01.Q4_0.gguf",
+		};
+
 		const eventListener = () => {
 			chat.resetChat();
 			hideContainer(parentElement);
@@ -29,9 +52,22 @@ export class HistoryContainer {
 			const newChatIndex = 2;
 			buttons![newChatIndex].id = "active-button";
 			buttons![settingsIndex].id = "";
+			const index = this.plugin.settings.historyIndex
+			const header = this.plugin.settings.promptHistory[index].prompt
+			const modelName = this.plugin.settings.promptHistory[index].modelName
+			this.plugin.settings.model = models[modelName];
+			this.plugin.settings.modelName = modelName;
+			this.plugin.saveSettings()
+			setHeading( modelEl, modelName, titleEl, header);
 		};
 
-		const disableHistory = (collection: HTMLCollection, index: number, enabled: boolean) => {
+		eventListener.bind(this)
+
+		const disableHistory = (
+			collection: HTMLCollection,
+			index: number,
+			enabled: boolean
+		) => {
 			for (let i = 0; i < collection.length; i++) {
 				if (i !== index && !enabled) {
 					collection.item(i)?.addClass("no-pointer");
@@ -73,6 +109,7 @@ export class HistoryContainer {
 			deleteHistory.buttonEl.id = "delete-history-button";
 			item.addEventListener("click", () => {
 				this.plugin.settings.historyIndex = index;
+				this.plugin.saveSettings()
 			});
 
 			item.addEventListener("click", eventListener);
@@ -92,7 +129,10 @@ export class HistoryContainer {
 					hideContainer,
 					showContainer,
 					containerToShow,
-					chat
+					chat,
+					setHeading,
+					titleEl,
+					modelEl
 				);
 			});
 
@@ -111,7 +151,7 @@ export class HistoryContainer {
 				if (item.textContent) {
 					this.plugin.settings.promptHistory[index].prompt =
 						item.textContent;
-						this.plugin.saveSettings()
+					this.plugin.saveSettings();
 				} else {
 					new Notice("Prompt length must be greater than 0");
 					return;

@@ -10,6 +10,8 @@ export type ChatHistoryItem = {
 	messages: Message[];
 	temperature: number;
 	tokens: number;
+	modelName: string;
+	model: string;
 };
 
 export type TokenParams = {
@@ -19,9 +21,9 @@ export type TokenParams = {
 
 export type Message = {
 	role: "user" | "assistant";
-	content: string
-}
+	content: string;
+};
 
 export type Model = {
-	[modelName: string]: string
-}
+	[modelName: string]: string;
+};
