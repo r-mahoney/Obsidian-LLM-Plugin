@@ -10,8 +10,8 @@ export class ChatContainer {
 	messages: Message[];
 	replaceChatHistory: boolean;
 	historyIndex: number;
-	closeModal: () => void;
-	constructor(private plugin: LocalLLMPlugin, closeModal: () => void) {
+	closeModal?: () => void;
+	constructor(private plugin: LocalLLMPlugin, closeModal?: () => void) {
 		this.closeModal = closeModal;
 	}
 
@@ -65,7 +65,7 @@ export class ChatContainer {
 			});
 	}
 
-	generateChatContainer(parentElement: HTMLElement) {
+	generateChatContainer(parentElement: Element) {
 		this.messages = [];
 		// this.historyMessages = new TextAreaComponent(parentElement);
 		this.historyMessages = parentElement.createDiv();
