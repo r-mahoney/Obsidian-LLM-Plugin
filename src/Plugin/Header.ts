@@ -4,7 +4,15 @@ import { ChatContainer } from "./ChatContainer";
 
 export class Header {
 	constructor(private plugin: LocalLLMPlugin) {}
+	modelEl: HTMLElement;
+	titleEl?: HTMLElement;
 
+	setHeader(modelName: string, title?: string) {
+		if (title) {
+			this.titleEl!.textContent = title;
+		}
+		this.modelEl.innerHTML = modelName;
+	}
 
 	generateHeader(
 		parentElement: Element,
@@ -15,19 +23,19 @@ export class Header {
 		showContainer: (container: HTMLElement) => void,
 		hideContainer: (container: HTMLElement) => void
 	) {
-		const titleDiv = parentElement.createDiv();
+		const titleDiv = createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
 		const titleContainer = titleDiv.createDiv();
-		const title = titleContainer.createDiv();
+		this.titleEl = titleContainer.createDiv();
 		const rightButtonsDiv = titleDiv.createDiv();
 		const rightA = rightButtonsDiv.createDiv();
 		const rightB = rightButtonsDiv.createDiv();
 
 		titleDiv.className = "title-div";
-		title.innerHTML = "LocalLLM Plugin";
-		const modelName = titleContainer.createDiv();
-		modelName.addClass("model-name");
-		modelName.innerHTML = this.plugin.settings.modelName;
+		this.titleEl.innerHTML = "LocalLLM Plugin";
+		this.modelEl = titleContainer.createDiv();
+		this.modelEl.addClass("model-name");
+		this.modelEl.innerHTML = this.plugin.settings.modelName;
 
 		const chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		chatHistoryButton.onClick(() => {
@@ -74,5 +82,7 @@ export class Header {
 		chatHistoryButton.setIcon("bullet-list");
 		settingsButton.setIcon("wrench-screwdriver-glyph");
 		newChatButton.setIcon("plus");
+
+		parentElement.prepend(titleDiv)
 	}
 }

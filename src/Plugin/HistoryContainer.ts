@@ -2,6 +2,7 @@ import { ChatHistoryItem } from "Types/types";
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Notice } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
+import { Header } from "./Header";
 
 export class HistoryContainer {
 	constructor(private plugin: LocalLLMPlugin) {}
@@ -13,14 +14,7 @@ export class HistoryContainer {
 		showContainer: (container: HTMLElement) => void,
 		containerToShow: HTMLElement,
 		chat: ChatContainer,
-		setHeading: (
-			modelEl: HTMLElement,
-			modelName: string,
-			titleEl?: HTMLElement,
-			title?: string,
-		) => void,
-		titleEl: HTMLElement,
-		modelEl: HTMLElement
+		Header: Header
 	) {
 
 		const models: Record<string, string> = {
@@ -57,8 +51,8 @@ export class HistoryContainer {
 			const modelName = this.plugin.settings.promptHistory[index].modelName
 			this.plugin.settings.model = models[modelName];
 			this.plugin.settings.modelName = modelName;
-			this.plugin.saveSettings()
-			setHeading( modelEl, modelName, titleEl, header);
+			this.plugin.saveSettings();
+			Header.setHeader(modelName, header)
 		};
 
 		eventListener.bind(this)
@@ -130,9 +124,7 @@ export class HistoryContainer {
 					showContainer,
 					containerToShow,
 					chat,
-					setHeading,
-					titleEl,
-					modelEl
+					Header
 				);
 			});
 

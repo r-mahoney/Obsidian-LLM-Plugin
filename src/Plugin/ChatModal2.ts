@@ -3,6 +3,7 @@ import { ButtonComponent, Modal } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
 import { SettingsContainer } from "./SettingsContainer";
+import { Header } from "./Header";
 
 export class ChatModal2 extends Modal {
 	constructor(private plugin: LocalLLMPlugin) {
@@ -15,18 +16,6 @@ export class ChatModal2 extends Modal {
 		container.setAttr("style", "display: flex");
 	}
 
-	setHeader(
-		modelEl: HTMLElement,
-		modelName: string,
-		titleEl?: HTMLElement,
-		title?: string
-	) {
-		if (titleEl && title) {
-			titleEl.textContent = title;
-		}
-		modelEl.innerHTML = modelName;
-	}
-
 	onOpen() {
 		this.modalEl
 			.getElementsByClassName("modal-close-button")[0]
@@ -37,10 +26,24 @@ export class ChatModal2 extends Modal {
 			this.close();
 		};
 
+		const header = new Header(this.plugin);
 		const chatContainer = new ChatContainer(this.plugin, closeModal);
 		const historyContainer = new HistoryContainer(this.plugin);
 		const settingsContainer = new SettingsContainer(this.plugin);
 
+		const lineBreak = contentEl.createDiv();
+		const chatContainerDiv = contentEl.createDiv();
+		const chatHistoryContainer = contentEl.createDiv();
+		const settingsContainerDiv = contentEl.createDiv();
+		header.generateHeader(
+			contentEl,
+			chatContainerDiv,
+			chatHistoryContainer,
+			settingsContainerDiv,
+			chatContainer,
+			this.showContainer,
+			this.hideContainer
+		);
 		let history = this.plugin.settings.promptHistory;
 		const models = {
 			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
@@ -55,12 +58,6 @@ export class ChatModal2 extends Modal {
 			Snoozy: "gpt4all-13b-snoozy-q4_0.gguf",
 			"EM German Mistral": "em_german_mistral_v01.Q4_0.gguf",
 		};
-
-		const lineBreak = contentEl.createDiv();
-
-		const chatContainerDiv = contentEl.createDiv();
-		const chatHistoryContainer = contentEl.createDiv();
-		const settingsContainerDiv = contentEl.createDiv();
 
 		settingsContainerDiv.setAttr("style", "display: none");
 		settingsContainerDiv.className = "settings-container";
@@ -77,15 +74,12 @@ export class ChatModal2 extends Modal {
 			this.showContainer,
 			chatContainerDiv,
 			chatContainer,
-			this.setHeader,
-			title,
-			modelName
+			header
 		);
 		settingsContainer.generateSettingsContainer(
 			settingsContainerDiv,
 			models,
-			this.setHeader,
-			modelName
+			header
 		);
 	}
 }
