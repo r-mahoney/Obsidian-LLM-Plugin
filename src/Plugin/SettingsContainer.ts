@@ -1,6 +1,7 @@
 import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { DropdownComponent, Setting } from "obsidian";
 import { DEFAULT_DIRECTORY } from "utils/utils";
+import { Header } from "./Header";
 const fs = require("fs");
 
 export class SettingsContainer {
@@ -10,8 +11,7 @@ export class SettingsContainer {
 	generateSettingsContainer(
 		parentContainer: HTMLElement,
 		models: Record<string, string>,
-		setHeading: (modelEl: HTMLElement, modelName: string) => void,
-		modelEl: HTMLElement
+		Header: Header
 	) {
 		this.downloadedModels = {};
 		const modelOptions = new Setting(parentContainer)
@@ -37,7 +37,7 @@ export class SettingsContainer {
 					this.plugin.settings.model = models[change];
 					this.plugin.settings.modelName = change;
 					this.plugin.saveSettings();
-					setHeading(modelEl, change)
+					Header.setHeader(change)
 				});
 				dropdown.setValue(this.plugin.settings.model);
 			});
