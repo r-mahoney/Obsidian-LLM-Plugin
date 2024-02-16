@@ -16,7 +16,6 @@ export class HistoryContainer {
 		chat: ChatContainer,
 		Header: Header
 	) {
-
 		const models: Record<string, string> = {
 			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
 			"Mistral Instruct": "mistral-7b-instruct-v0.1.Q4_0.gguf",
@@ -46,16 +45,17 @@ export class HistoryContainer {
 			const newChatIndex = 2;
 			buttons![newChatIndex].id = "active-button";
 			buttons![settingsIndex].id = "";
-			const index = this.plugin.settings.historyIndex
-			const header = this.plugin.settings.promptHistory[index].prompt
-			const modelName = this.plugin.settings.promptHistory[index].modelName
+			const index = this.plugin.settings.historyIndex;
+			const header = this.plugin.settings.promptHistory[index].prompt;
+			const modelName =
+				this.plugin.settings.promptHistory[index].modelName;
 			this.plugin.settings.model = models[modelName];
 			this.plugin.settings.modelName = modelName;
 			this.plugin.saveSettings();
-			Header.setHeader(modelName, header)
+			Header.setHeader(modelName, header);
 		};
 
-		eventListener.bind(this)
+		eventListener.bind(this);
 
 		const disableHistory = (
 			collection: HTMLCollection,
@@ -103,7 +103,7 @@ export class HistoryContainer {
 			deleteHistory.buttonEl.id = "delete-history-button";
 			item.addEventListener("click", () => {
 				this.plugin.settings.historyIndex = index;
-				this.plugin.saveSettings()
+				this.plugin.saveSettings();
 			});
 
 			item.addEventListener("click", eventListener);
