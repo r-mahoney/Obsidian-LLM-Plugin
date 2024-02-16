@@ -37,17 +37,19 @@ export default class LocalLLMPlugin extends Plugin {
 
 		this.registerRibbonIcons();
 		this.registerCommands();
-		this.registerView(
-			VIEW_TYPE,
-			(leaf) => new WidgetView(leaf, this)
-		  );
+		
+		// this.registerView(
+		// 	VIEW_TYPE,
+		// 	(leaf) => new WidgetView(leaf, this)
+		//   );
 	  
-		  this.addRibbonIcon("dice", "Activate view", () => {
-			this.activateView();
-		  });
+		//   this.addRibbonIcon("dice", "Activate view", () => {
+		// 	this.activateView();
+		//   });
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SettingsView(this.app, this));
+		// this.addSettingTab(new SettingsView(this.app, this));
+
 		this.history = new History(this);
 	}
 
