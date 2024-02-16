@@ -69,27 +69,45 @@ export class ChatModal2 extends Modal {
 		titleDiv.className = "title-div";
 		title.innerHTML = "LocalLLM Plugin";
 		const modelName = titleContainer.createDiv();
-		modelName.addClass("model-name")
+		modelName.addClass("model-name");
 		modelName.innerHTML = this.plugin.settings.modelName;
 
 		const chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		chatHistoryButton.onClick(() => {
-			newChatButton.buttonEl.id = "";
-			settingsButton.buttonEl.id = "";
-			chatHistoryButton.buttonEl.id = "active-button";
-			this.showContainer(chatHistoryContainer);
-			this.hideContainer(settingsContainerDiv);
-			this.hideContainer(chatContainerDiv);
+			if (chatHistoryContainer.style.display === "none") {
+				chatHistoryButton.setIcon("arrow-left");
+				newChatButton.buttonEl.id = "";
+				settingsButton.buttonEl.id = "";
+				chatHistoryButton.buttonEl.id = "active-button";
+				this.showContainer(chatHistoryContainer);
+				this.hideContainer(settingsContainerDiv);
+				this.hideContainer(chatContainerDiv);
+			} else {
+				chatHistoryButton.setIcon("bullet-list");
+				newChatButton.buttonEl.id = "active-button";
+				chatHistoryButton.buttonEl.id = "";
+				this.showContainer(chatContainerDiv);
+				this.hideContainer(chatHistoryContainer);
+			}
 		});
 
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
-			newChatButton.buttonEl.id = "";
-			settingsButton.buttonEl.id = "active-button";
-			chatHistoryButton.buttonEl.id = "";
-			this.showContainer(settingsContainerDiv);
-			this.hideContainer(chatContainerDiv);
-			this.hideContainer(chatHistoryContainer);
+			if (settingsContainerDiv.style.display === "none") {
+				settingsButton.setIcon("arrow-left");
+				newChatButton.buttonEl.id = "";
+				settingsButton.buttonEl.id = "active-button";
+				chatHistoryButton.buttonEl.id = "";
+				this.showContainer(settingsContainerDiv);
+				this.hideContainer(chatContainerDiv);
+				this.hideContainer(chatHistoryContainer);
+			} else {
+				settingsButton.setIcon("wrench-screwdriver-glyph");
+				newChatButton.buttonEl.id = "active-button";
+				settingsButton.buttonEl.id = "";
+				this.showContainer(chatContainerDiv);
+				this.hideContainer(settingsContainerDiv);
+			}
 		});
 
 		const newChatButton = new ButtonComponent(rightB);
