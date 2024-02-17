@@ -41,10 +41,10 @@ export class HistoryContainer {
 			const titleDiv =
 				parentElement.parentNode?.querySelector(".title-div");
 			const buttons = titleDiv?.querySelectorAll(".title-buttons");
-			const settingsIndex = 0;
+			const historyIndex = 0;
 			const newChatIndex = 2;
 			buttons![newChatIndex].id = "active-button";
-			buttons![settingsIndex].id = "";
+			buttons![historyIndex].id = "";
 			const index = this.plugin.settings.historyIndex;
 			const header = this.plugin.settings.promptHistory[index].prompt;
 			const modelName =
@@ -53,6 +53,7 @@ export class HistoryContainer {
 			this.plugin.settings.modelName = modelName;
 			this.plugin.saveSettings();
 			Header.setHeader(modelName, header);
+			Header.resetHistoryButton()
 		};
 
 		eventListener.bind(this);
