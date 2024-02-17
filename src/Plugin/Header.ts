@@ -6,12 +6,18 @@ export class Header {
 	constructor(private plugin: LocalLLMPlugin) {}
 	modelEl: HTMLElement;
 	titleEl?: HTMLElement;
+	chatHistoryButton: ButtonComponent;
 
 	setHeader(modelName: string, title?: string) {
 		if (title) {
 			this.titleEl!.textContent = title;
 		}
 		this.modelEl.innerHTML = modelName;
+	}
+
+	resetHistoryButton() {
+		this.chatHistoryButton.setIcon("bullet-list");
+		this.chatHistoryButton.buttonEl.id = ""
 	}
 
 	clickHandler(button: ButtonComponent, toggles: ButtonComponent[]) {
@@ -70,9 +76,9 @@ export class Header {
 		this.modelEl.addClass("model-name");
 		this.modelEl.innerHTML = this.plugin.settings.modelName;
 
-		const chatHistoryButton = new ButtonComponent(leftButtonDiv);
-		chatHistoryButton.onClick(() => {
-			this.clickHandler(chatHistoryButton, [
+		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
+		this.chatHistoryButton.onClick(() => {
+			this.clickHandler(this.chatHistoryButton, [
 				newChatButton,
 				settingsButton,
 			]);
@@ -90,7 +96,7 @@ export class Header {
 		settingsButton.onClick(() => {
 			this.clickHandler(settingsButton, [
 				newChatButton,
-				chatHistoryButton,
+				this.chatHistoryButton,
 			]);
 			if (settingsContainer.style.display === "none") {
 				showContainer(settingsContainer);
@@ -107,7 +113,7 @@ export class Header {
 		newChatButton.onClick(() => {
 			this.clickHandler(newChatButton, [
 				settingsButton,
-				chatHistoryButton,
+				this.chatHistoryButton,
 			]);
 			this.setHeader(this.plugin.settings.modelName, "New Chat");
 			showContainer(chatContainerDiv);
@@ -121,12 +127,13 @@ export class Header {
 		leftButtonDiv.className = "one left-buttons-div";
 		rightButtonsDiv.className = "one right-buttons-div";
 		titleContainer.className = "four title";
-		chatHistoryButton.buttonEl.className = "title-buttons chat-history";
+		this.chatHistoryButton.buttonEl.className =
+			"title-buttons chat-history";
 		settingsButton.buttonEl.addClass("title-buttons", "settings-button");
 		newChatButton.buttonEl.className = "title-buttons new-chat-button";
 		rightA.className = "flex-end";
 		rightB.className = "flex-end";
-		chatHistoryButton.setIcon("bullet-list");
+		this.chatHistoryButton.setIcon("bullet-list");
 		settingsButton.setIcon("wrench-screwdriver-glyph");
 		newChatButton.setIcon("plus");
 
