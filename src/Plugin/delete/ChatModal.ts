@@ -223,14 +223,5 @@ export class ChatModal extends Modal {
 			this.generateButton.setButtonText("Generate Notes");
 			return;
 		}
-
-		this.plugin.history.push({
-			prompt: this.prompt,
-			processedPrompt: this.processedPrompt,
-			messages: params.messages,
-			temperature: params.temperature,
-			tokens: params.tokens,
-			modelName: params.model,
-		});
 	}
 }

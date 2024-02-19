@@ -82,7 +82,6 @@ export class HistoryContainer {
 			const item = parentElement.createDiv();
 			const text = item.createEl("p");
 			text.innerHTML = historyItem.prompt;
-			// item.innerHTML = historyItem.prompt;
 			const buttonsDiv = item.createDiv();
 			buttonsDiv.addClass("history-buttons-div");
 			const editPrompt = new ButtonComponent(buttonsDiv);

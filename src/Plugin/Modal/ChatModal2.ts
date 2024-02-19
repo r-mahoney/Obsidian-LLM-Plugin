@@ -1,9 +1,9 @@
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Modal } from "obsidian";
-import { ChatContainer } from "./ChatContainer";
-import { HistoryContainer } from "./HistoryContainer";
-import { SettingsContainer } from "./SettingsContainer";
-import { Header } from "./Header";
+import { ChatContainer } from "../Components/ChatContainer";
+import { HistoryContainer } from "../Components/HistoryContainer";
+import { SettingsContainer } from "../Components/SettingsContainer";
+import { Header } from "../Components/Header";
 
 export class ChatModal2 extends Modal {
 	constructor(private plugin: LocalLLMPlugin) {
@@ -27,7 +27,7 @@ export class ChatModal2 extends Modal {
 		};
 
 		const header = new Header(this.plugin);
-		const chatContainer = new ChatContainer(this.plugin, closeModal);
+		const chatContainer = new ChatContainer(this.plugin /*, closeModal*/);
 		const historyContainer = new HistoryContainer(this.plugin);
 		const settingsContainer = new SettingsContainer(this.plugin);
 

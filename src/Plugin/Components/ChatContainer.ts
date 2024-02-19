@@ -1,6 +1,6 @@
 import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
-import { ButtonComponent, Notice, TextComponent } from "obsidian";
+import { ButtonComponent, MarkdownView, Notice, TextComponent } from "obsidian";
 import { appendMessage, messageGPT4AllServer } from "utils/utils";
 
 export class ChatContainer {
@@ -10,9 +10,9 @@ export class ChatContainer {
 	messages: Message[];
 	replaceChatHistory: boolean;
 	historyIndex: number;
-	closeModal?: () => void;
-	constructor(private plugin: LocalLLMPlugin, closeModal?: () => void) {
-		this.closeModal = closeModal;
+	// closeModal?: () => void;
+	constructor(private plugin: LocalLLMPlugin, /*closeModal?: () => void*/) {
+		// this.closeModal = closeModal;
 	}
 
 	private handleGenerateClick() {
@@ -153,9 +153,11 @@ export class ChatContainer {
 				);
 				return;
 			}
-			appendMessage(editor, content);
-			//Use this if we want to close modal after adding any text
-			// this.closeModal();
+			if(editor) {
+				appendMessage(editor, content);
+				//Use this if we want to close modal after adding any text
+				// this.closeModal();
+			} 
 		});
 	}
 

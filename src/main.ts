@@ -2,9 +2,9 @@ import { Plugin, WorkspaceLeaf } from "obsidian";
 import { ChatHistoryItem, GPT4AllParams, Message } from "./Types/types";
 
 import { History } from "History/HistoryHandler";
-import { ChatModal } from "Plugin/ChatModal";
-import { ConversationalModal } from "Plugin/ConversationalModal";
-import { ChatModal2 } from "Plugin/ChatModal2";
+import { ChatModal } from "Plugin/delete/ChatModal";
+import { ConversationalModal } from "Plugin/delete/ConversationalModal";
+import { ChatModal2 } from "Plugin/Modal/ChatModal2";
 import SettingsView from "Settings/SettingsView";
 import { VIEW_TYPE, WidgetView } from "Plugin/Widget/Widget";
 
@@ -37,18 +37,15 @@ export default class LocalLLMPlugin extends Plugin {
 
 		this.registerRibbonIcons();
 		this.registerCommands();
-		
-		// this.registerView(
-		// 	VIEW_TYPE,
-		// 	(leaf) => new WidgetView(leaf, this)
-		//   );
-	  
-		//   this.addRibbonIcon("dice", "Activate view", () => {
+
+		// this.registerView(VIEW_TYPE, (leaf) => new WidgetView(leaf, this));
+
+		// this.addRibbonIcon("dice", "Activate view", () => {
 		// 	this.activateView();
-		//   });
+		// });
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		// this.addSettingTab(new SettingsView(this.app, this));
+		this.addSettingTab(new SettingsView(this.app, this));
 
 		this.history = new History(this);
 	}
@@ -77,23 +74,23 @@ export default class LocalLLMPlugin extends Plugin {
 
 	async activateView() {
 		const { workspace } = this.app;
-	
+
 		let leaf: WorkspaceLeaf | null = null;
 		const leaves = workspace.getLeavesOfType(VIEW_TYPE);
-	
+
 		if (leaves.length > 0) {
-		  // A leaf with our view already exists, use that
-		  leaf = leaves[0];
+			// A leaf with our view already exists, use that
+			leaf = leaves[0];
 		} else {
-		  // Our view could not be found in the workspace, create a new leaf
-		  // in the right sidebar for it
-		  leaf = workspace.getRightLeaf(false);
-		  await leaf.setViewState({ type: VIEW_TYPE, active: true });
+			// Our view could not be found in the workspace, create a new leaf
+			// in the right sidebar for it
+			leaf = workspace.getRightLeaf(false);
+			await leaf.setViewState({ type: VIEW_TYPE, active: true });
 		}
-	
+
 		// "Reveal" the leaf in case it is in a collapsed sidebar
 		workspace.revealLeaf(leaf);
-	  }
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign(
