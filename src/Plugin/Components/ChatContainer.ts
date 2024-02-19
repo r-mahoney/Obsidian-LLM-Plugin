@@ -1,6 +1,6 @@
 import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
-import { ButtonComponent, MarkdownView, Notice, TextComponent } from "obsidian";
+import { ButtonComponent, Notice, TextComponent } from "obsidian";
 import { appendMessage, messageGPT4AllServer } from "utils/utils";
 
 export class ChatContainer {
@@ -10,8 +10,10 @@ export class ChatContainer {
 	messages: Message[];
 	replaceChatHistory: boolean;
 	historyIndex: number;
+	loading: boolean;
+	loadingDivContainer: HTMLElement;
 	// closeModal?: () => void;
-	constructor(private plugin: LocalLLMPlugin, /*closeModal?: () => void*/) {
+	constructor(private plugin: LocalLLMPlugin /*closeModal?: () => void*/) {
 		// this.closeModal = closeModal;
 	}
 
@@ -22,6 +24,7 @@ export class ChatContainer {
 		}
 		this.messages.push({ role: "user", content: this.prompt });
 		this.appendNewMessage({ role: "user", content: this.prompt });
+		this.setLoadingDiv();
 
 		const params: GPT4AllParams = {
 			messages: this.messages,
@@ -29,40 +32,43 @@ export class ChatContainer {
 			tokens: this.plugin.settings.tokens,
 			model: this.plugin.settings.model,
 		};
-
-		messageGPT4AllServer(params)
-			.then((response: Message) => {
-				this.messages.push(response);
-				this.appendNewMessage(response);
-				if (this.plugin.settings.historyIndex > -1) {
-					this.plugin.history.overwriteHistory(
-						this.messages,
-						this.plugin.settings.historyIndex
-					);
-				} else {
-					this.plugin.history.push({
-						prompt: this.prompt,
-						processedPrompt: this.processedPrompt,
-						messages: params.messages,
-						temperature: params.temperature,
-						tokens: params.tokens,
-						modelName: this.plugin.settings.modelName,
-						model: params.model,
-					});
-					const length = this.plugin.settings.promptHistory.length;
-					this.plugin.settings.historyIndex = length - 1;
-					this.plugin.saveSettings();
-					this.prompt = "";
-				}
-			})
-			.catch((err) => {
-				if (err.message === "Failed to fetch") {
-					new Notice(
-						"You must have GPT4All open with the API Server enabled"
-					);
-					this.removeMessage();
-				}
-			});
+		try {
+			messageGPT4AllServer(params)
+				.then((response: Message) => {
+					this.removeLodingDiv();
+					this.messages.push(response);
+					this.appendNewMessage(response);
+					if (this.plugin.settings.historyIndex > -1) {
+						this.plugin.history.overwriteHistory(
+							this.messages,
+							this.plugin.settings.historyIndex
+						);
+					} else {
+						this.plugin.history.push({
+							prompt: this.prompt,
+							processedPrompt: this.processedPrompt,
+							messages: params.messages,
+							temperature: params.temperature,
+							tokens: params.tokens,
+							modelName: this.plugin.settings.modelName,
+							model: params.model,
+						});
+						const length =
+							this.plugin.settings.promptHistory.length;
+						this.plugin.settings.historyIndex = length - 1;
+						this.plugin.saveSettings();
+						this.prompt = "";
+					}
+				})
+				.catch((err) => {
+					if (err.message === "Failed to fetch") {
+						new Notice(
+							"You must have GPT4All open with the API Server enabled"
+						);
+						this.removeMessage();
+					}
+				});
+		} catch (error) {}
 	}
 
 	generateChatContainer(parentElement: Element) {
@@ -117,6 +123,23 @@ export class ChatContainer {
 	resetMessages() {
 		this.messages = [];
 	}
+	setLoadingDiv() {
+		this.loadingDivContainer = this.historyMessages.createDiv();
+		const loadingIcon = this.loadingDivContainer.createDiv();
+		const loadingDiv = this.loadingDivContainer.createDiv();
+		loadingDiv.innerHTML = `Loading<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`;
+		loadingIcon.innerHTML = "A";
+		loadingIcon.addClass("message-icon");
+		loadingDiv.addClass("im-like-message");
+		this.loadingDivContainer.addClass(
+			"flex-end",
+			"im-like-message-container"
+		);
+		this.historyMessages.scroll(0, 9999);
+	}
+	removeLodingDiv() {
+		this.loadingDivContainer.remove();
+	}
 
 	private createMessage(role: string, content: string, index: number) {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
@@ -153,11 +176,11 @@ export class ChatContainer {
 				);
 				return;
 			}
-			if(editor) {
+			if (editor) {
 				appendMessage(editor, content);
 				//Use this if we want to close modal after adding any text
 				// this.closeModal();
-			} 
+			}
 		});
 	}
 
