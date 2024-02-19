@@ -7,6 +7,7 @@ export class Header {
 	modelEl: HTMLElement;
 	titleEl?: HTMLElement;
 	chatHistoryButton: ButtonComponent;
+	newChatButton: ButtonComponent;
 
 	setHeader(modelName: string, title?: string) {
 		if (title) {
@@ -16,39 +17,22 @@ export class Header {
 	}
 
 	resetHistoryButton() {
-		this.chatHistoryButton.setIcon("bullet-list");
-		this.chatHistoryButton.buttonEl.id = ""
+		this.chatHistoryButton.buttonEl.removeClass("is-active");
+		this.newChatButton.buttonEl.addClass("is-active");
 	}
 
 	clickHandler(button: ButtonComponent, toggles: ButtonComponent[]) {
-		const buttonMap: Record<string, string> = {
-			"new-chat-button": "plus",
-			"settings-button": "wrench-screwdriver-glyph",
-			"chat-history": "bullet-list",
-		};
-		const clickedButton = button.buttonEl.classList[1];
-		if (clickedButton === "new-chat-button") {
-			button.buttonEl.id = "active-button";
+		if (button.buttonEl.classList.contains("is-active")) {
+			button.buttonEl.removeClass("is-active");
 			toggles.map((el) => {
-				el.buttonEl.id = "";
-				el.setIcon(buttonMap[el.buttonEl.classList[1]]);
-			});
-			return;
-		}
-		if (button.buttonEl.id === "active-button") {
-			button.setIcon(buttonMap[clickedButton]);
-			button.buttonEl.id = "";
-			toggles.map((el) => {
-				if (el.buttonEl.classList[1] === "new-chat-button") {
-					el.buttonEl.id = "active-button";
+				if (el.buttonEl.classList.contains("new-chat-button")) {
+					el.buttonEl.addClass("is-active");
 				}
 			});
 		} else {
-			button.setIcon("arrow-left");
-			button.buttonEl.id = "active-button";
+			button.buttonEl.addClass("is-active");
 			toggles.map((el) => {
-				el.buttonEl.id = "";
-				el.setIcon(buttonMap[el.buttonEl.classList[1]]);
+				el.buttonEl.removeClass("is-active");
 			});
 		}
 	}
@@ -79,7 +63,7 @@ export class Header {
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		this.chatHistoryButton.onClick(() => {
 			this.clickHandler(this.chatHistoryButton, [
-				newChatButton,
+				this.newChatButton,
 				settingsButton,
 			]);
 			if (historyContainer.style.display === "none") {
@@ -95,7 +79,7 @@ export class Header {
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
 			this.clickHandler(settingsButton, [
-				newChatButton,
+				this.newChatButton,
 				this.chatHistoryButton,
 			]);
 			if (settingsContainer.style.display === "none") {
@@ -108,10 +92,10 @@ export class Header {
 			}
 		});
 
-		const newChatButton = new ButtonComponent(rightB);
-		newChatButton.buttonEl.id = "active-button";
-		newChatButton.onClick(() => {
-			this.clickHandler(newChatButton, [
+		this.newChatButton = new ButtonComponent(rightB);
+		this.newChatButton.buttonEl.addClass("is-active");
+		this.newChatButton.onClick(() => {
+			this.clickHandler(this.newChatButton, [
 				settingsButton,
 				this.chatHistoryButton,
 			]);
@@ -127,15 +111,20 @@ export class Header {
 		leftButtonDiv.className = "one left-buttons-div";
 		rightButtonsDiv.className = "one right-buttons-div";
 		titleContainer.className = "four title";
-		this.chatHistoryButton.buttonEl.className =
-			"title-buttons chat-history";
-		settingsButton.buttonEl.addClass("title-buttons", "settings-button");
-		newChatButton.buttonEl.className = "title-buttons new-chat-button";
+		this.chatHistoryButton.buttonEl.addClass(
+			"clickable-icon",
+			"chat-history"
+		);
+		settingsButton.buttonEl.addClass("clickable-icon", "settings-button");
+		this.newChatButton.buttonEl.addClass(
+			"clickable-icon",
+			"new-chat-button"
+		);
 		rightA.className = "flex-end";
 		rightB.className = "flex-end";
 		this.chatHistoryButton.setIcon("bullet-list");
 		settingsButton.setIcon("wrench-screwdriver-glyph");
-		newChatButton.setIcon("plus");
+		this.newChatButton.setIcon("plus");
 
 		parentElement.prepend(titleDiv);
 	}
