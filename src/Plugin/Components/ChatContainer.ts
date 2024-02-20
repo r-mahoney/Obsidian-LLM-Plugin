@@ -68,7 +68,6 @@ export class ChatContainer {
 				}
 				this.historyPush(params);
 				this.messages.push({ role: "assistant", content: previewText });
-				console.log(this.messages);
 			}
 		} catch (error) {}
 	}
