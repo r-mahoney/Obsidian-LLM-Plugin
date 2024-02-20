@@ -1,6 +1,7 @@
 import LocalLLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
+import { HistoryContainer } from "./HistoryContainer";
 
 export class Header {
 	constructor(private plugin: LocalLLMPlugin) {}
@@ -40,7 +41,7 @@ export class Header {
 	generateHeader(
 		parentElement: Element,
 		chatContainerDiv: HTMLElement,
-		historyContainer: HTMLElement,
+		chatHistoryContainer: HTMLElement,
 		settingsContainer: HTMLElement,
 		chatContainer: ChatContainer,
 		showContainer: (container: HTMLElement) => void,
@@ -66,13 +67,13 @@ export class Header {
 				this.newChatButton,
 				settingsButton,
 			]);
-			if (historyContainer.style.display === "none") {
-				showContainer(historyContainer);
+			if (chatHistoryContainer.style.display === "none") {
+				showContainer(chatHistoryContainer);
 				hideContainer(settingsContainer);
 				hideContainer(chatContainerDiv);
 			} else {
 				showContainer(chatContainerDiv);
-				hideContainer(historyContainer);
+				hideContainer(chatHistoryContainer);
 			}
 		});
 
@@ -85,7 +86,7 @@ export class Header {
 			if (settingsContainer.style.display === "none") {
 				showContainer(settingsContainer);
 				hideContainer(chatContainerDiv);
-				hideContainer(historyContainer);
+				hideContainer(chatHistoryContainer);
 			} else {
 				showContainer(chatContainerDiv);
 				hideContainer(settingsContainer);
@@ -102,7 +103,7 @@ export class Header {
 			this.setHeader(this.plugin.settings.modelName, "New Chat");
 			showContainer(chatContainerDiv);
 			hideContainer(settingsContainer);
-			hideContainer(historyContainer);
+			hideContainer(chatHistoryContainer);
 			chatContainer.resetChat();
 			chatContainer.resetMessages();
 			this.plugin.settings.historyIndex = -1;

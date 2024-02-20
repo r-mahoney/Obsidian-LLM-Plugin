@@ -1,13 +1,9 @@
-import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LocalLLMPlugin from "main";
 import {
 	App,
 	ButtonComponent,
-	DropdownComponent,
-	Notice,
 	PluginSettingTab,
-	Setting,
-	TextAreaComponent,
-	TextComponent,
+	Setting
 } from "obsidian";
 
 export default class SettingsView extends PluginSettingTab {
@@ -27,10 +23,27 @@ export default class SettingsView extends PluginSettingTab {
 			.setName("Reset Chat History")
 			.setDesc("This will delete previous Prompts and Chat Contexts")
 			.addButton((button: ButtonComponent) => {
-				button.setButtonText("Reset History")
+				button.setButtonText("Reset History");
 				button.onClick(() => {
-					this.plugin.history.reset()
-				})
+					this.plugin.history.reset();
+				});
+			});
+
+		const openAIAPIKey = new Setting(containerEl)
+			.setName("OpenAI API Key")
+			.setDesc("OpenAI models require an API key for authentication.")
+			.addText((text) => {
+				text.setValue(`${this.plugin.settings.openAIAPIKey}`);
+				text.onChange((change) => {
+					this.plugin.settings.openAIAPIKey = change;
+					this.plugin.saveSettings();
+				});
 			})
+			.addButton((button: ButtonComponent) => {
+				button.setButtonText("Generate token");
+				button.onClick((evt: MouseEvent) => {
+					window.open("https://beta.openai.com/account/api-keys");
+				});
+			});
 	}
 }

@@ -1,6 +1,8 @@
 import { GPT4AllParams, Message } from "Types/types";
 import { existsSync } from "fs";
 import { Editor } from "obsidian";
+import OpenAI from "openai";
+import { Stream } from "openai/streaming";
 
 const path = require("path");
 const homeDir = require("os").homedir();
@@ -27,6 +29,28 @@ export async function messageGPT4AllServer(params: GPT4AllParams) {
 		}),
 	}).then((res) => res.json());
 	return response.choices[0].message;
+}
+
+/* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
+export async function openAIMessage(
+	params: GPT4AllParams,
+	OpenAI_API_Key: string
+) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+	const { model, messages, tokens, temperature } = params;
+
+	const stream = await openai.chat.completions.create({
+		model,
+		messages,
+		max_tokens: tokens,
+		temperature,
+		stream: true,
+	});
+
+	return stream;
 }
 
 export function processReplacementTokens(prompt: string) {

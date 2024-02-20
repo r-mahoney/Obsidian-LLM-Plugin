@@ -1,7 +1,11 @@
 import { GPT4AllParams, Message } from "Types/types";
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Notice, TextComponent } from "obsidian";
-import { appendMessage, messageGPT4AllServer } from "utils/utils";
+import {
+	appendMessage,
+	messageGPT4AllServer,
+	openAIMessage,
+} from "utils/utils";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -12,75 +16,94 @@ export class ChatContainer {
 	historyIndex: number;
 	loading: boolean;
 	loadingDivContainer: HTMLElement;
+	streamingDiv: HTMLElement;
 	// closeModal?: () => void;
 	constructor(private plugin: LocalLLMPlugin /*closeModal?: () => void*/) {
 		// this.closeModal = closeModal;
 	}
 
-	private handleGenerateClick() {
+	async handleGenerateClick() {
 		if (!this.prompt) {
 			new Notice("You need to ask a question first.");
 			return;
 		}
 		this.messages.push({ role: "user", content: this.prompt });
 		this.appendNewMessage({ role: "user", content: this.prompt });
-		this.setLoadingDiv();
 
 		const params: GPT4AllParams = {
 			messages: this.messages,
-			temperature: this.plugin.settings.temperature / 10,
+			temperature: this.plugin.settings.temperature,
 			tokens: this.plugin.settings.tokens,
 			model: this.plugin.settings.model,
 		};
 		try {
-			messageGPT4AllServer(params)
-				.then((response: Message) => {
-					this.removeLodingDiv();
-					this.messages.push(response);
-					this.appendNewMessage(response);
-					if (this.plugin.settings.historyIndex > -1) {
-						this.plugin.history.overwriteHistory(
-							this.messages,
-							this.plugin.settings.historyIndex
-						);
-					} else {
-						this.plugin.history.push({
-							prompt: this.prompt,
-							processedPrompt: this.processedPrompt,
-							messages: params.messages,
-							temperature: params.temperature,
-							tokens: params.tokens,
-							modelName: this.plugin.settings.modelName,
-							model: params.model,
-						});
-						const length =
-							this.plugin.settings.promptHistory.length;
-						this.plugin.settings.historyIndex = length - 1;
-						this.plugin.saveSettings();
-						this.prompt = "";
-					}
-				})
-				.catch((err) => {
-					if (err.message === "Failed to fetch") {
-						new Notice(
-							"You must have GPT4All open with the API Server enabled"
-						);
-						this.removeMessage();
-					}
-				});
+			if (this.plugin.settings.modelType === "GPT4All") {
+				this.setLoadingDiv();
+				messageGPT4AllServer(params)
+					.then((response: Message) => {
+						this.removeLodingDiv();
+						this.messages.push(response);
+						this.appendNewMessage(response);
+						this.historyPush(params);
+					})
+					.catch((err) => {
+						if (err.message === "Failed to fetch") {
+							new Notice(
+								"You must have GPT4All open with the API Server enabled"
+							);
+							this.removeMessage();
+						}
+					});
+			} else {
+				const stream = await openAIMessage(
+					params,
+					this.plugin.settings.openAIAPIKey
+				);
+				this.setStreamingDiv();
+				let previewText = "";
+				for await (const chunk of stream) {
+					previewText += chunk.choices[0]?.delta?.content || "";
+					this.streamingDiv.innerHTML = previewText;
+					this.historyMessages.scroll(0, 9999);
+				}
+				this.historyPush(params);
+				this.messages.push({ role: "assistant", content: previewText });
+				console.log(this.messages);
+			}
 		} catch (error) {}
+	}
+
+	historyPush(params: GPT4AllParams) {
+		if (this.plugin.settings.historyIndex > -1) {
+			this.plugin.history.overwriteHistory(
+				this.messages,
+				this.plugin.settings.historyIndex
+			);
+		} else {
+			this.plugin.history.push({
+				prompt: this.prompt,
+				processedPrompt: this.processedPrompt,
+				messages: params.messages,
+				temperature: params.temperature,
+				tokens: params.tokens,
+				modelName: this.plugin.settings.modelName,
+				model: params.model,
+			});
+			const length = this.plugin.settings.promptHistory.length;
+			this.plugin.settings.historyIndex = length - 1;
+			this.plugin.saveSettings();
+			this.prompt = "";
+		}
 	}
 
 	generateChatContainer(parentElement: Element) {
 		this.messages = [];
-		// this.historyMessages = new TextAreaComponent(parentElement);
 		this.historyMessages = parentElement.createDiv();
 		this.historyMessages.className = "messages-div";
 		const promptContainer = parentElement.createDiv();
 		const promptField = new TextComponent(promptContainer);
 		const sendButton = new ButtonComponent(promptContainer);
 
-		// this.historyMessages.inputEl.className = "messages-div";
 		promptContainer.className = "prompt-container";
 		promptField.inputEl.className = "chat-prompt-text-area";
 		promptField.inputEl.id = "chat-prompt-text-area";
@@ -112,7 +135,6 @@ export class ChatContainer {
 			this.messages = history[this.plugin.settings.historyIndex].messages;
 		} else {
 			this.messages.push({ role: "user", content: this.prompt });
-			// this.messages.push({ role: "user", content: this.processedPrompt });
 		}
 	}
 
@@ -123,6 +145,7 @@ export class ChatContainer {
 	resetMessages() {
 		this.messages = [];
 	}
+
 	setLoadingDiv() {
 		this.loadingDivContainer = this.historyMessages.createDiv();
 		const loadingIcon = this.loadingDivContainer.createDiv();
@@ -139,6 +162,21 @@ export class ChatContainer {
 	}
 	removeLodingDiv() {
 		this.loadingDivContainer.remove();
+	}
+
+	setStreamingDiv() {
+		this.loadingDivContainer = this.historyMessages.createDiv();
+		const loadingIcon = this.loadingDivContainer.createDiv();
+		this.streamingDiv = this.loadingDivContainer.createDiv();
+		this.streamingDiv.innerHTML = "";
+		loadingIcon.innerHTML = "A";
+		loadingIcon.addClass("message-icon");
+		this.streamingDiv.addClass("im-like-message");
+		this.loadingDivContainer.addClass(
+			"flex-end",
+			"im-like-message-container"
+		);
+		this.historyMessages.scroll(0, 9999);
 	}
 
 	private createMessage(role: string, content: string, index: number) {
