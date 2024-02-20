@@ -1,9 +1,7 @@
 import { Plugin, WorkspaceLeaf } from "obsidian";
-import { ChatHistoryItem, GPT4AllParams, Message } from "./Types/types";
+import { ChatHistoryItem} from "./Types/types";
 
 import { History } from "History/HistoryHandler";
-import { ChatModal } from "Plugin/delete/ChatModal";
-import { ConversationalModal } from "Plugin/delete/ConversationalModal";
 import { ChatModal2 } from "Plugin/Modal/ChatModal2";
 import SettingsView from "Settings/SettingsView";
 import { VIEW_TYPE, WidgetView } from "Plugin/Widget/Widget";
@@ -12,20 +10,24 @@ interface LocalLLMPluginSettings {
 	appName: string;
 	model: string;
 	modelName: string;
+	modelType: string;
 	tokens: number;
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
 	historyIndex: number;
+	openAIAPIKey: string;
 }
 
 export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 	appName: "Local LLM Plugin",
 	model: "mistral-7b-openorca.Q4_0.gguf",
 	modelName: "Mistral OpenOrca",
+	modelType: "GPT4All",
 	tokens: 300,
 	temperature: 0.65,
 	promptHistory: [],
 	historyIndex: -1,
+	openAIAPIKey: "",
 };
 
 export default class LocalLLMPlugin extends Plugin {

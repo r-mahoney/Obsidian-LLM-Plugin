@@ -25,5 +25,6 @@ export type Message = {
 };
 
 export type Model = {
-	[modelName: string]: string;
+	model: string;
+	type: string;
 };
