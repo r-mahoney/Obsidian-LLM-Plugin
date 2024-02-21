@@ -38,7 +38,7 @@ export class ChatContainer {
 		};
 		try {
 			if (this.plugin.settings.modelType === "GPT4All") {
-				this.setLoadingDiv();
+				this.setDiv(false);
 				messageGPT4AllServer(params)
 					.then((response: Message) => {
 						this.removeLodingDiv();
@@ -59,7 +59,7 @@ export class ChatContainer {
 					params,
 					this.plugin.settings.openAIAPIKey
 				);
-				this.setStreamingDiv();
+				this.setDiv(true);
 				let previewText = "";
 				for await (const chunk of stream) {
 					previewText += chunk.choices[0]?.delta?.content || "";
@@ -145,29 +145,16 @@ export class ChatContainer {
 		this.messages = [];
 	}
 
-	setLoadingDiv() {
-		this.loadingDivContainer = this.historyMessages.createDiv();
-		const loadingIcon = this.loadingDivContainer.createDiv();
-		const loadingDiv = this.loadingDivContainer.createDiv();
-		loadingDiv.innerHTML = `Loading<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`;
-		loadingIcon.innerHTML = "A";
-		loadingIcon.addClass("message-icon");
-		loadingDiv.addClass("im-like-message");
-		this.loadingDivContainer.addClass(
-			"flex-end",
-			"im-like-message-container"
-		);
-		this.historyMessages.scroll(0, 9999);
-	}
-	removeLodingDiv() {
-		this.loadingDivContainer.remove();
-	}
-
-	setStreamingDiv() {
+	setDiv(streaming: boolean) {
 		this.loadingDivContainer = this.historyMessages.createDiv();
 		const loadingIcon = this.loadingDivContainer.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
-		this.streamingDiv.innerHTML = "";
+		const addText = new ButtonComponent(this.loadingDivContainer);
+		addText.setIcon("files");
+		addText.buttonEl.addClass("add-text", "hide");
+		streaming
+			? (this.streamingDiv.innerHTML = "")
+			: (this.streamingDiv.innerHTML = `Loading<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
 		loadingIcon.innerHTML = "A";
 		loadingIcon.addClass("message-icon");
 		this.streamingDiv.addClass("im-like-message");
@@ -176,6 +163,25 @@ export class ChatContainer {
 			"im-like-message-container"
 		);
 		this.historyMessages.scroll(0, 9999);
+
+		if (streaming) {
+			this.loadingDivContainer.addEventListener("mouseenter", () => {
+				addText.buttonEl.removeClass("hide");
+			});
+
+			this.loadingDivContainer.addEventListener("mouseleave", () => {
+				addText.buttonEl.addClass("hide");
+			});
+		}
+
+		addText.onClick(async () => {
+			await navigator.clipboard.writeText(this.streamingDiv.innerHTML);
+			new Notice("Text copid to clipboard");
+		});
+	}
+
+	removeLodingDiv() {
+		this.loadingDivContainer.remove();
 	}
 
 	private createMessage(role: string, content: string, index: number) {
@@ -205,19 +211,9 @@ export class ChatContainer {
 			addText.buttonEl.addClass("hide");
 		});
 
-		addText.onClick(() => {
-			const editor = this.plugin.app.workspace.activeEditor?.editor;
-			if (!editor) {
-				new Notice(
-					"You must have a Markdown File open to complete this action."
-				);
-				return;
-			}
-			if (editor) {
-				appendMessage(editor, content);
-				//Use this if we want to close modal after adding any text
-				// this.closeModal();
-			}
+		addText.onClick(async () => {
+			await navigator.clipboard.writeText(content);
+			new Notice("Text copid to clipboard");
 		});
 	}
 

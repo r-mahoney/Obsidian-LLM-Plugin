@@ -1,7 +1,6 @@
 import LocalLLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
-import { HistoryContainer } from "./HistoryContainer";
 
 export class Header {
 	constructor(private plugin: LocalLLMPlugin) {}
@@ -19,19 +18,15 @@ export class Header {
 
 	resetHistoryButton() {
 		this.chatHistoryButton.buttonEl.removeClass("is-active");
-		this.newChatButton.buttonEl.addClass("is-active");
 	}
 
 	clickHandler(button: ButtonComponent, toggles: ButtonComponent[]) {
 		if (button.buttonEl.classList.contains("is-active")) {
 			button.buttonEl.removeClass("is-active");
-			toggles.map((el) => {
-				if (el.buttonEl.classList.contains("new-chat-button")) {
-					el.buttonEl.addClass("is-active");
-				}
-			});
 		} else {
-			button.buttonEl.addClass("is-active");
+			if(!button.buttonEl.classList.contains("new-chat-button")) {
+				button.buttonEl.addClass("is-active");
+			}
 			toggles.map((el) => {
 				el.buttonEl.removeClass("is-active");
 			});
@@ -64,7 +59,6 @@ export class Header {
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		this.chatHistoryButton.onClick(() => {
 			this.clickHandler(this.chatHistoryButton, [
-				this.newChatButton,
 				settingsButton,
 			]);
 			if (chatHistoryContainer.style.display === "none") {
@@ -80,7 +74,6 @@ export class Header {
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
 			this.clickHandler(settingsButton, [
-				this.newChatButton,
 				this.chatHistoryButton,
 			]);
 			if (settingsContainer.style.display === "none") {
@@ -94,7 +87,6 @@ export class Header {
 		});
 
 		this.newChatButton = new ButtonComponent(rightB);
-		this.newChatButton.buttonEl.addClass("is-active");
 		this.newChatButton.onClick(() => {
 			this.clickHandler(this.newChatButton, [
 				settingsButton,
@@ -124,7 +116,7 @@ export class Header {
 		rightA.className = "flex-end";
 		rightB.className = "flex-end";
 		this.chatHistoryButton.setIcon("bullet-list");
-		settingsButton.setIcon("wrench-screwdriver-glyph");
+		settingsButton.setIcon("sliders-horizontal");
 		this.newChatButton.setIcon("plus");
 
 		parentElement.prepend(titleDiv);
