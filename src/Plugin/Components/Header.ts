@@ -1,6 +1,7 @@
 import LocalLLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
+import { HistoryContainer } from "./HistoryContainer";
 
 export class Header {
 	constructor(private plugin: LocalLLMPlugin) {}
@@ -24,7 +25,7 @@ export class Header {
 		if (button.buttonEl.classList.contains("is-active")) {
 			button.buttonEl.removeClass("is-active");
 		} else {
-			if(!button.buttonEl.classList.contains("new-chat-button")) {
+			if (!button.buttonEl.classList.contains("new-chat-button")) {
 				button.buttonEl.addClass("is-active");
 			}
 			toggles.map((el) => {
@@ -40,7 +41,8 @@ export class Header {
 		settingsContainer: HTMLElement,
 		chatContainer: ChatContainer,
 		showContainer: (container: HTMLElement) => void,
-		hideContainer: (container: HTMLElement) => void
+		hideContainer: (container: HTMLElement) => void,
+		historyContainer: HistoryContainer
 	) {
 		const titleDiv = createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
@@ -58,9 +60,17 @@ export class Header {
 
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		this.chatHistoryButton.onClick(() => {
-			this.clickHandler(this.chatHistoryButton, [
-				settingsButton,
-			]);
+			historyContainer.resetHistory(chatHistoryContainer);
+			historyContainer.generateHistoryContainer(
+				chatHistoryContainer,
+				this.plugin.settings.promptHistory,
+				hideContainer,
+				showContainer,
+				chatContainerDiv,
+				chatContainer,
+				this
+			);
+			this.clickHandler(this.chatHistoryButton, [settingsButton]);
 			if (chatHistoryContainer.style.display === "none") {
 				showContainer(chatHistoryContainer);
 				hideContainer(settingsContainer);
@@ -73,9 +83,7 @@ export class Header {
 
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.onClick(() => {
-			this.clickHandler(settingsButton, [
-				this.chatHistoryButton,
-			]);
+			this.clickHandler(settingsButton, [this.chatHistoryButton]);
 			if (settingsContainer.style.display === "none") {
 				showContainer(settingsContainer);
 				hideContainer(chatContainerDiv);
