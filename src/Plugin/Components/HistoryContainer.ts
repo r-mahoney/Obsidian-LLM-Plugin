@@ -1,5 +1,5 @@
 import { ChatHistoryItem } from "Types/types";
-import LocalLLMPlugin from "main";
+import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { ButtonComponent, Notice } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { Header } from "./Header";
@@ -46,7 +46,7 @@ export class HistoryContainer {
 			this.plugin.settings.modelName = modelName;
 			this.plugin.saveSettings();
 			Header.setHeader(modelName, header);
-			Header.resetHistoryButton()
+			Header.resetHistoryButton();
 		};
 
 		eventListener.bind(this);
@@ -119,6 +119,15 @@ export class HistoryContainer {
 					chat,
 					Header
 				);
+				chat.resetChat();
+				chat.resetMessages();
+				Header.setHeader(
+					this.plugin.settings.modelName,
+					"Local LLM Plugin"
+				);
+				this.plugin.settings.historyIndex =
+					DEFAULT_SETTINGS.historyIndex;
+				this.plugin.saveSettings();
 			});
 
 			editPrompt.onClick((e: MouseEvent) => {
