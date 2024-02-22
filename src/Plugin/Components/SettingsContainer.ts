@@ -25,7 +25,7 @@ export class SettingsContainer {
 			"nous-hermes-llama2-13b.Q4_0.gguf": "Hermes",
 			"gpt4all-13b-snoozy-q4_0.gguf": "Snoozy",
 			"em_german_mistral_v01.Q4_0.gguf": "EM German Mistral",
-			"gpt-3.5-turbo" : "ChatGPT-3.5 Turbo",
+			"gpt-3.5-turbo": "ChatGPT-3.5 Turbo",
 			"text-embedding-3-small": "Text Embedding 3 (Small)",
 		};
 
@@ -57,9 +57,16 @@ export class SettingsContainer {
 				}
 				dropdown.onChange((change) => {
 					const modelName = modelNames[change];
+					const index = this.plugin.settings.historyIndex;
 					this.plugin.settings.model = change;
 					this.plugin.settings.modelName = modelName;
 					this.plugin.settings.modelType = models[modelName].type;
+					if (index > -1) {
+						this.plugin.settings.promptHistory[index].model =
+							change;
+						this.plugin.settings.promptHistory[index].modelName =
+							modelName;
+					}
 					this.plugin.saveSettings();
 					Header.setHeader(modelName);
 				});
