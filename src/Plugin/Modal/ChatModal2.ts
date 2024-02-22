@@ -1,4 +1,4 @@
-import LocalLLMPlugin from "main";
+import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { ButtonComponent, Modal } from "obsidian";
 import { ChatContainer } from "../Components/ChatContainer";
 import { HistoryContainer } from "../Components/HistoryContainer";
@@ -20,7 +20,10 @@ export class ChatModal2 extends Modal {
 		this.modalEl
 			.getElementsByClassName("modal-close-button")[0]
 			.setAttr("style", "display: none");
-		this.plugin.settings.historyIndex = -1;
+		this.plugin.settings.historyIndex = DEFAULT_SETTINGS.historyIndex;
+		this.plugin.settings.model = DEFAULT_SETTINGS.model;
+		this.plugin.settings.modelName = DEFAULT_SETTINGS.modelName;
+		this.plugin.saveSettings()
 		const { contentEl } = this;
 		const closeModal = () => {
 			this.close();
