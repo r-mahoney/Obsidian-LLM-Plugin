@@ -70,7 +70,8 @@ export class WidgetView extends ItemView {
 			settingsContainerDiv,
 			chatContainer,
 			this.showContainer,
-			this.hideContainer
+			this.hideContainer,
+			historyContainer
 		);
 		chatContainer.generateChatContainer(chatContainerDiv);
 		historyContainer.generateHistoryContainer(
@@ -84,7 +85,6 @@ export class WidgetView extends ItemView {
 		);
 		settingsContainer.generateSettingsContainer(
 			settingsContainerDiv,
-			models,
 			header
 		);
 	}
