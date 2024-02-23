@@ -24,16 +24,6 @@ export class History {
 		this.plugin.saveSettings();
 	}
 
-	//CAN GET RID OF addContext WHEN DONE WITH NEW UI
-
-	addContext(promptMessages: Message[]) {
-		let history = this.plugin.settings.promptHistory;
-		let length = this.plugin.settings.promptHistory.length;
-		history[length - 1].messages = promptMessages;
-		this.plugin.settings.promptHistory = history;
-		this.plugin.saveSettings();
-	}
-
     //take in an index from the selected chat history
     //overwrite history with new prompt/additional prompt
 	overwriteHistory(messages: Message[], index: number) {

@@ -1,9 +1,10 @@
 import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
-import { ButtonComponent, Modal } from "obsidian";
+import { Modal } from "obsidian";
+import { models } from "utils/utils";
 import { ChatContainer } from "../Components/ChatContainer";
+import { Header } from "../Components/Header";
 import { HistoryContainer } from "../Components/HistoryContainer";
 import { SettingsContainer } from "../Components/SettingsContainer";
-import { Header } from "../Components/Header";
 
 export class ChatModal2 extends Modal {
 	constructor(private plugin: LocalLLMPlugin) {
@@ -23,7 +24,8 @@ export class ChatModal2 extends Modal {
 		this.plugin.settings.historyIndex = DEFAULT_SETTINGS.historyIndex;
 		this.plugin.settings.model = DEFAULT_SETTINGS.model;
 		this.plugin.settings.modelName = DEFAULT_SETTINGS.modelName;
-		this.plugin.saveSettings()
+		this.plugin.settings.modelType = DEFAULT_SETTINGS.modelType;
+		this.plugin.saveSettings();
 		const { contentEl } = this;
 		const closeModal = () => {
 			this.close();
@@ -49,22 +51,6 @@ export class ChatModal2 extends Modal {
 			historyContainer
 		);
 		let history = this.plugin.settings.promptHistory;
-		const models = {
-			"Mistral OpenOrca": {model: "mistral-7b-openorca.Q4_0.gguf", type: "GPT4All"},
-			"Mistral Instruct": {model: "mistral-7b-instruct-v0.1.Q4_0.gguf", type: "GPT4All"},
-			"GPT4All Falcon": {model: "gpt4all-falcon-newbpe-q4_0.gguf", type: "GPT4All"},
-			"Orca 2 (Medium)": {model: "orca-2-7b.Q4_0.gguf", type: "GPT4All"},
-			"Orca 2 (Full)": {model: "orca-2-13b.Q4_0.gguf", type: "GPT4All"},
-			"Mini Orca (Small)": {model: "orca-mini-3b-gguf2-q4_0.gguf", type: "GPT4All"},
-			"MPT Chat": {model: "mpt-7b-chat-newbpe-q4_0.gguf", type: "GPT4All"},
-			"Wizard v1.2": {model: "wizardlm-13b-v1.2.Q4_0.gguf", type: "GPT4All"},
-			Hermes: {model: "nous-hermes-llama2-13b.Q4_0.gguf", type: "GPT4All"},
-			Snoozy: {model: "gpt4all-13b-snoozy-q4_0.gguf", type: "GPT4All"},
-			"EM German Mistral": {model: "em_german_mistral_v01.Q4_0.gguf", type: "GPT4All"},
-			"ChatGPT-3.5 Turbo": {model: "gpt-3.5-turbo", type: "openAI"},
-			"Text Embedding 3 (Small)": {model: "text-embedding-3-small", type: "openAI"},
-			// "DALL·E 3": {model: "dall-e-3", type: "openAI"},
-		};
 
 		settingsContainerDiv.setAttr("style", "display: none");
 		settingsContainerDiv.className = "settings-container";
@@ -85,7 +71,6 @@ export class ChatModal2 extends Modal {
 		);
 		settingsContainer.generateSettingsContainer(
 			settingsContainerDiv,
-			models,
 			header
 		);
 	}
