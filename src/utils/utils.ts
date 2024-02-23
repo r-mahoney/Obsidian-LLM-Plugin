@@ -1,4 +1,4 @@
-import { GPT4AllParams, Message } from "Types/types";
+import { GPT4AllParams, Message, Model } from "Types/types";
 import { existsSync } from "fs";
 import { Editor } from "obsidian";
 import OpenAI from "openai";
@@ -98,3 +98,45 @@ export function serializeMessages(messages: Message[]) {
 
 	return response;
 }
+
+export const models: Record<string, Model> = {
+	"Mistral OpenOrca": {model: "mistral-7b-openorca.Q4_0.gguf", type: "GPT4All"},
+	"Mistral Instruct": {model: "mistral-7b-instruct-v0.1.Q4_0.gguf", type: "GPT4All"},
+	"GPT4All Falcon": {model: "gpt4all-falcon-newbpe-q4_0.gguf", type: "GPT4All"},
+	"Orca 2 (Medium)": {model: "orca-2-7b.Q4_0.gguf", type: "GPT4All"},
+	"Orca 2 (Full)": {model: "orca-2-13b.Q4_0.gguf", type: "GPT4All"},
+	"Mini Orca (Small)": {model: "orca-mini-3b-gguf2-q4_0.gguf", type: "GPT4All"},
+	"MPT Chat": {model: "mpt-7b-chat-newbpe-q4_0.gguf", type: "GPT4All"},
+	"Wizard v1.2": {model: "wizardlm-13b-v1.2.Q4_0.gguf", type: "GPT4All"},
+	Hermes: {model: "nous-hermes-llama2-13b.Q4_0.gguf", type: "GPT4All"},
+	Snoozy: {model: "gpt4all-13b-snoozy-q4_0.gguf", type: "GPT4All"},
+	"EM German Mistral": {model: "em_german_mistral_v01.Q4_0.gguf", type: "GPT4All"},
+	"ChatGPT-3.5 Turbo": {model: "gpt-3.5-turbo", type: "openAI"},
+	"Text Embedding 3 (Small)": {model: "text-embedding-3-small", type: "openAI"},
+	// "DALL·E 3": {model: "dall-e-3", type: "openAI"},
+};
+
+export const modelNames: Record<string, string> = {
+	"mistral-7b-openorca.Q4_0.gguf": "Mistral OpenOrca",
+	"mistral-7b-instruct-v0.1.Q4_0.gguf": "Mistral Instruct",
+	"gpt4all-falcon-newbpe-q4_0.gguf": "GPT4All Falcon",
+	"orca-2-7b.Q4_0.gguf": "Orca 2 (Medium)",
+	"orca-2-13b.Q4_0.gguf": "Orca 2 (Full)",
+	"orca-mini-3b-gguf2-q4_0.gguf": "Mini Orca (Small)",
+	"mpt-7b-chat-newbpe-q4_0.gguf": "MPT Chat",
+	"wizardlm-13b-v1.2.Q4_0.gguf": "Wizard v1.2",
+	"nous-hermes-llama2-13b.Q4_0.gguf": "Hermes",
+	"gpt4all-13b-snoozy-q4_0.gguf": "Snoozy",
+	"em_german_mistral_v01.Q4_0.gguf": "EM German Mistral",
+	"gpt-3.5-turbo": "ChatGPT-3.5 Turbo",
+	"text-embedding-3-small": "Text Embedding 3 (Small)",
+};
+
+// export function getModelNames():Record<string, string> {
+//     let modelNames = Object.keys(models)
+//     let names:Record<string, string> = {}
+//     for(const name of modelNames) {
+//         names[models[name].model] = name
+//     }
+// 	return names
+// }
