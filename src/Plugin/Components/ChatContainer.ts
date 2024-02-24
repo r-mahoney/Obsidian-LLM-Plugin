@@ -1,11 +1,8 @@
-import { GPT4AllParams, Message } from "Types/types";
+import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Notice, TextComponent } from "obsidian";
-import {
-	appendMessage,
-	messageGPT4AllServer,
-	openAIMessage,
-} from "utils/utils";
+import { messageGPT4AllServer, openAIMessage, classNames } from "utils/utils";
+import { Header } from "./Header";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -13,31 +10,38 @@ export class ChatContainer {
 	processedPrompt: string;
 	messages: Message[];
 	replaceChatHistory: boolean;
-	historyIndex: number;
-	loading: boolean;
 	loadingDivContainer: HTMLElement;
 	streamingDiv: HTMLElement;
+	viewType: ViewType;
+	model: string;
+	modelName: string;
+	modelType: string;
+	historyIndex: number;
 	// closeModal?: () => void;
-	constructor(private plugin: LocalLLMPlugin /*closeModal?: () => void*/) {
+	constructor(
+		private plugin: LocalLLMPlugin,
+		viewType: ViewType /*closeModal?: () => void*/
+	) {
 		// this.closeModal = closeModal;
+		this.viewType = viewType;
 	}
 
-	async handleGenerateClick() {
+	async handleGenerateClick(header: Header) {
 		if (!this.prompt) {
 			new Notice("You need to ask a question first.");
 			return;
 		}
 		this.messages.push({ role: "user", content: this.prompt });
 		this.appendNewMessage({ role: "user", content: this.prompt });
-
+		header.setHeader(this.modelName, this.prompt);
 		const params: GPT4AllParams = {
 			messages: this.messages,
 			temperature: this.plugin.settings.temperature,
 			tokens: this.plugin.settings.tokens,
-			model: this.plugin.settings.model,
+			model: this.model,
 		};
 		try {
-			if (this.plugin.settings.modelType === "GPT4All") {
+			if (this.modelType === "GPT4All") {
 				this.setDiv(false);
 				messageGPT4AllServer(params)
 					.then((response: Message) => {
@@ -73,10 +77,10 @@ export class ChatContainer {
 	}
 
 	historyPush(params: GPT4AllParams) {
-		if (this.plugin.settings.historyIndex > -1) {
+		if (this.historyIndex > -1) {
 			this.plugin.history.overwriteHistory(
 				this.messages,
-				this.plugin.settings.historyIndex
+				this.historyIndex
 			);
 		} else {
 			this.plugin.history.push({
@@ -85,28 +89,43 @@ export class ChatContainer {
 				messages: params.messages,
 				temperature: params.temperature,
 				tokens: params.tokens,
-				modelName: this.plugin.settings.modelName,
+				modelName: this.modelName,
 				model: params.model,
 			});
 			const length = this.plugin.settings.promptHistory.length;
-			this.plugin.settings.historyIndex = length - 1;
+			this.historyIndex = length - 1;
 			this.plugin.saveSettings();
 			this.prompt = "";
 		}
 	}
 
-	generateChatContainer(parentElement: Element) {
+	generateChatContainer(parentElement: Element, header: Header) {
+		if (this.viewType === "modal") {
+			this.model = this.plugin.settings.modalSettings.model;
+			this.modelName = this.plugin.settings.modalSettings.modelName;
+			this.modelType = this.plugin.settings.modalSettings.modelType;
+			this.modelType = this.plugin.settings.modalSettings.modelType;
+			this.historyIndex = this.plugin.settings.modalSettings.historyIndex;
+		} else {
+			this.model = this.plugin.settings.widgetSettings.model;
+			this.modelName = this.plugin.settings.widgetSettings.modelName;
+			this.modelType = this.plugin.settings.widgetSettings.modelType;
+			this.modelType = this.plugin.settings.widgetSettings.modelType;
+			this.historyIndex =
+				this.plugin.settings.widgetSettings.historyIndex;
+		}
+
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();
-		this.historyMessages.className = "messages-div";
+		this.historyMessages.className = classNames[this.viewType]["messages-div"];
 		const promptContainer = parentElement.createDiv();
 		const promptField = new TextComponent(promptContainer);
 		const sendButton = new ButtonComponent(promptContainer);
 
-		promptContainer.className = "prompt-container";
-		promptField.inputEl.className = "chat-prompt-text-area";
+		promptContainer.className = classNames[this.viewType]["prompt-container"];
+		promptField.inputEl.className = classNames[this.viewType]["text-area"];
 		promptField.inputEl.id = "chat-prompt-text-area";
-		sendButton.buttonEl.className = "send-button";
+		sendButton.buttonEl.className = classNames[this.viewType].button;
 
 		sendButton.setIcon("up-arrow-with-tail");
 
@@ -116,22 +135,30 @@ export class ChatContainer {
 		});
 		promptField.inputEl.addEventListener("keydown", (event) => {
 			if (event.code == "Enter") {
-				this.handleGenerateClick();
+				this.handleGenerateClick(header);
 				promptField.inputEl.setText("");
 				promptField.setValue("");
 			}
 		});
 		sendButton.onClick(() => {
-			this.handleGenerateClick();
+			this.handleGenerateClick(header);
 			promptField.inputEl.setText("");
 			promptField.setValue("");
 		});
 	}
 
 	setMessages(replaceChatHistory: boolean = false) {
+		const settings: Record<string, string> = {
+			modal: "modalSettings",
+			widget: "widgetSettings",
+		};
+		const settingType: "modalSettings" | "widgetSettings" = settings[
+			this.viewType
+		] as "modalSettings" | "widgetSettings";
+		const index = this.plugin.settings[settingType].historyIndex;
 		if (replaceChatHistory) {
 			let history = this.plugin.settings.promptHistory;
-			this.messages = history[this.plugin.settings.historyIndex].messages;
+			this.messages = history[index].messages;
 		} else {
 			this.messages.push({ role: "user", content: this.prompt });
 		}
@@ -215,6 +242,8 @@ export class ChatContainer {
 			await navigator.clipboard.writeText(content);
 			new Notice("Text copid to clipboard");
 		});
+		this.historyMessages.scroll(0, 9999);
+
 	}
 
 	generateIMLikeMessgaes(messages: Message[]) {

@@ -12,7 +12,7 @@
 	padding-bottom: 20px;
 }
 
-.title-border {
+.modal-title-border {
 	border-bottom: 1px solid var(--background-modifier-border);
 	margin-left: -16px;
 	width: calc(100% + 32px);
@@ -78,7 +78,7 @@
 	background: #b896fc;
 }
 
-.messages-div {
+.modal-messages-div {
 	min-height: 10rem;
 	max-height: 40vh;
 	overflow-y: auto;
@@ -98,7 +98,7 @@
 	justify-content: flex-start;
 }
 
-.prompt-container {
+.modal-prompt-container {
 	position: relative;
 	width: 100%;
 }
@@ -108,13 +108,12 @@
 	font-size: 16px;
 }
 
-.chat-prompt-text-area {
+.modal-chat-prompt-text-area, .widget-chat-prompt-text-area {
 	width: 100%;
 	min-height: 3rem;
-	font-size: 16px;
 }
 
-.send-button {
+.modal-send-button {
 	position: absolute;
 	top: 9px;
 	right: 9px;
@@ -218,18 +217,27 @@
 	padding: 4px;
 }
 
-/* VIEW CSS POTENTIALLY*/
+/* WIDGET*/
 
-/* 
-	.chat-prompt-text-area{
-    position: absolute;
-    bottom: 35px;
-    right: 0;
-    padding: 0px 10px;
-	}
+/* .widget-prompt-container {
+	position: absolute;
+	bottom: 35px;
+	right: 0;
+	padding: 0px 10px;
+	width: 100%;
+} */
 
-	.send-button{margin-right:10px}
- */
+.widget-send-button {
+	margin-top: 9px;
+	position: absolute;
+	right: 25px;
+}
+
+.widget-title-border {
+	border-bottom: 1px solid var(--background-modifier-border);
+	margin-left: -16px;
+	width: 100%;
+}
 
 /* LOADING ANIMATION TO USE BEFORE WE GET STREAMING UP */
 .dot {

@@ -1,32 +1,45 @@
 import { Plugin, WorkspaceLeaf } from "obsidian";
-import { ChatHistoryItem} from "./Types/types";
+import { ChatHistoryItem } from "./Types/types";
 
 import { History } from "History/HistoryHandler";
 import { ChatModal2 } from "Plugin/Modal/ChatModal2";
 import SettingsView from "Settings/SettingsView";
 import { VIEW_TYPE, WidgetView } from "Plugin/Widget/Widget";
 
-interface LocalLLMPluginSettings {
-	appName: string;
+type ViewSettings = {
 	model: string;
 	modelName: string;
 	modelType: string;
+	historyIndex: number;
+};
+
+export interface LocalLLMPluginSettings {
+	appName: string;
+	modalSettings: ViewSettings;
+	widgetSettings: ViewSettings,
 	tokens: number;
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
-	historyIndex: number;
 	openAIAPIKey: string;
 }
 
 export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 	appName: "Local LLM Plugin",
-	model: "mistral-7b-openorca.Q4_0.gguf",
-	modelName: "Mistral OpenOrca",
-	modelType: "GPT4All",
+	modalSettings: {
+		model: "mistral-7b-openorca.Q4_0.gguf",
+		modelName: "Mistral OpenOrca",
+		modelType: "GPT4All",
+		historyIndex: -1,
+	},
+	widgetSettings: {
+		model: "mistral-7b-openorca.Q4_0.gguf",
+		modelName: "Mistral OpenOrca",
+		modelType: "GPT4All",
+		historyIndex: -1,
+	},
 	tokens: 300,
 	temperature: 0.65,
 	promptHistory: [],
-	historyIndex: -1,
 	openAIAPIKey: "",
 };
 
@@ -40,11 +53,11 @@ export default class LocalLLMPlugin extends Plugin {
 		this.registerRibbonIcons();
 		this.registerCommands();
 
-		// this.registerView(VIEW_TYPE, (leaf) => new WidgetView(leaf, this));
+		this.registerView(VIEW_TYPE, (leaf) => new WidgetView(leaf, this));
 
-		// this.addRibbonIcon("dice", "Activate view", () => {
-		// 	this.activateView();
-		// });
+		this.addRibbonIcon("dice", "Activate view", () => {
+			this.activateView();
+		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsView(this.app, this));
