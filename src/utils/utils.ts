@@ -100,19 +100,37 @@ export function serializeMessages(messages: Message[]) {
 }
 
 export const models: Record<string, Model> = {
-	"Mistral OpenOrca": {model: "mistral-7b-openorca.Q4_0.gguf", type: "GPT4All"},
-	"Mistral Instruct": {model: "mistral-7b-instruct-v0.1.Q4_0.gguf", type: "GPT4All"},
-	"GPT4All Falcon": {model: "gpt4all-falcon-newbpe-q4_0.gguf", type: "GPT4All"},
-	"Orca 2 (Medium)": {model: "orca-2-7b.Q4_0.gguf", type: "GPT4All"},
-	"Orca 2 (Full)": {model: "orca-2-13b.Q4_0.gguf", type: "GPT4All"},
-	"Mini Orca (Small)": {model: "orca-mini-3b-gguf2-q4_0.gguf", type: "GPT4All"},
-	"MPT Chat": {model: "mpt-7b-chat-newbpe-q4_0.gguf", type: "GPT4All"},
-	"Wizard v1.2": {model: "wizardlm-13b-v1.2.Q4_0.gguf", type: "GPT4All"},
-	Hermes: {model: "nous-hermes-llama2-13b.Q4_0.gguf", type: "GPT4All"},
-	Snoozy: {model: "gpt4all-13b-snoozy-q4_0.gguf", type: "GPT4All"},
-	"EM German Mistral": {model: "em_german_mistral_v01.Q4_0.gguf", type: "GPT4All"},
-	"ChatGPT-3.5 Turbo": {model: "gpt-3.5-turbo", type: "openAI"},
-	"Text Embedding 3 (Small)": {model: "text-embedding-3-small", type: "openAI"},
+	"Mistral OpenOrca": {
+		model: "mistral-7b-openorca.Q4_0.gguf",
+		type: "GPT4All",
+	},
+	"Mistral Instruct": {
+		model: "mistral-7b-instruct-v0.1.Q4_0.gguf",
+		type: "GPT4All",
+	},
+	"GPT4All Falcon": {
+		model: "gpt4all-falcon-newbpe-q4_0.gguf",
+		type: "GPT4All",
+	},
+	"Orca 2 (Medium)": { model: "orca-2-7b.Q4_0.gguf", type: "GPT4All" },
+	"Orca 2 (Full)": { model: "orca-2-13b.Q4_0.gguf", type: "GPT4All" },
+	"Mini Orca (Small)": {
+		model: "orca-mini-3b-gguf2-q4_0.gguf",
+		type: "GPT4All",
+	},
+	"MPT Chat": { model: "mpt-7b-chat-newbpe-q4_0.gguf", type: "GPT4All" },
+	"Wizard v1.2": { model: "wizardlm-13b-v1.2.Q4_0.gguf", type: "GPT4All" },
+	Hermes: { model: "nous-hermes-llama2-13b.Q4_0.gguf", type: "GPT4All" },
+	Snoozy: { model: "gpt4all-13b-snoozy-q4_0.gguf", type: "GPT4All" },
+	"EM German Mistral": {
+		model: "em_german_mistral_v01.Q4_0.gguf",
+		type: "GPT4All",
+	},
+	"ChatGPT-3.5 Turbo": { model: "gpt-3.5-turbo", type: "openAI" },
+	"Text Embedding 3 (Small)": {
+		model: "text-embedding-3-small",
+		type: "openAI",
+	},
 	// "DALL·E 3": {model: "dall-e-3", type: "openAI"},
 };
 
@@ -140,3 +158,27 @@ export const modelNames: Record<string, string> = {
 //     }
 // 	return names
 // }
+
+export const classNames = {
+	modal: {
+		"messages-div": "modal-messages-div",
+		"title-border": "modal-title-border",
+		"prompt-container": "modal-prompt-container",
+		"text-area": "modal-chat-prompt-text-area",
+		button: "modal-send-button",
+	},
+	widget: {
+		"messages-div": "widget-messages-div",
+		"title-border": "widget-title-border",
+		"prompt-container": "widget-prompt-container",
+		"text-area": "widget-chat-prompt-text-area",
+		button: "widget-send-button",
+	},
+	"floating-action-button": {
+		"messages-div": "fab-messages-div",
+		"title-border": "fab-title-border",
+		"prompt-container": "fab-prompt-container",
+		"text-area": "fab-chat-prompt-text-area",
+		button: "fab-send-button",
+	},
+};

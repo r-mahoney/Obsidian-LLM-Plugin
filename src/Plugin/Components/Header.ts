@@ -2,9 +2,13 @@ import LocalLLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
+import { ViewType } from "Types/types";
 
 export class Header {
-	constructor(private plugin: LocalLLMPlugin) {}
+	viewType: string;
+	constructor(private plugin: LocalLLMPlugin, viewType: ViewType) {
+		this.viewType = viewType;
+	}
 	modelEl: HTMLElement;
 	titleEl?: HTMLElement;
 	chatHistoryButton: ButtonComponent;
@@ -44,6 +48,13 @@ export class Header {
 		hideContainer: (container: HTMLElement) => void,
 		historyContainer: HistoryContainer
 	) {
+		const settings: Record<string, string> = {
+			modal: "modalSettings",
+			widget: "widgetSettings",
+		};
+		const settingType: "modalSettings" | "widgetSettings" = settings[
+			this.viewType
+		] as "modalSettings" | "widgetSettings";
 		const titleDiv = createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
 		const titleContainer = titleDiv.createDiv();
@@ -56,7 +67,7 @@ export class Header {
 		this.titleEl.innerHTML = "LocalLLM Plugin";
 		this.modelEl = titleContainer.createDiv();
 		this.modelEl.addClass("model-name");
-		this.modelEl.innerHTML = this.plugin.settings.modelName;
+		this.modelEl.innerHTML = this.plugin.settings[settingType].modelName;
 
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		this.chatHistoryButton.onClick(() => {
@@ -100,13 +111,13 @@ export class Header {
 				settingsButton,
 				this.chatHistoryButton,
 			]);
-			this.setHeader(this.plugin.settings.modelName, "New Chat");
+			this.setHeader(this.plugin.settings[settingType].modelName, "New Chat");
 			showContainer(chatContainerDiv);
 			hideContainer(settingsContainer);
 			hideContainer(chatHistoryContainer);
 			chatContainer.resetChat();
 			chatContainer.resetMessages();
-			this.plugin.settings.historyIndex = -1;
+			this.plugin.settings[settingType].historyIndex = -1;
 		});
 
 		leftButtonDiv.className = "one left-buttons-div";

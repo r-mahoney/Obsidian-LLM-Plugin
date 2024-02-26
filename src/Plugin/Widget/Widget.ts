@@ -4,6 +4,7 @@ import { HistoryContainer } from "Plugin/Components/HistoryContainer";
 import { SettingsContainer } from "Plugin/Components/SettingsContainer";
 import LocalLLMPlugin from "main";
 import { ItemView, WorkspaceLeaf } from "obsidian";
+import { classNames } from "utils/utils";
 
 export const VIEW_TYPE = "example-view";
 
@@ -31,25 +32,15 @@ export class WidgetView extends ItemView {
 
 	async onOpen() {
 		const container = this.containerEl.children[1];
-		let history = this.plugin.settings.promptHistory;
-		const models = {
-			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
-			"Mistral Instruct": "mistral-7b-instruct-v0.1.Q4_0.gguf",
-			"GPT4All Falcon": "gpt4all-falcon-newbpe-q4_0.gguf",
-			"Orca 2 (Medium)": "orca-2-7b.Q4_0.gguf",
-			"Orca 2 (Full)": "orca-2-13b.Q4_0.gguf",
-			"Mini Orca (Small)": "orca-mini-3b-gguf2-q4_0.gguf",
-			"MPT Chat": "mpt-7b-chat-newbpe-q4_0.gguf",
-			"Wizard v1.2": "wizardlm-13b-v1.2.Q4_0.gguf",
-			Hermes: "nous-hermes-llama2-13b.Q4_0.gguf",
-			Snoozy: "gpt4all-13b-snoozy-q4_0.gguf",
-			"EM German Mistral": "em_german_mistral_v01.Q4_0.gguf",
-		};
+		const history = this.plugin.settings.promptHistory;
 		container.empty();
-		const header = new Header(this.plugin);
-		const chatContainer = new ChatContainer(this.plugin /*, closeModal*/);
-		const historyContainer = new HistoryContainer(this.plugin);
-		const settingsContainer = new SettingsContainer(this.plugin);
+		const header = new Header(this.plugin, "widget");
+		const chatContainer = new ChatContainer(
+			this.plugin,
+			"widget" /*, closeModal*/
+		);
+		const historyContainer = new HistoryContainer(this.plugin, "widget");
+		const settingsContainer = new SettingsContainer(this.plugin, "widget");
 
 		const lineBreak = container.createDiv();
 		const chatContainerDiv = container.createDiv();
@@ -60,8 +51,9 @@ export class WidgetView extends ItemView {
 		settingsContainerDiv.className = "settings-container";
 		chatHistoryContainer.setAttr("style", "display: none");
 		chatHistoryContainer.className = "chat-history-container";
-		lineBreak.className = "title-border";
-		chatContainerDiv.className = "chat-container";
+		lineBreak.className = classNames["widget"]["title-border"];
+		// chatContainerDiv.className = "chat-container";
+		chatContainerDiv.className = "widget-chat-container";
 
 		header.generateHeader(
 			container,
@@ -73,7 +65,7 @@ export class WidgetView extends ItemView {
 			this.hideContainer,
 			historyContainer
 		);
-		chatContainer.generateChatContainer(chatContainerDiv);
+		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(
 			chatHistoryContainer,
 			history,

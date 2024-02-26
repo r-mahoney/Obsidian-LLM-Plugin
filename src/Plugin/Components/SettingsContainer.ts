@@ -1,23 +1,45 @@
+import { ViewType } from "Types/types";
 import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
-import { ButtonComponent, DropdownComponent, Setting } from "obsidian";
+import { DropdownComponent, Setting } from "obsidian";
 import { DEFAULT_DIRECTORY, modelNames, models } from "utils/utils";
 import { Header } from "./Header";
-import { Model } from "Types/types";
 const fs = require("fs");
 
 export class SettingsContainer {
-	constructor(private plugin: LocalLLMPlugin) {}
+	viewType: string;
+	model: string;
+	modelName: string;
+	modelType: string;
+	historyIndex: number;
 
-	generateSettingsContainer(
-		parentContainer: HTMLElement,
-		Header: Header
-	) {
+	constructor(private plugin: LocalLLMPlugin, viewType: ViewType) {
+		this.viewType = viewType;
+	}
+
+	generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
+		const settings: Record<string, string> = {'modal': 'modalSettings', 'widget': 'widgetSettings'}
+		const settingType: ('modalSettings' | 'widgetSettings') = settings[this.viewType] as ('modalSettings' | 'widgetSettings')
+		if ((this.viewType === "modal")) {
+			this.model = this.plugin.settings.modalSettings.model;
+			this.modelName = this.plugin.settings.modalSettings.modelName;
+			this.modelType = this.plugin.settings.modalSettings.modelType;
+			this.modelType = this.plugin.settings.modalSettings.modelType;
+			this.historyIndex = this.plugin.settings.modalSettings.historyIndex
+		} else {
+			this.model = this.plugin.settings.widgetSettings.model;
+			this.modelName = this.plugin.settings.widgetSettings.modelName;
+			this.modelType = this.plugin.settings.widgetSettings.modelType;
+			this.modelType = this.plugin.settings.widgetSettings.modelType;
+			this.historyIndex = this.plugin.settings.widgetSettings.historyIndex
+		}
+		
+
 		const modelOptions = new Setting(parentContainer)
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
 				dropdown.addOption(
-					DEFAULT_SETTINGS.modelName,
+					DEFAULT_SETTINGS[settingType].modelName,
 					"---Default Model---"
 				);
 				let keys = Object.keys(models);
@@ -40,10 +62,10 @@ export class SettingsContainer {
 				}
 				dropdown.onChange((change) => {
 					const modelName = modelNames[change];
-					const index = this.plugin.settings.historyIndex;
-					this.plugin.settings.model = change;
-					this.plugin.settings.modelName = modelName;
-					this.plugin.settings.modelType = models[modelName].type;
+					const index = this.historyIndex;
+					this.plugin.settings[settingType].model = change;
+					this.plugin.settings[settingType].modelName = modelName;
+					this.plugin.settings[settingType].modelType = models[modelName].type;
 					if (index > -1) {
 						this.plugin.settings.promptHistory[index].model =
 							change;
@@ -53,7 +75,7 @@ export class SettingsContainer {
 					this.plugin.saveSettings();
 					Header.setHeader(modelName);
 				});
-				dropdown.setValue(this.plugin.settings.model);
+				dropdown.setValue(this.plugin.settings[settingType].model);
 			});
 
 		const tempSetting = new Setting(parentContainer)

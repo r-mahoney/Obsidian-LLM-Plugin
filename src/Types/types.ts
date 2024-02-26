@@ -28,3 +28,5 @@ export type Model = {
 	model: string;
 	type: string;
 };
+
+export type ViewType = "modal" | "widget" | "floating-action-button";

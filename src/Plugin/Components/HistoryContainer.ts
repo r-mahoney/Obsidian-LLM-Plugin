@@ -1,11 +1,19 @@
-import { ChatHistoryItem } from "Types/types";
+import { ChatHistoryItem, ViewType } from "Types/types";
 import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { ButtonComponent, Notice } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { Header } from "./Header";
+import { models } from "utils/utils";
 
 export class HistoryContainer {
-	constructor(private plugin: LocalLLMPlugin) {}
+	viewType: string;
+	model: string;
+	modelName: string;
+	modelType: string;
+	historyIndex: number;
+	constructor(private plugin: LocalLLMPlugin, viewType: ViewType) {
+		this.viewType = viewType;
+	}
 
 	generateHistoryContainer(
 		parentElement: HTMLElement,
@@ -16,19 +24,22 @@ export class HistoryContainer {
 		chat: ChatContainer,
 		Header: Header
 	) {
-		const models: Record<string, string> = {
-			"Mistral OpenOrca": "mistral-7b-openorca.Q4_0.gguf",
-			"Mistral Instruct": "mistral-7b-instruct-v0.1.Q4_0.gguf",
-			"GPT4All Falcon": "gpt4all-falcon-newbpe-q4_0.gguf",
-			"Orca 2 (Medium)": "orca-2-7b.Q4_0.gguf",
-			"Orca 2 (Full)": "orca-2-13b.Q4_0.gguf",
-			"Mini Orca (Small)": "orca-mini-3b-gguf2-q4_0.gguf",
-			"MPT Chat": "mpt-7b-chat-newbpe-q4_0.gguf",
-			"Wizard v1.2": "wizardlm-13b-v1.2.Q4_0.gguf",
-			Hermes: "nous-hermes-llama2-13b.Q4_0.gguf",
-			Snoozy: "gpt4all-13b-snoozy-q4_0.gguf",
-			"EM German Mistral": "em_german_mistral_v01.Q4_0.gguf",
-		};
+		const settings: Record<string, string> = {'modal': 'modalSettings', 'widget': 'widgetSettings'}
+		const settingType: ('modalSettings' | 'widgetSettings') = settings[this.viewType] as ('modalSettings' | 'widgetSettings')
+		if (this.viewType === "modal") {
+			this.model = this.plugin.settings.modalSettings.model;
+			this.modelName = this.plugin.settings.modalSettings.modelName;
+			this.modelType = this.plugin.settings.modalSettings.modelType;
+			this.modelType = this.plugin.settings.modalSettings.modelType;
+			this.historyIndex = this.plugin.settings.modalSettings.historyIndex;
+		} else {
+			this.model = this.plugin.settings.widgetSettings.model;
+			this.modelName = this.plugin.settings.widgetSettings.modelName;
+			this.modelType = this.plugin.settings.widgetSettings.modelType;
+			this.modelType = this.plugin.settings.widgetSettings.modelType;
+			this.historyIndex =
+				this.plugin.settings.widgetSettings.historyIndex;
+		}
 
 		const eventListener = () => {
 			chat.resetChat();
@@ -38,12 +49,12 @@ export class HistoryContainer {
 			const messages = chat.getMessages();
 			chat.generateIMLikeMessgaes(messages);
 			containerToShow.querySelector(".messages-div")?.scroll(0, 9999);
-			const index = this.plugin.settings.historyIndex;
+			const index = this.historyIndex;
 			const header = this.plugin.settings.promptHistory[index].prompt;
 			const modelName =
 				this.plugin.settings.promptHistory[index].modelName;
-			this.plugin.settings.model = models[modelName];
-			this.plugin.settings.modelName = modelName;
+			this.plugin.settings[settingType].modelName = modelName
+			this.plugin.settings[settingType].model = models[modelName].model
 			this.plugin.saveSettings();
 			Header.setHeader(modelName, header);
 			Header.resetHistoryButton();
@@ -95,7 +106,9 @@ export class HistoryContainer {
 			);
 			deleteHistory.buttonEl.id = "delete-history-button";
 			item.addEventListener("click", () => {
-				this.plugin.settings.historyIndex = index;
+				this.plugin.settings[settingType].historyIndex =
+					index;
+				this.historyIndex = index;
 				this.plugin.saveSettings();
 			});
 
@@ -121,12 +134,9 @@ export class HistoryContainer {
 				);
 				chat.resetChat();
 				chat.resetMessages();
-				Header.setHeader(
-					this.plugin.settings.modelName,
-					"Local LLM Plugin"
-				);
-				this.plugin.settings.historyIndex =
-					DEFAULT_SETTINGS.historyIndex;
+				Header.setHeader(this.modelName, "Local LLM Plugin");
+				this.plugin.settings[settingType].historyIndex =
+					DEFAULT_SETTINGS[settingType].historyIndex;
 				this.plugin.saveSettings();
 			});
 
