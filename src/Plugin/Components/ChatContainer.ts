@@ -1,6 +1,6 @@
 import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LocalLLMPlugin from "main";
-import { ButtonComponent, Notice, TextComponent } from "obsidian";
+import { ButtonComponent, Notice, TextComponent, View } from "obsidian";
 import { messageGPT4AllServer, openAIMessage, classNames } from "utils/utils";
 import { Header } from "./Header";
 
@@ -13,9 +13,6 @@ export class ChatContainer {
 	loadingDivContainer: HTMLElement;
 	streamingDiv: HTMLElement;
 	viewType: ViewType;
-	model: string;
-	modelName: string;
-	modelType: string;
 	historyIndex: number;
 	// closeModal?: () => void;
 	constructor(
@@ -26,22 +23,45 @@ export class ChatContainer {
 		this.viewType = viewType;
 	}
 
+	getModelInfo(viewType: ViewType) {
+		const model =
+			viewType === "modal"
+				? this.plugin.settings.modalSettings.model
+				: this.plugin.settings.widgetSettings.model;
+		const modelType =
+			viewType === "modal"
+				? this.plugin.settings.modalSettings.modelType
+				: this.plugin.settings.widgetSettings.modelType;
+		const modelName =
+			viewType === "modal"
+				? this.plugin.settings.modalSettings.modelName
+				: this.plugin.settings.widgetSettings.modelName;
+		return {
+			model,
+			modelName,
+			modelType,
+		};
+	}
+
 	async handleGenerateClick(header: Header) {
+		const { model, modelName, modelType } = this.getModelInfo(
+			this.viewType
+		);
 		if (!this.prompt) {
 			new Notice("You need to ask a question first.");
 			return;
 		}
 		this.messages.push({ role: "user", content: this.prompt });
 		this.appendNewMessage({ role: "user", content: this.prompt });
-		header.setHeader(this.modelName, this.prompt);
+		header.setHeader(modelName, this.prompt);
 		const params: GPT4AllParams = {
 			messages: this.messages,
 			temperature: this.plugin.settings.temperature,
 			tokens: this.plugin.settings.tokens,
-			model: this.model,
+			model,
 		};
 		try {
-			if (this.modelType === "GPT4All") {
+			if (modelType === "GPT4All") {
 				this.setDiv(false);
 				messageGPT4AllServer(params)
 					.then((response: Message) => {
@@ -77,6 +97,7 @@ export class ChatContainer {
 	}
 
 	historyPush(params: GPT4AllParams) {
+		const { modelName } = this.getModelInfo(this.viewType);
 		if (this.historyIndex > -1) {
 			this.plugin.history.overwriteHistory(
 				this.messages,
@@ -89,7 +110,7 @@ export class ChatContainer {
 				messages: params.messages,
 				temperature: params.temperature,
 				tokens: params.tokens,
-				modelName: this.modelName,
+				modelName: modelName,
 				model: params.model,
 			});
 			const length = this.plugin.settings.promptHistory.length;
@@ -101,28 +122,22 @@ export class ChatContainer {
 
 	generateChatContainer(parentElement: Element, header: Header) {
 		if (this.viewType === "modal") {
-			this.model = this.plugin.settings.modalSettings.model;
-			this.modelName = this.plugin.settings.modalSettings.modelName;
-			this.modelType = this.plugin.settings.modalSettings.modelType;
-			this.modelType = this.plugin.settings.modalSettings.modelType;
 			this.historyIndex = this.plugin.settings.modalSettings.historyIndex;
 		} else {
-			this.model = this.plugin.settings.widgetSettings.model;
-			this.modelName = this.plugin.settings.widgetSettings.modelName;
-			this.modelType = this.plugin.settings.widgetSettings.modelType;
-			this.modelType = this.plugin.settings.widgetSettings.modelType;
 			this.historyIndex =
 				this.plugin.settings.widgetSettings.historyIndex;
 		}
 
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();
-		this.historyMessages.className = classNames[this.viewType]["messages-div"];
+		this.historyMessages.className =
+			classNames[this.viewType]["messages-div"];
 		const promptContainer = parentElement.createDiv();
 		const promptField = new TextComponent(promptContainer);
 		const sendButton = new ButtonComponent(promptContainer);
 
-		promptContainer.className = classNames[this.viewType]["prompt-container"];
+		promptContainer.className =
+			classNames[this.viewType]["prompt-container"];
 		promptField.inputEl.className = classNames[this.viewType]["text-area"];
 		promptField.inputEl.id = "chat-prompt-text-area";
 		sendButton.buttonEl.className = classNames[this.viewType].button;
@@ -243,7 +258,6 @@ export class ChatContainer {
 			new Notice("Text copid to clipboard");
 		});
 		this.historyMessages.scroll(0, 9999);
-
 	}
 
 	generateIMLikeMessgaes(messages: Message[]) {
