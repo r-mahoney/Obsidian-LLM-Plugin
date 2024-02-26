@@ -2,7 +2,7 @@ import { ChatContainer } from "Plugin/Components/ChatContainer";
 import { Header } from "Plugin/Components/Header";
 import { HistoryContainer } from "Plugin/Components/HistoryContainer";
 import { SettingsContainer } from "Plugin/Components/SettingsContainer";
-import LocalLLMPlugin from "main";
+import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { ItemView, WorkspaceLeaf } from "obsidian";
 import { classNames } from "utils/utils";
 
@@ -31,6 +31,15 @@ export class WidgetView extends ItemView {
 	}
 
 	async onOpen() {
+		this.plugin.settings.widgetSettings.historyIndex =
+			DEFAULT_SETTINGS.widgetSettings.historyIndex;
+		this.plugin.settings.widgetSettings.model =
+			DEFAULT_SETTINGS.widgetSettings.model;
+		this.plugin.settings.widgetSettings.modelName =
+			DEFAULT_SETTINGS.widgetSettings.modelName;
+		this.plugin.settings.widgetSettings.modelType =
+			DEFAULT_SETTINGS.widgetSettings.modelType;
+		this.plugin.saveSettings();
 		const container = this.containerEl.children[1];
 		const history = this.plugin.settings.promptHistory;
 		container.empty();

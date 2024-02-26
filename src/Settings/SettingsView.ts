@@ -54,7 +54,7 @@ export default class SettingsView extends PluginSettingTab {
 				.setDesc("Sets the default LLM you want to use for the plugin")
 				.addDropdown((dropdown: DropdownComponent) => {
 					dropdown.addOption(
-						DEFAULT_SETTINGS.modelName,
+						DEFAULT_SETTINGS.modalSettings.modelName,
 						"Select Default Model"
 					);
 					let keys = Object.keys(models);
@@ -77,12 +77,15 @@ export default class SettingsView extends PluginSettingTab {
 					}
 					dropdown.onChange((change) => {
 						const modelName = modelNames[change];
-						DEFAULT_SETTINGS.model = change;
-						DEFAULT_SETTINGS.modelName = modelName;
-						DEFAULT_SETTINGS.modelType = models[modelName].type;
+						DEFAULT_SETTINGS.modalSettings.model = change;
+						DEFAULT_SETTINGS.modalSettings.modelName = modelName;
+						DEFAULT_SETTINGS.modalSettings.modelType = models[modelName].type;
+						DEFAULT_SETTINGS.widgetSettings.model = change;
+						DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
+						DEFAULT_SETTINGS.widgetSettings.modelType = models[modelName].type;
 						this.plugin.saveSettings();
 					});
-					dropdown.setValue(this.plugin.settings.model);
+					dropdown.setValue(this.plugin.settings.modalSettings.model);
 				});
 	}
 }
