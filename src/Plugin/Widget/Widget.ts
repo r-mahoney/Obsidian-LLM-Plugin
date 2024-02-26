@@ -52,7 +52,8 @@ export class WidgetView extends ItemView {
 		chatHistoryContainer.setAttr("style", "display: none");
 		chatHistoryContainer.className = "chat-history-container";
 		lineBreak.className = classNames["widget"]["title-border"];
-		chatContainerDiv.className = "chat-container";
+		// chatContainerDiv.className = "chat-container";
+		chatContainerDiv.className = "widget-chat-container";
 
 		header.generateHeader(
 			container,
