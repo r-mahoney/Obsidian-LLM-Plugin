@@ -1,4 +1,5 @@
 export type GPT4AllParams = {
+	prompt: string;
 	messages: Message[];
 	temperature: number;
 	tokens: number;
@@ -32,3 +33,12 @@ export type Model = {
 };
 
 export type ViewType = "modal" | "widget" | "floating-action-button";
+
+export type ViewSettings = {
+	model: string;
+	modelName: string;
+	modelType: string;
+	historyIndex: number;
+	modelEndpoint: string;
+	endpointURL: string;
+};

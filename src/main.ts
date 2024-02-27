@@ -10,13 +10,15 @@ type ViewSettings = {
 	model: string;
 	modelName: string;
 	modelType: string;
+	modelEndpoint: string;
+	endpointURL: string;
 	historyIndex: number;
 };
 
 export interface LocalLLMPluginSettings {
 	appName: string;
 	modalSettings: ViewSettings;
-	widgetSettings: ViewSettings,
+	widgetSettings: ViewSettings;
 	tokens: number;
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
@@ -29,12 +31,16 @@ export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 		model: "mistral-7b-openorca.Q4_0.gguf",
 		modelName: "Mistral OpenOrca",
 		modelType: "GPT4All",
+		modelEndpoint: "chat",
+		endpointURL: "/v1/chat/completions",
 		historyIndex: -1,
 	},
 	widgetSettings: {
 		model: "mistral-7b-openorca.Q4_0.gguf",
 		modelName: "Mistral OpenOrca",
 		modelType: "GPT4All",
+		modelEndpoint: "chat",
+		endpointURL: "/v1/chat/completions",
 		historyIndex: -1,
 	},
 	tokens: 300,

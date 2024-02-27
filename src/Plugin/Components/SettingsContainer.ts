@@ -63,6 +63,10 @@ export class SettingsContainer {
 					this.plugin.settings[settingType].modelName = modelName;
 					this.plugin.settings[settingType].modelType =
 						models[modelName].type;
+					this.plugin.settings[settingType].endpointURL =
+						models[modelName].url;
+					this.plugin.settings[settingType].modelEndpoint =
+						models[modelName].endpoint;
 					if (index > -1) {
 						this.plugin.settings.promptHistory[index].model =
 							change;
