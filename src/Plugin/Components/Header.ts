@@ -65,6 +65,7 @@ export class Header {
 		this.modelEl.innerHTML = modelName;
 
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
+		this.chatHistoryButton.setTooltip("Chats")
 		this.chatHistoryButton.onClick(() => {
 			historyContainer.resetHistory(chatHistoryContainer);
 			historyContainer.generateHistoryContainer(
@@ -88,6 +89,7 @@ export class Header {
 		});
 
 		const settingsButton = new ButtonComponent(rightA);
+		settingsButton.setTooltip("Chat Settings")
 		settingsButton.onClick(() => {
 			this.clickHandler(settingsButton, [this.chatHistoryButton]);
 			if (settingsContainer.style.display === "none") {
@@ -101,6 +103,7 @@ export class Header {
 		});
 
 		this.newChatButton = new ButtonComponent(rightB);
+		this.newChatButton.setTooltip("New Chat")
 		this.newChatButton.onClick(() => {
 			this.clickHandler(this.newChatButton, [
 				settingsButton,
