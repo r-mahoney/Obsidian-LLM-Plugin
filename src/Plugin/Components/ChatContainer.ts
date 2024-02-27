@@ -1,7 +1,7 @@
 import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Notice, TextComponent, View } from "obsidian";
-import { messageGPT4AllServer, openAIMessage, classNames, getModelInfo, setHistoryIndex } from "utils/utils";
+import { messageGPT4AllServer, openAIMessage, classNames, getViewInfo, setHistoryIndex } from "utils/utils";
 import { Header } from "./Header";
 
 export class ChatContainer {
@@ -23,7 +23,7 @@ export class ChatContainer {
 	}
 
 	async handleGenerateClick(header: Header) {
-		const { model, modelName, modelType } = getModelInfo(
+		const { model, modelName, modelType } = getViewInfo(
 			this.plugin, 
 			this.viewType
 		);
@@ -77,7 +77,7 @@ export class ChatContainer {
 	}
 
 	historyPush(params: GPT4AllParams) {
-		const { modelName, historyIndex } = getModelInfo(this.plugin, this.viewType);
+		const { modelName, historyIndex } = getViewInfo(this.plugin, this.viewType);
 		if (historyIndex > -1) {
 			this.plugin.history.overwriteHistory(
 				this.messages,

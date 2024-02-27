@@ -3,7 +3,7 @@ import { ButtonComponent } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
 import { ViewType } from "Types/types";
-import { getModelInfo, setHistoryIndex } from "utils/utils";
+import { getViewInfo, setHistoryIndex } from "utils/utils";
 
 export class Header {
 	viewType: ViewType;
@@ -49,7 +49,7 @@ export class Header {
 		hideContainer: (container: HTMLElement) => void,
 		historyContainer: HistoryContainer
 	) {
-		const {model, modelName, modelType, historyIndex} = getModelInfo(this.plugin, this.viewType)
+		const {model, modelName, modelType, historyIndex} = getViewInfo(this.plugin, this.viewType)
 		const titleDiv = createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
 		const titleContainer = titleDiv.createDiv();

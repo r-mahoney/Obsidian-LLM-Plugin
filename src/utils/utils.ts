@@ -67,7 +67,7 @@ export function processReplacementTokens(prompt: string) {
 	return prompt;
 }
 
-export function getModelInfo(plugin: LocalLLMPlugin, viewType: ViewType) {
+export function getViewInfo(plugin: LocalLLMPlugin, viewType: ViewType) {
 	const model =
 		viewType === "modal"
 			? plugin.settings.modalSettings.model

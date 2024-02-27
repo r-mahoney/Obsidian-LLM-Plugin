@@ -3,7 +3,7 @@ import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { DropdownComponent, Setting } from "obsidian";
 import {
 	DEFAULT_DIRECTORY,
-	getModelInfo,
+	getViewInfo,
 	modelNames,
 	models,
 } from "utils/utils";
@@ -53,7 +53,7 @@ export class SettingsContainer {
 					}
 				}
 				dropdown.onChange((change) => {
-					const { historyIndex } = getModelInfo(
+					const { historyIndex } = getViewInfo(
 						this.plugin,
 						this.viewType
 					);
