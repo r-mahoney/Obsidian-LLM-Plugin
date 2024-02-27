@@ -49,7 +49,7 @@ export class Header {
 		hideContainer: (container: HTMLElement) => void,
 		historyContainer: HistoryContainer
 	) {
-		const {model, modelName, modelType, historyIndex} = getViewInfo(this.plugin, this.viewType)
+		const { modelName } = getViewInfo(this.plugin, this.viewType)
 		const titleDiv = createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
 		const titleContainer = titleDiv.createDiv();

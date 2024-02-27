@@ -31,14 +31,16 @@ export class WidgetView extends ItemView {
 	}
 
 	async onOpen() {
-		this.plugin.settings.widgetSettings.historyIndex =
+		const widgetSettings = this.plugin.settings.widgetSettings;
+		widgetSettings.historyIndex =
 			DEFAULT_SETTINGS.widgetSettings.historyIndex;
-		this.plugin.settings.widgetSettings.model =
-			DEFAULT_SETTINGS.widgetSettings.model;
-		this.plugin.settings.widgetSettings.modelName =
-			DEFAULT_SETTINGS.widgetSettings.modelName;
-		this.plugin.settings.widgetSettings.modelType =
-			DEFAULT_SETTINGS.widgetSettings.modelType;
+		widgetSettings.model = DEFAULT_SETTINGS.widgetSettings.model;
+		widgetSettings.modelName = DEFAULT_SETTINGS.widgetSettings.modelName;
+		widgetSettings.modelType = DEFAULT_SETTINGS.widgetSettings.modelType;
+		widgetSettings.modelEndpoint =
+			DEFAULT_SETTINGS.widgetSettings.modelEndpoint;
+		widgetSettings.endpointURL =
+			DEFAULT_SETTINGS.widgetSettings.endpointURL;
 		this.plugin.saveSettings();
 		const container = this.containerEl.children[1];
 		const history = this.plugin.settings.promptHistory;

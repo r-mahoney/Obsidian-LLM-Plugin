@@ -1,4 +1,10 @@
-import { GPT4AllParams, Message, Model, ViewType } from "Types/types";
+import {
+	GPT4AllParams,
+	Message,
+	Model,
+	ViewSettings,
+	ViewType,
+} from "Types/types";
 import { existsSync } from "fs";
 import LocalLLMPlugin from "main";
 import { Editor } from "obsidian";
@@ -35,23 +41,42 @@ export async function messageGPT4AllServer(params: GPT4AllParams, url: string) {
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
 	params: GPT4AllParams,
-	OpenAI_API_Key: string
+	OpenAI_API_Key: string,
+	endpoint: string,
+	endpointType: string
 ) {
 	const openai = new OpenAI({
 		apiKey: OpenAI_API_Key,
 		dangerouslyAllowBrowser: true,
 	});
-	const { model, messages, tokens, temperature } = params;
+	const { prompt, model, messages, tokens, temperature } = params;
 
-	const stream = await openai.chat.completions.create({
-		model,
-		messages,
-		max_tokens: tokens,
-		temperature,
-		stream: true,
-	});
+	if (endpointType === "chat") {
+		const stream = await openai.chat.completions.create(
+			{
+				model,
+				messages,
+				max_tokens: tokens,
+				temperature,
+				stream: true,
+			},
+			{ path: endpoint }
+		);
 
-	return stream;
+		return stream;
+	}
+
+	if (endpointType === "images") {
+		const image = await openai.images.generate({
+			model,
+			prompt,
+			size: "1024x1024",
+			quality: "standard",
+			n: 1,
+		});
+
+		return image.data[0].url;
+	}
 }
 
 export function processReplacementTokens(prompt: string) {
@@ -67,28 +92,50 @@ export function processReplacementTokens(prompt: string) {
 	return prompt;
 }
 
-export function getViewInfo(plugin: LocalLLMPlugin, viewType: ViewType) {
-	const model =
-		viewType === "modal"
-			? plugin.settings.modalSettings.model
-			: plugin.settings.widgetSettings.model;
-	const modelType =
-		viewType === "modal"
-			? plugin.settings.modalSettings.modelType
-			: plugin.settings.widgetSettings.modelType;
-	const modelName =
-		viewType === "modal"
-			? plugin.settings.modalSettings.modelName
-			: plugin.settings.widgetSettings.modelName;
-	const historyIndex =
-		viewType === "modal"
-			? plugin.settings.modalSettings.historyIndex
-			: plugin.settings.widgetSettings.historyIndex;
+export function getViewInfo(
+	plugin: LocalLLMPlugin,
+	viewType: ViewType
+): ViewSettings {
+	if (viewType === "modal") {
+		return {
+			model: plugin.settings.modalSettings.model,
+			modelName: plugin.settings.modalSettings.modelName,
+			modelType: plugin.settings.modalSettings.modelType,
+			historyIndex: plugin.settings.modalSettings.historyIndex,
+			modelEndpoint: plugin.settings.modalSettings.modelEndpoint,
+			endpointURL: plugin.settings.modalSettings.endpointURL,
+		};
+	}
+
+	if (viewType === "widget") {
+		return {
+			model: plugin.settings.widgetSettings.model,
+			modelName: plugin.settings.widgetSettings.modelName,
+			modelType: plugin.settings.widgetSettings.modelType,
+			historyIndex: plugin.settings.widgetSettings.historyIndex,
+			modelEndpoint: plugin.settings.widgetSettings.modelEndpoint,
+			endpointURL: plugin.settings.widgetSettings.endpointURL,
+		};
+	}
+
+	if (viewType === "floating-action-button") {
+		return {
+			model: plugin.settings.widgetSettings.model,
+			modelName: plugin.settings.widgetSettings.modelName,
+			modelType: plugin.settings.widgetSettings.modelType,
+			historyIndex: plugin.settings.widgetSettings.historyIndex,
+			modelEndpoint: plugin.settings.widgetSettings.modelEndpoint,
+			endpointURL: plugin.settings.widgetSettings.endpointURL,
+		};
+	}
+
 	return {
-		model,
-		modelName,
-		modelType,
-		historyIndex,
+		model: "",
+		modelName: "",
+		modelType: "",
+		historyIndex: -1,
+		modelEndpoint: "",
+		endpointURL: "",
 	};
 }
 
@@ -214,15 +261,26 @@ export const models: Record<string, Model> = {
 		model: "gpt-3.5-turbo",
 		type: "openAI",
 		endpoint: "chat",
-		url: "/v1/chat/completions",
+		url: "/chat/completions",
 	},
-	"Text Embedding 3 (Small)": {
-		model: "text-embedding-3-small",
-		type: "openAI",
-		endpoint: "embeddings",
-		url: "/v1/embeddings"
-	},
-	// "DALL·E 3": {model: "dall-e-3", type: "openAI"},
+	// "Text Embedding 3 (Small)": {
+	// 	model: "text-embedding-3-small",
+	// 	type: "openAI",
+	// 	endpoint: "embeddings",
+	// 	url: "/embeddings",
+	// },
+	// "DALL·E 3": {
+	// 	model: "dall-e-3",
+	// 	type: "openAI",
+	// 	endpoint: "images",
+	// 	url: "/images/generations",
+	// // },
+	// "DALL·E 2": {
+	// 	model: "dall-e-2",
+	// 	type: "openAI",
+	// 	endpoint: "images",
+	// 	url: "/images/generations",
+	// },
 };
 
 export const modelNames: Record<string, string> = {
@@ -238,7 +296,9 @@ export const modelNames: Record<string, string> = {
 	"gpt4all-13b-snoozy-q4_0.gguf": "Snoozy",
 	"em_german_mistral_v01.Q4_0.gguf": "EM German Mistral",
 	"gpt-3.5-turbo": "ChatGPT-3.5 Turbo",
-	"text-embedding-3-small": "Text Embedding 3 (Small)",
+	// "text-embedding-3-small": "Text Embedding 3 (Small)",
+	// "dall-e-3": "DALL·E 3",
+	// "dall-e-2": "DALL·E 2",
 };
 
 // export function getModelNames():Record<string, string> {

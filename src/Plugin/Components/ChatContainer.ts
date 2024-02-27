@@ -9,6 +9,8 @@ import {
 	setHistoryIndex,
 } from "utils/utils";
 import { Header } from "./Header";
+import { ChatCompletionChunk } from "openai/resources";
+import { Stream } from "openai/streaming";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -29,10 +31,8 @@ export class ChatContainer {
 	}
 
 	async handleGenerateClick(header: Header) {
-		const { model, modelName, modelType } = getViewInfo(
-			this.plugin,
-			this.viewType
-		);
+		const { model, modelName, modelType, endpointURL, modelEndpoint } =
+			getViewInfo(this.plugin, this.viewType);
 		if (!this.prompt) {
 			new Notice("You need to ask a question first.");
 			return;
@@ -41,6 +41,7 @@ export class ChatContainer {
 		this.appendNewMessage({ role: "user", content: this.prompt });
 		header.setHeader(modelName, this.prompt);
 		const params: GPT4AllParams = {
+			prompt: this.prompt,
 			messages: this.messages,
 			temperature: this.plugin.settings.temperature,
 			tokens: this.plugin.settings.tokens,
@@ -49,7 +50,7 @@ export class ChatContainer {
 		try {
 			if (modelType === "GPT4All") {
 				this.setDiv(false);
-				messageGPT4AllServer(params, "/v1/chat/completions")
+				messageGPT4AllServer(params, endpointURL)
 					.then((response: Message) => {
 						this.removeLodingDiv();
 						this.messages.push(response);
@@ -65,19 +66,40 @@ export class ChatContainer {
 						}
 					});
 			} else {
-				const stream = await openAIMessage(
-					params,
-					this.plugin.settings.openAIAPIKey
-				);
-				this.setDiv(true);
 				let previewText = "";
-				for await (const chunk of stream) {
-					previewText += chunk.choices[0]?.delta?.content || "";
-					this.streamingDiv.innerHTML = previewText;
-					this.historyMessages.scroll(0, 9999);
+				if (modelEndpoint === "chat") {
+					const stream = await openAIMessage(
+						params,
+						this.plugin.settings.openAIAPIKey,
+						endpointURL,
+						modelEndpoint
+					);
+					this.setDiv(true);
+					for await (const chunk of stream as Stream<ChatCompletionChunk>) {
+						previewText += chunk.choices[0]?.delta?.content || "";
+						this.streamingDiv.innerHTML = previewText;
+						this.historyMessages.scroll(0, 9999);
+					}
+					this.historyPush(params);
+					this.messages.push({
+						role: "assistant",
+						content: previewText,
+					});
 				}
-				this.historyPush(params);
-				this.messages.push({ role: "assistant", content: previewText });
+				if (modelEndpoint === "images") {
+					this.setDiv(false);
+					await openAIMessage(
+						params,
+						this.plugin.settings.openAIAPIKey,
+						endpointURL,
+						modelEndpoint
+					).then((response: string) => {
+						this.removeLodingDiv();
+						// this.messages.push(response);
+						this.appendImage(response);
+						// this.historyPush(params);
+					});
+				}
 			}
 		} catch (error) {}
 	}
@@ -122,7 +144,7 @@ export class ChatContainer {
 		sendButton.buttonEl.className = classNames[this.viewType].button;
 
 		sendButton.setIcon("up-arrow-with-tail");
-		sendButton.setTooltip("Send Prompt")
+		sendButton.setTooltip("Send Prompt");
 
 		promptField.onChange((change: string) => {
 			this.prompt = change;
@@ -204,6 +226,24 @@ export class ChatContainer {
 
 	removeLodingDiv() {
 		this.loadingDivContainer.remove();
+	}
+
+	appendImage(image: string) {
+		const length = this.historyMessages.childNodes.length;
+		const imLikeMessageContainer = this.historyMessages.createDiv();
+		const icon = imLikeMessageContainer.createDiv();
+		const imLikeMessage = imLikeMessageContainer.createDiv();
+		icon.innerHTML = "A";
+		imLikeMessage.innerHTML = `<img src=${image} alt="image generated with ${this.prompt}" width="250" height="300">`;
+		imLikeMessageContainer.addClass("im-like-message-container");
+		icon.addClass("message-icon");
+		imLikeMessage.addClass("im-like-message");
+		if (length % 2 === 0) {
+			imLikeMessageContainer.addClass("flex-start");
+		} else {
+			imLikeMessageContainer.addClass("flex-end");
+		}
+		this.historyMessages.scroll(0, 9999);
 	}
 
 	private createMessage(role: string, content: string, index: number) {

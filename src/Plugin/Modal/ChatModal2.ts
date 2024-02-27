@@ -18,17 +18,18 @@ export class ChatModal2 extends Modal {
 	}
 
 	onOpen() {
+		const modalSettings = this.plugin.settings.modalSettings;
 		this.modalEl
 			.getElementsByClassName("modal-close-button")[0]
 			.setAttr("style", "display: none");
-		this.plugin.settings.modalSettings.historyIndex =
+		modalSettings.historyIndex =
 			DEFAULT_SETTINGS.modalSettings.historyIndex;
-		this.plugin.settings.modalSettings.model =
-			DEFAULT_SETTINGS.modalSettings.model;
-		this.plugin.settings.modalSettings.modelName =
-			DEFAULT_SETTINGS.modalSettings.modelName;
-		this.plugin.settings.modalSettings.modelType =
-			DEFAULT_SETTINGS.modalSettings.modelType;
+		modalSettings.model = DEFAULT_SETTINGS.modalSettings.model;
+		modalSettings.modelName = DEFAULT_SETTINGS.modalSettings.modelName;
+		modalSettings.modelType = DEFAULT_SETTINGS.modalSettings.modelType;
+		modalSettings.modelEndpoint =
+			DEFAULT_SETTINGS.modalSettings.modelEndpoint;
+		modalSettings.endpointURL = DEFAULT_SETTINGS.modalSettings.endpointURL;
 		this.plugin.saveSettings();
 		const { contentEl } = this;
 		const closeModal = () => {
@@ -36,7 +37,10 @@ export class ChatModal2 extends Modal {
 		};
 
 		const header = new Header(this.plugin, "modal");
-		const chatContainer = new ChatContainer(this.plugin, "modal" /*, closeModal*/);
+		const chatContainer = new ChatContainer(
+			this.plugin,
+			"modal" /*, closeModal*/
+		);
 		const historyContainer = new HistoryContainer(this.plugin, "modal");
 		const settingsContainer = new SettingsContainer(this.plugin, "modal");
 
