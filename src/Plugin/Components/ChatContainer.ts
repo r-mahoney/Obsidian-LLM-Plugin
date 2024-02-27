@@ -49,7 +49,7 @@ export class ChatContainer {
 		try {
 			if (modelType === "GPT4All") {
 				this.setDiv(false);
-				messageGPT4AllServer(params)
+				messageGPT4AllServer(params, "/v1/chat/completions")
 					.then((response: Message) => {
 						this.removeLodingDiv();
 						this.messages.push(response);

@@ -19,8 +19,8 @@ export function modelLookup(modelName: string) {
 	return existsSync(model);
 }
 
-export async function messageGPT4AllServer(params: GPT4AllParams) {
-	const response = await fetch("http://localhost:4891/v1/chat/completions", {
+export async function messageGPT4AllServer(params: GPT4AllParams, url: string) {
+	const response = await fetch(`http://localhost:4891${url}`, {
 		method: "POST",
 		body: JSON.stringify({
 			model: params.model,
@@ -101,13 +101,13 @@ export function setHistoryIndex(
 		viewType === "modal"
 			? (plugin.settings.modalSettings.historyIndex = -1)
 			: (plugin.settings.widgetSettings.historyIndex = -1);
-			plugin.saveSettings()
+		plugin.saveSettings();
 		return;
 	}
 	viewType === "modal"
 		? (plugin.settings.modalSettings.historyIndex = length - 1)
 		: (plugin.settings.widgetSettings.historyIndex = length - 1);
-		plugin.saveSettings()
+	plugin.saveSettings();
 }
 
 function moveCursorToEndOfFile(editor: Editor) {
@@ -147,33 +147,80 @@ export const models: Record<string, Model> = {
 	"Mistral OpenOrca": {
 		model: "mistral-7b-openorca.Q4_0.gguf",
 		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
 	},
 	"Mistral Instruct": {
 		model: "mistral-7b-instruct-v0.1.Q4_0.gguf",
 		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
 	},
 	"GPT4All Falcon": {
 		model: "gpt4all-falcon-newbpe-q4_0.gguf",
 		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
 	},
-	"Orca 2 (Medium)": { model: "orca-2-7b.Q4_0.gguf", type: "GPT4All" },
-	"Orca 2 (Full)": { model: "orca-2-13b.Q4_0.gguf", type: "GPT4All" },
+	"Orca 2 (Medium)": {
+		model: "orca-2-7b.Q4_0.gguf",
+		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
+	},
+	"Orca 2 (Full)": {
+		model: "orca-2-13b.Q4_0.gguf",
+		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
+	},
 	"Mini Orca (Small)": {
 		model: "orca-mini-3b-gguf2-q4_0.gguf",
 		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
 	},
-	"MPT Chat": { model: "mpt-7b-chat-newbpe-q4_0.gguf", type: "GPT4All" },
-	"Wizard v1.2": { model: "wizardlm-13b-v1.2.Q4_0.gguf", type: "GPT4All" },
-	Hermes: { model: "nous-hermes-llama2-13b.Q4_0.gguf", type: "GPT4All" },
-	Snoozy: { model: "gpt4all-13b-snoozy-q4_0.gguf", type: "GPT4All" },
+	"MPT Chat": {
+		model: "mpt-7b-chat-newbpe-q4_0.gguf",
+		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
+	},
+	"Wizard v1.2": {
+		model: "wizardlm-13b-v1.2.Q4_0.gguf",
+		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
+	},
+	Hermes: {
+		model: "nous-hermes-llama2-13b.Q4_0.gguf",
+		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
+	},
+	Snoozy: {
+		model: "gpt4all-13b-snoozy-q4_0.gguf",
+		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
+	},
 	"EM German Mistral": {
 		model: "em_german_mistral_v01.Q4_0.gguf",
 		type: "GPT4All",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
 	},
-	"ChatGPT-3.5 Turbo": { model: "gpt-3.5-turbo", type: "openAI" },
+	"ChatGPT-3.5 Turbo": {
+		model: "gpt-3.5-turbo",
+		type: "openAI",
+		endpoint: "chat",
+		url: "/v1/chat/completions",
+	},
 	"Text Embedding 3 (Small)": {
 		model: "text-embedding-3-small",
 		type: "openAI",
+		endpoint: "embeddings",
+		url: "/v1/embeddings"
 	},
 	// "DALL·E 3": {model: "dall-e-3", type: "openAI"},
 };

@@ -27,6 +27,8 @@ export type Message = {
 export type Model = {
 	model: string;
 	type: string;
+	endpoint: string;
+	url: string;
 };
 
 export type ViewType = "modal" | "widget" | "floating-action-button";
