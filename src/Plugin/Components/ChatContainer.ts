@@ -62,10 +62,19 @@ export class ChatContainer {
 							new Notice(
 								"You must have GPT4All open with the API Server enabled"
 							);
-							this.removeMessage();
+							this.removeMessage(header, modelName);
 						}
 					});
 			} else {
+				const API_KEY = this.plugin.settings.openAIAPIKey;
+				if (!API_KEY) {
+					setTimeout(() => {
+						this.removeMessage(header, modelName);
+					}, 1000);
+					new Notice(
+						"You must have an OpenAI API Key in order to use OpenAI models"
+					);
+				}
 				let previewText = "";
 				if (modelEndpoint === "chat") {
 					const stream = await openAIMessage(
@@ -296,9 +305,12 @@ export class ChatContainer {
 		this.historyMessages.scroll(0, 9999);
 	}
 
-	removeMessage() {
+	removeMessage(header: Header, modelName: string) {
 		this.messages.pop();
 		this.historyMessages.lastElementChild?.remove();
+		if (this.historyMessages.children.length < 1) {
+			header.setHeader(modelName, "LLM Plugin");
+		}
 	}
 
 	resetChat() {
