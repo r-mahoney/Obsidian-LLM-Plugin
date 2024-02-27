@@ -24,8 +24,13 @@ export class HistoryContainer {
 		chat: ChatContainer,
 		Header: Header
 	) {
-		const settings: Record<string, string> = {'modal': 'modalSettings', 'widget': 'widgetSettings'}
-		const settingType: ('modalSettings' | 'widgetSettings') = settings[this.viewType] as ('modalSettings' | 'widgetSettings')
+		const settings: Record<string, string> = {
+			modal: "modalSettings",
+			widget: "widgetSettings",
+		};
+		const settingType: "modalSettings" | "widgetSettings" = settings[
+			this.viewType
+		] as "modalSettings" | "widgetSettings";
 		if (this.viewType === "modal") {
 			this.model = this.plugin.settings.modalSettings.model;
 			this.modelName = this.plugin.settings.modalSettings.modelName;
@@ -53,8 +58,14 @@ export class HistoryContainer {
 			const header = this.plugin.settings.promptHistory[index].prompt;
 			const modelName =
 				this.plugin.settings.promptHistory[index].modelName;
-			this.plugin.settings[settingType].modelName = modelName
-			this.plugin.settings[settingType].model = models[modelName].model
+			this.plugin.settings[settingType].modelName = modelName;
+			this.plugin.settings[settingType].model = models[modelName].model;
+			this.plugin.settings[settingType].modelType =
+				models[modelName].type;
+			this.plugin.settings[settingType].modelEndpoint =
+				models[modelName].endpoint;
+			this.plugin.settings[settingType].endpointURL =
+				models[modelName].url;
 			this.plugin.saveSettings();
 			Header.setHeader(modelName, header);
 			Header.resetHistoryButton();
@@ -106,8 +117,7 @@ export class HistoryContainer {
 			);
 			deleteHistory.buttonEl.id = "delete-history-button";
 			item.addEventListener("click", () => {
-				this.plugin.settings[settingType].historyIndex =
-					index;
+				this.plugin.settings[settingType].historyIndex = index;
 				this.historyIndex = index;
 				this.plugin.saveSettings();
 			});

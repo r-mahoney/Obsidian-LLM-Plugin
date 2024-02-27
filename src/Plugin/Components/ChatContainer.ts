@@ -37,9 +37,11 @@ export class ChatContainer {
 			new Notice("You need to ask a question first.");
 			return;
 		}
+		if (this.historyMessages.children.length < 1) {
+			header.setHeader(modelName, this.prompt);
+		}
 		this.messages.push({ role: "user", content: this.prompt });
 		this.appendNewMessage({ role: "user", content: this.prompt });
-		header.setHeader(modelName, this.prompt);
 		const params: GPT4AllParams = {
 			prompt: this.prompt,
 			messages: this.messages,
