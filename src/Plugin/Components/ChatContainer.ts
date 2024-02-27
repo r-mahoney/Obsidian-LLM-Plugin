@@ -1,7 +1,13 @@
 import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Notice, TextComponent, View } from "obsidian";
-import { messageGPT4AllServer, openAIMessage, classNames, getViewInfo, setHistoryIndex } from "utils/utils";
+import {
+	messageGPT4AllServer,
+	openAIMessage,
+	classNames,
+	getViewInfo,
+	setHistoryIndex,
+} from "utils/utils";
 import { Header } from "./Header";
 
 export class ChatContainer {
@@ -24,7 +30,7 @@ export class ChatContainer {
 
 	async handleGenerateClick(header: Header) {
 		const { model, modelName, modelType } = getViewInfo(
-			this.plugin, 
+			this.plugin,
 			this.viewType
 		);
 		if (!this.prompt) {
@@ -77,12 +83,12 @@ export class ChatContainer {
 	}
 
 	historyPush(params: GPT4AllParams) {
-		const { modelName, historyIndex } = getViewInfo(this.plugin, this.viewType);
+		const { modelName, historyIndex } = getViewInfo(
+			this.plugin,
+			this.viewType
+		);
 		if (historyIndex > -1) {
-			this.plugin.history.overwriteHistory(
-				this.messages,
-				historyIndex
-			);
+			this.plugin.history.overwriteHistory(this.messages, historyIndex);
 		} else {
 			this.plugin.history.push({
 				prompt: this.prompt,
@@ -94,14 +100,13 @@ export class ChatContainer {
 				model: params.model,
 			});
 			const length = this.plugin.settings.promptHistory.length;
-			setHistoryIndex(this.plugin, this.viewType, length)
+			setHistoryIndex(this.plugin, this.viewType, length);
 			this.plugin.saveSettings();
 			this.prompt = "";
 		}
 	}
 
 	generateChatContainer(parentElement: Element, header: Header) {
-
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();
 		this.historyMessages.className =
@@ -117,6 +122,7 @@ export class ChatContainer {
 		sendButton.buttonEl.className = classNames[this.viewType].button;
 
 		sendButton.setIcon("up-arrow-with-tail");
+		sendButton.setTooltip("Send Prompt")
 
 		promptField.onChange((change: string) => {
 			this.prompt = change;
@@ -192,7 +198,7 @@ export class ChatContainer {
 
 		addText.onClick(async () => {
 			await navigator.clipboard.writeText(this.streamingDiv.innerHTML);
-			new Notice("Text copid to clipboard");
+			new Notice("Text copied to clipboard");
 		});
 	}
 
@@ -227,9 +233,10 @@ export class ChatContainer {
 			addText.buttonEl.addClass("hide");
 		});
 
+		addText.setTooltip("Copy to clipboard");
 		addText.onClick(async () => {
 			await navigator.clipboard.writeText(content);
-			new Notice("Text copid to clipboard");
+			new Notice("Text copied to clipboard");
 		});
 		this.historyMessages.scroll(0, 9999);
 	}
