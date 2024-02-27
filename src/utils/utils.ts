@@ -1,5 +1,6 @@
-import { GPT4AllParams, Message, Model } from "Types/types";
+import { GPT4AllParams, Message, Model, ViewType } from "Types/types";
 import { existsSync } from "fs";
+import LocalLLMPlugin from "main";
 import { Editor } from "obsidian";
 import OpenAI from "openai";
 import { Stream } from "openai/streaming";
@@ -64,6 +65,49 @@ export function processReplacementTokens(prompt: string) {
 	});
 
 	return prompt;
+}
+
+export function getModelInfo(plugin: LocalLLMPlugin, viewType: ViewType) {
+	const model =
+		viewType === "modal"
+			? plugin.settings.modalSettings.model
+			: plugin.settings.widgetSettings.model;
+	const modelType =
+		viewType === "modal"
+			? plugin.settings.modalSettings.modelType
+			: plugin.settings.widgetSettings.modelType;
+	const modelName =
+		viewType === "modal"
+			? plugin.settings.modalSettings.modelName
+			: plugin.settings.widgetSettings.modelName;
+	const historyIndex =
+		viewType === "modal"
+			? plugin.settings.modalSettings.historyIndex
+			: plugin.settings.widgetSettings.historyIndex;
+	return {
+		model,
+		modelName,
+		modelType,
+		historyIndex,
+	};
+}
+
+export function setHistoryIndex(
+	plugin: LocalLLMPlugin,
+	viewType: ViewType,
+	length?: number
+) {
+	if (!length) {
+		viewType === "modal"
+			? (plugin.settings.modalSettings.historyIndex = -1)
+			: (plugin.settings.widgetSettings.historyIndex = -1);
+			plugin.saveSettings()
+		return;
+	}
+	viewType === "modal"
+		? (plugin.settings.modalSettings.historyIndex = length - 1)
+		: (plugin.settings.widgetSettings.historyIndex = length - 1);
+		plugin.saveSettings()
 }
 
 function moveCursorToEndOfFile(editor: Editor) {

@@ -1,7 +1,7 @@
 import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LocalLLMPlugin from "main";
 import { ButtonComponent, Notice, TextComponent, View } from "obsidian";
-import { messageGPT4AllServer, openAIMessage, classNames } from "utils/utils";
+import { messageGPT4AllServer, openAIMessage, classNames, getModelInfo, setHistoryIndex } from "utils/utils";
 import { Header } from "./Header";
 
 export class ChatContainer {
@@ -13,7 +13,6 @@ export class ChatContainer {
 	loadingDivContainer: HTMLElement;
 	streamingDiv: HTMLElement;
 	viewType: ViewType;
-	historyIndex: number;
 	// closeModal?: () => void;
 	constructor(
 		private plugin: LocalLLMPlugin,
@@ -23,28 +22,9 @@ export class ChatContainer {
 		this.viewType = viewType;
 	}
 
-	getModelInfo(viewType: ViewType) {
-		const model =
-			viewType === "modal"
-				? this.plugin.settings.modalSettings.model
-				: this.plugin.settings.widgetSettings.model;
-		const modelType =
-			viewType === "modal"
-				? this.plugin.settings.modalSettings.modelType
-				: this.plugin.settings.widgetSettings.modelType;
-		const modelName =
-			viewType === "modal"
-				? this.plugin.settings.modalSettings.modelName
-				: this.plugin.settings.widgetSettings.modelName;
-		return {
-			model,
-			modelName,
-			modelType,
-		};
-	}
-
 	async handleGenerateClick(header: Header) {
-		const { model, modelName, modelType } = this.getModelInfo(
+		const { model, modelName, modelType } = getModelInfo(
+			this.plugin, 
 			this.viewType
 		);
 		if (!this.prompt) {
@@ -97,11 +77,11 @@ export class ChatContainer {
 	}
 
 	historyPush(params: GPT4AllParams) {
-		const { modelName } = this.getModelInfo(this.viewType);
-		if (this.historyIndex > -1) {
+		const { modelName, historyIndex } = getModelInfo(this.plugin, this.viewType);
+		if (historyIndex > -1) {
 			this.plugin.history.overwriteHistory(
 				this.messages,
-				this.historyIndex
+				historyIndex
 			);
 		} else {
 			this.plugin.history.push({
@@ -114,19 +94,13 @@ export class ChatContainer {
 				model: params.model,
 			});
 			const length = this.plugin.settings.promptHistory.length;
-			this.historyIndex = length - 1;
+			setHistoryIndex(this.plugin, this.viewType, length)
 			this.plugin.saveSettings();
 			this.prompt = "";
 		}
 	}
 
 	generateChatContainer(parentElement: Element, header: Header) {
-		if (this.viewType === "modal") {
-			this.historyIndex = this.plugin.settings.modalSettings.historyIndex;
-		} else {
-			this.historyIndex =
-				this.plugin.settings.widgetSettings.historyIndex;
-		}
 
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();

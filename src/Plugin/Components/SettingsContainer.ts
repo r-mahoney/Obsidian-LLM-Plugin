@@ -1,38 +1,30 @@
 import { ViewType } from "Types/types";
 import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { DropdownComponent, Setting } from "obsidian";
-import { DEFAULT_DIRECTORY, modelNames, models } from "utils/utils";
+import {
+	DEFAULT_DIRECTORY,
+	getModelInfo,
+	modelNames,
+	models,
+} from "utils/utils";
 import { Header } from "./Header";
 const fs = require("fs");
 
 export class SettingsContainer {
-	viewType: string;
-	model: string;
-	modelName: string;
-	modelType: string;
-	historyIndex: number;
+	viewType: ViewType;
 
 	constructor(private plugin: LocalLLMPlugin, viewType: ViewType) {
 		this.viewType = viewType;
 	}
 
 	generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
-		const settings: Record<string, string> = {'modal': 'modalSettings', 'widget': 'widgetSettings'}
-		const settingType: ('modalSettings' | 'widgetSettings') = settings[this.viewType] as ('modalSettings' | 'widgetSettings')
-		if ((this.viewType === "modal")) {
-			this.model = this.plugin.settings.modalSettings.model;
-			this.modelName = this.plugin.settings.modalSettings.modelName;
-			this.modelType = this.plugin.settings.modalSettings.modelType;
-			this.modelType = this.plugin.settings.modalSettings.modelType;
-			this.historyIndex = this.plugin.settings.modalSettings.historyIndex
-		} else {
-			this.model = this.plugin.settings.widgetSettings.model;
-			this.modelName = this.plugin.settings.widgetSettings.modelName;
-			this.modelType = this.plugin.settings.widgetSettings.modelType;
-			this.modelType = this.plugin.settings.widgetSettings.modelType;
-			this.historyIndex = this.plugin.settings.widgetSettings.historyIndex
-		}
-		
+		const settings: Record<string, string> = {
+			modal: "modalSettings",
+			widget: "widgetSettings",
+		};
+		const settingType: "modalSettings" | "widgetSettings" = settings[
+			this.viewType
+		] as "modalSettings" | "widgetSettings";
 
 		const modelOptions = new Setting(parentContainer)
 			.setName("Models")
@@ -61,11 +53,16 @@ export class SettingsContainer {
 					}
 				}
 				dropdown.onChange((change) => {
+					const { historyIndex } = getModelInfo(
+						this.plugin,
+						this.viewType
+					);
 					const modelName = modelNames[change];
-					const index = this.historyIndex;
+					const index = historyIndex;
 					this.plugin.settings[settingType].model = change;
 					this.plugin.settings[settingType].modelName = modelName;
-					this.plugin.settings[settingType].modelType = models[modelName].type;
+					this.plugin.settings[settingType].modelType =
+						models[modelName].type;
 					if (index > -1) {
 						this.plugin.settings.promptHistory[index].model =
 							change;
