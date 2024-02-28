@@ -1,7 +1,7 @@
 {
-	"name": "gpt4all-local-llm-plugin",
+	"name": "llm-plugin",
 	"version": "0.10.3",
-	"description": "This plugin allows users to access LLMs downloaded from the GPT4ALL chat client for use inside Obsidian notes",
+	"description": "This plugin allows users to access LLMs downloaded from the GPT4ALL chat client for use inside Obsidian notes as well as LLMs from OpenAI and Gemini",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",

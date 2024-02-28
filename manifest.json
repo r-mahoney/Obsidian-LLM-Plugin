@@ -1,11 +1,11 @@
 {
-	"id": "gpt4all-local-llm-plugin",
-	"name": "GPT4All Local LLM Plugin",
+	"id": "llm-plugin",
+	"name": "LLM Plugin",
 	"version": "0.10.3",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"description": "This plugin gives users the ability to access locally downloaded LLMs using Nomics GPT4All chat client and models as well as access to OpenAI models and Googles Gemini model. Weve given users the ability to interact with these LLMs through a variety of options: A chat modal, a sidebar widget, and a floating action button.",
 	"author": "Ryan Mahoney",
 	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+	"fundingUrl": "https://www.buymeacoffee.com/johnny1093",
+	"isDesktopOnly": true
 }
