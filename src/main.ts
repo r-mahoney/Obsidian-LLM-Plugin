@@ -15,7 +15,7 @@ type ViewSettings = {
 	historyIndex: number;
 };
 
-export interface LocalLLMPluginSettings {
+export interface LLMPluginSettings {
 	appName: string;
 	modalSettings: ViewSettings;
 	widgetSettings: ViewSettings;
@@ -25,7 +25,7 @@ export interface LocalLLMPluginSettings {
 	openAIAPIKey: string;
 }
 
-export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
+export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	appName: "Local LLM Plugin",
 	modalSettings: {
 		model: "mistral-7b-openorca.Q4_0.gguf",
@@ -49,8 +49,8 @@ export const DEFAULT_SETTINGS: LocalLLMPluginSettings = {
 	openAIAPIKey: "",
 };
 
-export default class LocalLLMPlugin extends Plugin {
-	settings: LocalLLMPluginSettings;
+export default class LLMPlugin extends Plugin {
+	settings: LLMPluginSettings;
 	history: History;
 
 	async onload() {

@@ -1,8 +1,8 @@
 import { ChatHistoryItem, Message } from "Types/types";
-import LocalLLMPlugin from "main";
+import LLMPlugin from "main";
 
 export class History {
-	constructor(private plugin: LocalLLMPlugin) {}
+	constructor(private plugin: LLMPlugin) {}
 
 	push(message_context: ChatHistoryItem) {
 		try {

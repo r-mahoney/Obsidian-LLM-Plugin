@@ -1,4 +1,4 @@
-import LocalLLMPlugin from "main";
+import LLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
@@ -7,7 +7,7 @@ import { getViewInfo, setHistoryIndex } from "utils/utils";
 
 export class Header {
 	viewType: ViewType;
-	constructor(private plugin: LocalLLMPlugin, viewType: ViewType) {
+	constructor(private plugin: LLMPlugin, viewType: ViewType) {
 		this.viewType = viewType;
 	}
 	modelEl: HTMLElement;
@@ -59,7 +59,7 @@ export class Header {
 		const rightB = rightButtonsDiv.createDiv();
 
 		titleDiv.className = "title-div";
-		this.titleEl.innerHTML = "LocalLLM Plugin";
+		this.titleEl.innerHTML = "LLM Plugin";
 		this.modelEl = titleContainer.createDiv();
 		this.modelEl.addClass("model-name");
 		this.modelEl.innerHTML = modelName;
