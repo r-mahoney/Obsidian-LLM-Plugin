@@ -1,19 +1,15 @@
 import { ViewType } from "Types/types";
-import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LLMPlugin from "main";
 import { DropdownComponent, Setting } from "obsidian";
-import {
-	DEFAULT_DIRECTORY,
-	getViewInfo,
-	modelNames,
-	models,
-} from "utils/utils";
+import { modelNames, models } from "utils/models";
+import { DEFAULT_DIRECTORY, getViewInfo } from "utils/utils";
 import { Header } from "./Header";
 const fs = require("fs");
 
 export class SettingsContainer {
 	viewType: ViewType;
 
-	constructor(private plugin: LocalLLMPlugin, viewType: ViewType) {
+	constructor(private plugin: LLMPlugin, viewType: ViewType) {
 		this.viewType = viewType;
 	}
 
@@ -30,10 +26,7 @@ export class SettingsContainer {
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
-				dropdown.addOption(
-					"",
-					"---Select Model---"
-				);
+				dropdown.addOption("", "---Select Model---");
 				let keys = Object.keys(models);
 				for (let model of keys) {
 					if (models[model].type === "GPT4All") {
@@ -92,6 +85,7 @@ export class SettingsContainer {
 					this.plugin.saveSettings();
 				});
 			});
+			
 
 		const tokenSetting = new Setting(parentContainer)
 			.setName("Tokens")
@@ -104,5 +98,11 @@ export class SettingsContainer {
 					this.plugin.saveSettings();
 				});
 			});
+	}
+
+	blurFunction(element: HTMLElement) {
+		console.log(element.getText())
+		return
+		// if(element.getText() === "")
 	}
 }

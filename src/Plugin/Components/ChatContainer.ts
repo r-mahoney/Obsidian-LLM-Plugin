@@ -1,16 +1,17 @@
+import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
 import { GPT4AllParams, Message, ViewType } from "Types/types";
-import LocalLLMPlugin from "main";
-import { ButtonComponent, Notice, TextComponent, View } from "obsidian";
+import LLMPlugin from "main";
+import { ButtonComponent, Notice, TextComponent } from "obsidian";
+import { classNames } from "utils/classNames";
 import {
+	getViewInfo,
 	messageGPT4AllServer,
 	openAIMessage,
-	classNames,
-	getViewInfo,
 	setHistoryIndex,
 } from "utils/utils";
 import { Header } from "./Header";
-import { ChatCompletionChunk } from "openai/resources";
 import { Stream } from "openai/streaming";
+import { ChatCompletionChunk } from "openai/resources";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -23,7 +24,7 @@ export class ChatContainer {
 	viewType: ViewType;
 	// closeModal?: () => void;
 	constructor(
-		private plugin: LocalLLMPlugin,
+		private plugin: LLMPlugin,
 		viewType: ViewType /*closeModal?: () => void*/
 	) {
 		// this.closeModal = closeModal;
@@ -33,10 +34,6 @@ export class ChatContainer {
 	async handleGenerateClick(header: Header) {
 		const { model, modelName, modelType, endpointURL, modelEndpoint } =
 			getViewInfo(this.plugin, this.viewType);
-		if (!this.prompt) {
-			new Notice("You need to ask a question first.");
-			return;
-		}
 		if (this.historyMessages.children.length < 1) {
 			header.setHeader(modelName, this.prompt);
 		}
@@ -50,6 +47,9 @@ export class ChatContainer {
 			model,
 		};
 		try {
+			if (settingsErrorHandling(params).length > 0) {
+				throw new Error("Incorrect Settings");
+			}
 			if (modelType === "GPT4All") {
 				this.setDiv(false);
 				messageGPT4AllServer(params, endpointURL)
@@ -60,22 +60,12 @@ export class ChatContainer {
 						this.historyPush(params);
 					})
 					.catch((err) => {
-						if (err.message === "Failed to fetch") {
-							new Notice(
-								"You must have GPT4All open with the API Server enabled"
-							);
-							this.removeMessage(header, modelName);
-						}
+						throw new Error(err.message);
 					});
 			} else {
 				const API_KEY = this.plugin.settings.openAIAPIKey;
 				if (!API_KEY) {
-					setTimeout(() => {
-						this.removeMessage(header, modelName);
-					}, 1000);
-					new Notice(
-						"You must have an OpenAI API Key in order to use OpenAI models"
-					);
+					throw new Error("No API Key");
 				}
 				let previewText = "";
 				if (modelEndpoint === "chat") {
@@ -112,7 +102,12 @@ export class ChatContainer {
 					});
 				}
 			}
-		} catch (error) {}
+		} catch (error) {
+			errorMessages(error, params);
+			setTimeout(() => {
+				this.removeMessage(header, modelName);
+			}, 1000);
+		}
 	}
 
 	historyPush(params: GPT4AllParams) {

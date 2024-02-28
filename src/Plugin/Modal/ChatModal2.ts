@@ -1,13 +1,13 @@
-import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { Modal } from "obsidian";
-import { classNames, models } from "utils/utils";
+import { classNames } from "utils/classNames";
 import { ChatContainer } from "../Components/ChatContainer";
 import { Header } from "../Components/Header";
 import { HistoryContainer } from "../Components/HistoryContainer";
 import { SettingsContainer } from "../Components/SettingsContainer";
 
 export class ChatModal2 extends Modal {
-	constructor(private plugin: LocalLLMPlugin) {
+	constructor(private plugin: LLMPlugin) {
 		super(plugin.app);
 	}
 	hideContainer(container: HTMLElement) {

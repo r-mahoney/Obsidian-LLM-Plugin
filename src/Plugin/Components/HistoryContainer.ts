@@ -1,9 +1,9 @@
 import { ChatHistoryItem, ViewType } from "Types/types";
-import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { ButtonComponent, Notice } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { Header } from "./Header";
-import { models } from "utils/utils";
+import { models } from "utils/models";
 
 export class HistoryContainer {
 	viewType: string;
@@ -11,7 +11,7 @@ export class HistoryContainer {
 	modelName: string;
 	modelType: string;
 	historyIndex: number;
-	constructor(private plugin: LocalLLMPlugin, viewType: ViewType) {
+	constructor(private plugin: LLMPlugin, viewType: ViewType) {
 		this.viewType = viewType;
 	}
 

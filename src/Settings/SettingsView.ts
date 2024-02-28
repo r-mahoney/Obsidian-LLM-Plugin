@@ -1,4 +1,4 @@
-import LocalLLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LLMPlugin, { DEFAULT_SETTINGS } from "main";
 import {
 	App,
 	ButtonComponent,
@@ -6,13 +6,14 @@ import {
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
-import { DEFAULT_DIRECTORY, models, modelNames } from "utils/utils";
+import { DEFAULT_DIRECTORY } from "utils/utils";
+import {  models, modelNames  } from "utils/models";
 const fs = require("fs");
 
 export default class SettingsView extends PluginSettingTab {
-	plugin: LocalLLMPlugin;
+	plugin: LLMPlugin;
 
-	constructor(app: App, plugin: LocalLLMPlugin) {
+	constructor(app: App, plugin: LLMPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
