@@ -60,10 +60,7 @@ export default class LocalLLMPlugin extends Plugin {
 		this.registerCommands();
 
 		this.registerView(VIEW_TYPE, (leaf) => new WidgetView(leaf, this));
-
-		this.addRibbonIcon("dice", "Activate view", () => {
-			this.activateView();
-		});
+		this.activateView()
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsView(this.app, this));
@@ -76,9 +73,17 @@ export default class LocalLLMPlugin extends Plugin {
 	private registerCommands() {
 		const openChat = this.addCommand({
 			id: "open-conversation-modal",
-			name: "Open GPT4All Chat Modal",
+			name: "Open LLM Modal",
 			editorCallback: () => {
 				new ChatModal2(this).open();
+			},
+		});
+
+		const openWidget = this.addCommand({
+			id: "open-LLM-widget",
+			name: "Open LLM Widget",
+			callback: () => {
+				this.activateView();
 			},
 		});
 	}
@@ -110,7 +115,7 @@ export default class LocalLLMPlugin extends Plugin {
 		}
 
 		// "Reveal" the leaf in case it is in a collapsed sidebar
-		workspace.revealLeaf(leaf);
+		// workspace.revealLeaf(leaf);
 	}
 
 	async loadSettings() {
