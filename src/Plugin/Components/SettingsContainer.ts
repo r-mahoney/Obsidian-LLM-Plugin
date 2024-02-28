@@ -31,8 +31,8 @@ export class SettingsContainer {
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
 				dropdown.addOption(
-					DEFAULT_SETTINGS[settingType].modelName,
-					"---Default Model---"
+					"",
+					"---Select Model---"
 				);
 				let keys = Object.keys(models);
 				for (let model of keys) {
