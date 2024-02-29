@@ -247,6 +247,8 @@
 
 /* LOADING ANIMATION TO USE BEFORE WE GET STREAMING UP */
 .dot {
+	color: var(--interactive-accent);
+	font-size: 18pt;
 	display: inline-block;
 	animation-name: bouncing;
 	animation-duration: 700ms;

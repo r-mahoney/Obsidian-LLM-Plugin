@@ -204,7 +204,7 @@ export class ChatContainer {
 		addText.buttonEl.addClass("add-text", "hide");
 		streaming
 			? (this.streamingDiv.innerHTML = "")
-			: (this.streamingDiv.innerHTML = `Loading<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
+			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
 		loadingIcon.innerHTML = "A";
 		loadingIcon.addClass("message-icon");
 		this.streamingDiv.addClass("im-like-message");
