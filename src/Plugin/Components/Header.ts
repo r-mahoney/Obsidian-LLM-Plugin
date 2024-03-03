@@ -105,6 +105,7 @@ export class Header {
 		this.newChatButton = new ButtonComponent(rightB);
 		this.newChatButton.setTooltip("New Chat")
 		this.newChatButton.onClick(() => {
+			const { modelName } = getViewInfo(this.plugin, this.viewType)
 			this.clickHandler(this.newChatButton, [
 				settingsButton,
 				this.chatHistoryButton,
