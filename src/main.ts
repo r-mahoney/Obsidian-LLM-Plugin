@@ -5,6 +5,7 @@ import { History } from "History/HistoryHandler";
 import { ChatModal2 } from "Plugin/Modal/ChatModal2";
 import SettingsView from "Settings/SettingsView";
 import { VIEW_TYPE, WidgetView } from "Plugin/Widget/Widget";
+import { FAB } from "Plugin/FAB/FAB";
 
 type ViewSettings = {
 	model: string;
@@ -52,6 +53,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 export default class LLMPlugin extends Plugin {
 	settings: LLMPluginSettings;
 	history: History;
+	fab: FAB
 
 	async onload() {
 		await this.loadSettings();
@@ -64,6 +66,7 @@ export default class LLMPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsView(this.app, this));
+		new FAB(this)
 
 		this.history = new History(this);
 	}
