@@ -118,6 +118,24 @@
 	right: 9px;
 }
 
+.send-button {
+	border-radius: var(--button-radius);
+	box-shadow: none;
+	height: auto;
+	display: flex;
+	line-height: 1;
+	font-size: inherit;
+	align-items: center;
+	justify-content: center;
+	cursor: var(--cursor);
+	padding: var(--size-4-2);
+	border-bottom: 1px solid var(--background-modifier-border);
+	color: var(--text-muted);
+	background-color: var(--interactive-normal);
+	--icon-size: var(--icon-s);
+	--icon-stroke: var(--icon-s-stroke-width);
+}
+
 /* IM LIKE MESSAGE*/
 .im-like-message-container {
 	display: flex;
@@ -218,7 +236,7 @@
 
 /* WIDGET*/
 
-.widget-chat-container{
+.widget-chat-container {
 	height: 85%;
 	overflow: unset;
 }
@@ -236,8 +254,8 @@
 
 .widget-send-button {
 	position: relative;
-	bottom: 39px;
-	left: calc(100% - 50px);
+	bottom: 40px;
+	left: calc(100% - 40px);
 }
 
 .widget-title-border {
