@@ -1,35 +1,104 @@
+import { ChatContainer } from "Plugin/Components/ChatContainer";
+import { Header } from "Plugin/Components/Header";
+import { HistoryContainer } from "Plugin/Components/HistoryContainer";
+import { SettingsContainer } from "Plugin/Components/SettingsContainer";
 import LLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
+import { classNames } from "utils/classNames";
 
-const ROOT_WORKSPACE_CLASS = "app-container"
+const ROOT_WORKSPACE_CLASS = ".app-container";
 
 export class FAB {
-    plugin: LLMPlugin
+	plugin: LLMPlugin;
 	constructor(plugin: LLMPlugin) {
-        this.plugin = plugin
-    }
+		this.plugin = plugin;
+	}
 
 	hideContainer(container: HTMLElement) {
 		container.setAttr("style", "display: none");
 	}
 	showContainer(container: HTMLElement) {
-		container.setAttr("style", "display: flex");
+		container.setAttr("style", "display: block");
 	}
 
-	async onOpen() {
-        const topWidget = createDiv()
-		topWidget.setAttribute("class", `div-scrollToTop`);
-		topWidget.setAttribute("id", '__C_scrollToTop');
-		// document.body.style.setProperty("--size-ratio", this.settings.resizeButton.toString());
+	generateFAB() {
+		if (document.body.querySelector(".div-scrollToTop")) return;
+		const fabContainer = createDiv();
+		const viewArea = fabContainer.createDiv();
+		viewArea.addClass("fab-view-area");
+		viewArea.setAttr("style", "display: none");
+		const header = new Header(this.plugin, "floating-action-button");
+		const chatContainer = new ChatContainer(
+			this.plugin,
+			"floating-action-button"
+		);
+		const historyContainer = new HistoryContainer(
+			this.plugin,
+			"floating-action-button"
+		);
+		const settingsContainer = new SettingsContainer(
+			this.plugin,
+			"floating-action-button"
+		);
 
-		let button = new ButtonComponent(topWidget);
-		button.setIcon("arrow-up").setClass("buttonItem").onClick(() => {});
+		const lineBreak = viewArea.createDiv();
+		const chatContainerDiv = viewArea.createDiv();
+		const chatHistoryContainer = viewArea.createDiv();
+		const settingsContainerDiv = viewArea.createDiv();
+		header.generateHeader(
+			viewArea,
+			chatContainerDiv,
+			chatHistoryContainer,
+			settingsContainerDiv,
+			chatContainer,
+			this.showContainer,
+			this.hideContainer,
+			historyContainer
+		);
+		let history = this.plugin.settings.promptHistory;
+
+		settingsContainerDiv.setAttr("style", "display: none");
+		settingsContainerDiv.addClass(
+			"settings-container",
+			"fab-settings-container"
+		);
+		chatHistoryContainer.setAttr("style", "display: none");
+		chatHistoryContainer.className = "chat-history-container";
+		lineBreak.className =
+			classNames["floating-action-button"]["title-border"];
+		chatContainerDiv.className = "chat-container";
+
+		chatContainer.generateChatContainer(chatContainerDiv, header);
+		historyContainer.generateHistoryContainer(
+			chatHistoryContainer,
+			history,
+			this.hideContainer,
+			this.showContainer,
+			chatContainerDiv,
+			chatContainer,
+			header
+		);
+		settingsContainer.generateSettingsContainer(
+			settingsContainerDiv,
+			header
+		);
+		fabContainer.setAttribute("class", `div-scrollToTop`);
+		fabContainer.setAttribute("id", "__C_scrollToTop");
+
+		let button = new ButtonComponent(fabContainer);
+		button
+			.setIcon("arrow-up")
+			.setClass("buttonItem")
+			.onClick(() => {
+				if (viewArea.style.display === "none") {
+					this.showContainer(viewArea);
+				} else {
+					this.hideContainer(viewArea);
+				}
+			});
 
 		document.body
 			.querySelector(ROOT_WORKSPACE_CLASS)
-			?.insertAdjacentElement("afterbegin", topWidget);
-
+			?.insertAdjacentElement("afterbegin", fabContainer);
 	}
-
-	async onClose() {}
 }

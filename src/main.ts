@@ -20,6 +20,7 @@ export interface LLMPluginSettings {
 	appName: string;
 	modalSettings: ViewSettings;
 	widgetSettings: ViewSettings;
+	fabSettings: ViewSettings,
 	tokens: number;
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
@@ -44,6 +45,14 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 		endpointURL: "/v1/chat/completions",
 		historyIndex: -1,
 	},
+	fabSettings: {
+		model: "mistral-7b-openorca.Q4_0.gguf",
+		modelName: "Mistral OpenOrca",
+		modelType: "GPT4All",
+		modelEndpoint: "chat",
+		endpointURL: "/v1/chat/completions",
+		historyIndex: -1,
+	},
 	tokens: 300,
 	temperature: 0.65,
 	promptHistory: [],
@@ -53,7 +62,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 export default class LLMPlugin extends Plugin {
 	settings: LLMPluginSettings;
 	history: History;
-	fab: FAB
+	fab: FAB;
 
 	async onload() {
 		await this.loadSettings();
@@ -62,11 +71,12 @@ export default class LLMPlugin extends Plugin {
 		this.registerCommands();
 
 		this.registerView(VIEW_TYPE, (leaf) => new WidgetView(leaf, this));
-		this.activateView()
+		this.activateView();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsView(this.app, this));
-		new FAB(this)
+		this.fab = new FAB(this);
+		this.fab.generateFAB()
 
 		this.history = new History(this);
 	}
