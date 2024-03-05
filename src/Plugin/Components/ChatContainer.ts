@@ -134,20 +134,24 @@ export class ChatContainer {
 		}
 	}
 
+	// setFocus(parentElement: Element) {
+	// 	parentElement.getElementsByClassName(`${classNames[this.viewType]}["text-area"]`)
+	// }
+
 	generateChatContainer(parentElement: Element, header: Header) {
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();
 		this.historyMessages.className =
-			classNames[this.viewType]["messages-div"];
+		classNames[this.viewType]["messages-div"];
 		const promptContainer = parentElement.createDiv();
 		const promptField = new TextComponent(promptContainer);
 		const sendButton = new ButtonComponent(promptContainer);
-
+		
 		promptContainer.className =
-			classNames[this.viewType]["prompt-container"];
+		classNames[this.viewType]["prompt-container"];
 		promptField.inputEl.className = classNames[this.viewType]["text-area"];
 		promptField.inputEl.id = "chat-prompt-text-area";
-		sendButton.buttonEl.className = classNames[this.viewType].button;
+		sendButton.buttonEl.addClass(classNames[this.viewType].button, "send-button")
 
 		sendButton.setIcon("up-arrow-with-tail");
 		sendButton.setTooltip("Send Prompt");
