@@ -76,14 +76,6 @@
 	width: 100%;
 }
 
-.fab-settings-container {
-	overflow-y: auto;
-	max-height: 300px;
-	.setting-item {
-		flex-direction: column;
-	}
-}
-
 .modal-messages-div {
 	min-height: 10rem;
 	max-height: 40vh;
@@ -302,22 +294,44 @@
 	}
 }
 
+/* FAB VIEW CSS */
+
+.fab-prompt-container {
+	display: flex;
+}
+
+.fab-send-button {
+	position: relative;
+	top: 5px;
+	right: 38px;
+	height: 32px;
+}
+
+.fab-chat-prompt-text-area {
+	max-width: 100%;
+}
+
+#fab-chat-prompt-text-area > input[type='text'] {
+	height: unset;
+}
+
+.fab-settings-container,
+.fab-chat-container,
+.fab-chat-history-container {
+	overflow-y: auto;
+	max-height: 300px;
+}
+
+.fab-settings-container {
+	.setting-item {
+		flex-direction: column;
+	}
+}
+
 :root {
 	--size-ratio: 1;
-	--scroll-to-cursor-bottom: 15.05em;
-	--scroll-to-cursor-left: 2.05em;
-	--scroll-to-bottom-bottom: 2.65em;
-	--scroll-to-bottom-left: 2.05em;
-	--scroll-to-top-bottom: 5.75em;
-	--scroll-to-top-left: 2.05em;
-	--scroll-input-width: 1.875em;
-
-	--scroll-to-top-width: var(--scroll-input-width);
-	--scroll-to-top-height: var(--scroll-input-width);
-	--scroll-to-bottom-width: var(--scroll-input-width);
-	--scroll-to-bottom-height: var(--scroll-input-width);
-	--scroll-to-cursor-width: var(--scroll-input-width);
-	--scroll-to-cursor-height: var(--scroll-input-width);
+	--scroll-to-top-bottom: 2.15em;
+	--scroll-to-top-left: 1.15em;
 }
 
 .div-scrollToTop {
@@ -326,21 +340,21 @@
 	right: calc(var(--scroll-to-top-left) * var(--size-ratio));
 	z-index: 99;
 	overflow: hidden;
+	z-index: 16;
 }
 
 .fab-view-area {
-	max-width: 257px;
+	min-width: 260px;
+	max-width: 260px;
 	max-height: 500px;
+	background-color: var(--background-secondary);
 }
 
 #__C_scrollToTop {
-	border: 1px solid red;
 	padding: 3px;
 	border-radius: 6px;
-	transition: 200ms ease;
-	justify-content: space-around;
-	z-index: var(--layer-status-bar);
 	box-shadow: 0px 3px 32px rgb(31 38 135 / 15%);
+	border: 1px solid var(--background-modifier-border-focus);
 }
 #__C_scrollToTop .buttonItem {
 	float: right;

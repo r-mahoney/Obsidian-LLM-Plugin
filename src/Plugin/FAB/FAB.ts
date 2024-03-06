@@ -18,6 +18,10 @@ export class FAB {
 		container.setAttr("style", "display: none");
 	}
 	showContainer(container: HTMLElement) {
+		container.setAttr("style", "display: flex");
+	}
+
+	showViewArea(container: HTMLElement) {
 		container.setAttr("style", "display: block");
 	}
 
@@ -63,10 +67,13 @@ export class FAB {
 			"fab-settings-container"
 		);
 		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.className = "chat-history-container";
+		chatHistoryContainer.addClass(
+			"chat-history-container",
+			"fab-chat-history-container"
+		);
 		lineBreak.className =
 			classNames["floating-action-button"]["title-border"];
-		chatContainerDiv.className = "chat-container";
+		chatContainerDiv.addClass("chat-container", "fab-chat-container");
 
 		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(
@@ -87,11 +94,11 @@ export class FAB {
 
 		let button = new ButtonComponent(fabContainer);
 		button
-			.setIcon("arrow-up")
+			.setIcon("message-circle")
 			.setClass("buttonItem")
 			.onClick(() => {
 				if (viewArea.style.display === "none") {
-					this.showContainer(viewArea);
+					this.showViewArea(viewArea);
 				} else {
 					this.hideContainer(viewArea);
 				}

@@ -38,7 +38,6 @@ export class ChatContainer {
 			header.setHeader(modelName, this.prompt);
 		}
 		this.messages.push({ role: "user", content: this.prompt });
-		this.appendNewMessage({ role: "user", content: this.prompt });
 		const params: GPT4AllParams = {
 			prompt: this.prompt,
 			messages: this.messages,
@@ -50,6 +49,7 @@ export class ChatContainer {
 			if (settingsErrorHandling(params).length > 0) {
 				throw new Error("Incorrect Settings");
 			}
+			this.appendNewMessage({ role: "user", content: this.prompt });
 			if (modelType === "GPT4All") {
 				this.setDiv(false);
 				messageGPT4AllServer(params, endpointURL)
@@ -104,9 +104,11 @@ export class ChatContainer {
 			}
 		} catch (error) {
 			errorMessages(error, params);
-			setTimeout(() => {
-				this.removeMessage(header, modelName);
-			}, 1000);
+			if (this.messages.length > 0) {
+				setTimeout(() => {
+					this.removeMessage(header, modelName);
+				}, 1000);
+			}
 		}
 	}
 
@@ -180,10 +182,12 @@ export class ChatContainer {
 		const settings: Record<string, string> = {
 			modal: "modalSettings",
 			widget: "widgetSettings",
+			"floating-action-button": "fabSettings",
 		};
-		const settingType: "modalSettings" | "widgetSettings" = settings[
-			this.viewType
-		] as "modalSettings" | "widgetSettings";
+		const settingType = settings[this.viewType] as
+			| "modalSettings"
+			| "widgetSettings"
+			| "fabSettings";
 		const index = this.plugin.settings[settingType].historyIndex;
 		if (replaceChatHistory) {
 			let history = this.plugin.settings.promptHistory;

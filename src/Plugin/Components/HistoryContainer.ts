@@ -27,10 +27,11 @@ export class HistoryContainer {
 		const settings: Record<string, string> = {
 			modal: "modalSettings",
 			widget: "widgetSettings",
-		};
-		const settingType: "modalSettings" | "widgetSettings" = settings[
+			"floating-action-button": "fabSettings"
+		}
+		const settingType = settings[
 			this.viewType
-		] as "modalSettings" | "widgetSettings";
+		] as "modalSettings" | "widgetSettings" | "fabSettings";
 		if (this.viewType === "modal") {
 			this.model = this.plugin.settings.modalSettings.model;
 			this.modelName = this.plugin.settings.modalSettings.modelName;
@@ -47,7 +48,7 @@ export class HistoryContainer {
 		}
 
 		const eventListener = () => {
-			chat.resetChat();
+			chat.resetChat()
 			hideContainer(parentElement);
 			showContainer(containerToShow);
 			chat.setMessages(true);
