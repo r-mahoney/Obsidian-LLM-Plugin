@@ -4,6 +4,7 @@ import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
 import { ViewType } from "Types/types";
 import { getViewInfo, setHistoryIndex } from "utils/utils";
+import { SettingsContainer } from "./SettingsContainer";
 
 export class Header {
 	viewType: ViewType;
@@ -42,12 +43,13 @@ export class Header {
 	generateHeader(
 		parentElement: Element,
 		chatContainerDiv: HTMLElement,
-		chatHistoryContainer: HTMLElement,
-		settingsContainer: HTMLElement,
+		chatHistoryContainerDiv: HTMLElement,
+		settingsContainerDiv: HTMLElement,
 		chatContainer: ChatContainer,
+		historyContainer: HistoryContainer,
+		settingsContainer: SettingsContainer,
 		showContainer: (container: HTMLElement) => void,
 		hideContainer: (container: HTMLElement) => void,
-		historyContainer: HistoryContainer
 	) {
 		const { modelName } = getViewInfo(this.plugin, this.viewType)
 		const titleDiv = createDiv();
@@ -67,9 +69,9 @@ export class Header {
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		this.chatHistoryButton.setTooltip("Chats")
 		this.chatHistoryButton.onClick(() => {
-			historyContainer.resetHistory(chatHistoryContainer);
+			historyContainer.resetHistory(chatHistoryContainerDiv);
 			historyContainer.generateHistoryContainer(
-				chatHistoryContainer,
+				chatHistoryContainerDiv,
 				this.plugin.settings.promptHistory,
 				hideContainer,
 				showContainer,
@@ -78,27 +80,29 @@ export class Header {
 				this
 			);
 			this.clickHandler(this.chatHistoryButton, [settingsButton]);
-			if (chatHistoryContainer.style.display === "none") {
-				showContainer(chatHistoryContainer);
-				hideContainer(settingsContainer);
+			if (chatHistoryContainerDiv.style.display === "none") {
+				showContainer(chatHistoryContainerDiv);
+				hideContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
 			} else {
 				showContainer(chatContainerDiv);
-				hideContainer(chatHistoryContainer);
+				hideContainer(chatHistoryContainerDiv);
 			}
 		});
 
 		const settingsButton = new ButtonComponent(rightA);
 		settingsButton.setTooltip("Chat Settings")
 		settingsButton.onClick(() => {
+			settingsContainer.resetSettings(settingsContainerDiv);
+			settingsContainer.generateSettingsContainer(settingsContainerDiv, this)
 			this.clickHandler(settingsButton, [this.chatHistoryButton]);
-			if (settingsContainer.style.display === "none") {
-				showContainer(settingsContainer);
+			if (settingsContainerDiv.style.display === "none") {
+				showContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
-				hideContainer(chatHistoryContainer);
+				hideContainer(chatHistoryContainerDiv);
 			} else {
 				showContainer(chatContainerDiv);
-				hideContainer(settingsContainer);
+				hideContainer(settingsContainerDiv);
 			}
 		});
 
@@ -112,8 +116,8 @@ export class Header {
 			]);
 			this.setHeader(modelName, "New Chat");
 			showContainer(chatContainerDiv);
-			hideContainer(settingsContainer);
-			hideContainer(chatHistoryContainer);
+			hideContainer(settingsContainerDiv);
+			hideContainer(chatHistoryContainerDiv);
 			chatContainer.resetChat();
 			chatContainer.resetMessages();
 			setHistoryIndex(this.plugin, this.viewType)

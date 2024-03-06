@@ -72,9 +72,10 @@ export class WidgetView extends ItemView {
 			chatHistoryContainer,
 			settingsContainerDiv,
 			chatContainer,
+			historyContainer,
+			settingsContainer,
 			this.showContainer,
 			this.hideContainer,
-			historyContainer
 		);
 		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(

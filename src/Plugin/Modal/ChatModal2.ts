@@ -54,9 +54,10 @@ export class ChatModal2 extends Modal {
 			chatHistoryContainer,
 			settingsContainerDiv,
 			chatContainer,
+			historyContainer,
+			settingsContainer,
 			this.showContainer,
 			this.hideContainer,
-			historyContainer
 		);
 		let history = this.plugin.settings.promptHistory;
 

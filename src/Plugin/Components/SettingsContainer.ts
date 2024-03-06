@@ -101,9 +101,7 @@ export class SettingsContainer {
 			});
 	}
 
-	blurFunction(element: HTMLElement) {
-		console.log(element.getText())
-		return
-		// if(element.getText() === "")
+	resetSettings(parentContainer:Element) {
+		parentContainer.innerHTML = ""
 	}
 }
