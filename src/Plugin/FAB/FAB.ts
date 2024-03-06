@@ -55,9 +55,10 @@ export class FAB {
 			chatHistoryContainer,
 			settingsContainerDiv,
 			chatContainer,
+			historyContainer,
+			settingsContainer,
 			this.showContainer,
-			this.hideContainer,
-			historyContainer
+			this.hideContainer
 		);
 		let history = this.plugin.settings.promptHistory;
 
@@ -102,7 +103,7 @@ export class FAB {
 				} else {
 					this.hideContainer(viewArea);
 				}
-			})
+			});
 
 		document.body
 			.querySelector(ROOT_WORKSPACE_CLASS)
