@@ -274,7 +274,7 @@ export class ChatContainer {
 		imLikeMessageContainer.addClass("im-like-message-container");
 		addText.buttonEl.addClass("add-text", "hide");
 		icon.addClass("message-icon");
-		imLikeMessage.addClass("im-like-message");
+		imLikeMessage.addClass("im-like-message", classNames[this.viewType]["chat-message"]);
 		if (index % 2 === 0) {
 			imLikeMessageContainer.addClass("flex-start");
 		} else {
@@ -286,7 +286,7 @@ export class ChatContainer {
 		});
 
 		imLikeMessageContainer.addEventListener("mouseleave", () => {
-			addText.buttonEl.addClass("hide");
+			addText.buttonEl.addClass("hide")
 		});
 
 		addText.setTooltip("Copy to clipboard");
