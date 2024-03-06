@@ -41,7 +41,14 @@
 }
 
 .four {
+	max-width: 75%;
 	flex: 4;
+}
+
+.llm-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-wrap: nowrap;
 }
 
 /* Chat Container */

@@ -56,6 +56,7 @@ export class Header {
 		const leftButtonDiv = titleDiv.createDiv();
 		const titleContainer = titleDiv.createDiv();
 		this.titleEl = titleContainer.createDiv();
+		this.titleEl.addClass("llm-title")
 		const rightButtonsDiv = titleDiv.createDiv();
 		const rightA = rightButtonsDiv.createDiv();
 		const rightB = rightButtonsDiv.createDiv();
