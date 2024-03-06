@@ -20,7 +20,7 @@ export interface LLMPluginSettings {
 	appName: string;
 	modalSettings: ViewSettings;
 	widgetSettings: ViewSettings;
-	fabSettings: ViewSettings,
+	fabSettings: ViewSettings;
 	tokens: number;
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
@@ -76,8 +76,7 @@ export default class LLMPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsView(this.app, this));
 		this.fab = new FAB(this);
-		this.fab.generateFAB()
-
+		this.fab.regenerateFAB();
 		this.history = new History(this);
 	}
 

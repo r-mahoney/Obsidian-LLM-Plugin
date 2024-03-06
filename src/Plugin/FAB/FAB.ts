@@ -26,8 +26,9 @@ export class FAB {
 	}
 
 	generateFAB() {
-		if (document.body.querySelector(".div-scrollToTop")) return;
 		const fabContainer = createDiv();
+		fabContainer.setAttribute("class", `floating-action-button`);
+		fabContainer.setAttribute("id", "_floating-action-button");
 		const viewArea = fabContainer.createDiv();
 		viewArea.addClass("fab-view-area");
 		viewArea.setAttr("style", "display: none");
@@ -89,8 +90,6 @@ export class FAB {
 			settingsContainerDiv,
 			header
 		);
-		fabContainer.setAttribute("class", `div-scrollToTop`);
-		fabContainer.setAttribute("id", "__C_scrollToTop");
 
 		let button = new ButtonComponent(fabContainer);
 		button
@@ -102,10 +101,22 @@ export class FAB {
 				} else {
 					this.hideContainer(viewArea);
 				}
-			})
+			});
 
 		document.body
 			.querySelector(ROOT_WORKSPACE_CLASS)
 			?.insertAdjacentElement("afterbegin", fabContainer);
+	}
+
+	removeFab() {
+		const FAB = document.getElementById("_floating-action-button")
+		if(FAB) {
+			FAB.remove()
+		}
+	}
+
+	regenerateFAB() {
+		this.removeFab();
+		this.generateFAB()
 	}
 }

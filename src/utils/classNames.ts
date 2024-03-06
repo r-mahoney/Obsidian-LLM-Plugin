@@ -6,6 +6,7 @@ export const classNames = {
 		"prompt-container": "modal-prompt-container",
 		"text-area": "modal-chat-prompt-text-area",
 		button: "modal-send-button",
+		"chat-message" : "modal-chat-message"
 	},
 	widget: {
 		"messages-div": "widget-messages-div",
@@ -13,6 +14,7 @@ export const classNames = {
 		"prompt-container": "widget-prompt-container",
 		"text-area": "widget-chat-prompt-text-area",
 		button: "widget-send-button",
+		"chat-message" : "widget-chat-message"
 	},
 	"floating-action-button": {
 		"messages-div": "fab-messages-div",
@@ -20,5 +22,6 @@ export const classNames = {
 		"prompt-container": "fab-prompt-container",
 		"text-area": "fab-chat-prompt-text-area",
 		button: "fab-send-button",
+		"chat-message" : "fab-chat-message"
 	},
 };
