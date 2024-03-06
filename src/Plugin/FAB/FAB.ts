@@ -102,7 +102,7 @@ export class FAB {
 				} else {
 					this.hideContainer(viewArea);
 				}
-			});
+			})
 
 		document.body
 			.querySelector(ROOT_WORKSPACE_CLASS)
