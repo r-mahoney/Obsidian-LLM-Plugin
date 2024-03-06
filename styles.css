@@ -311,9 +311,10 @@
 	max-width: 100%;
 }
 
-#fab-chat-prompt-text-area > input[type='text'] {
+.fab-chat-prompt-text-area > input[type='text'] {
 	height: unset;
 }
+#chat-prompt-text-area
 
 .fab-settings-container,
 .fab-chat-container,
