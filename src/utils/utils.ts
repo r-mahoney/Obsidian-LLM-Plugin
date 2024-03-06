@@ -109,23 +109,23 @@ export function getViewInfo(
 
 	if (viewType === "widget") {
 		return {
-			model: plugin.settings.widgetSettings.model,
-			modelName: plugin.settings.widgetSettings.modelName,
-			modelType: plugin.settings.widgetSettings.modelType,
-			historyIndex: plugin.settings.widgetSettings.historyIndex,
-			modelEndpoint: plugin.settings.widgetSettings.modelEndpoint,
-			endpointURL: plugin.settings.widgetSettings.endpointURL,
+			model: plugin.settings.fabSettings.model,
+			modelName: plugin.settings.fabSettings.modelName,
+			modelType: plugin.settings.fabSettings.modelType,
+			historyIndex: plugin.settings.fabSettings.historyIndex,
+			modelEndpoint: plugin.settings.fabSettings.modelEndpoint,
+			endpointURL: plugin.settings.fabSettings.endpointURL,
 		};
 	}
-
+	
 	if (viewType === "floating-action-button") {
 		return {
-			model: plugin.settings.widgetSettings.model,
-			modelName: plugin.settings.widgetSettings.modelName,
-			modelType: plugin.settings.widgetSettings.modelType,
-			historyIndex: plugin.settings.widgetSettings.historyIndex,
-			modelEndpoint: plugin.settings.widgetSettings.modelEndpoint,
-			endpointURL: plugin.settings.widgetSettings.endpointURL,
+			model: plugin.settings.fabSettings.model,
+			modelName: plugin.settings.fabSettings.modelName,
+			modelType: plugin.settings.fabSettings.modelType,
+			historyIndex: plugin.settings.fabSettings.historyIndex,
+			modelEndpoint: plugin.settings.fabSettings.modelEndpoint,
+			endpointURL: plugin.settings.fabSettings.endpointURL,
 		};
 	}
 
@@ -144,16 +144,21 @@ export function setHistoryIndex(
 	viewType: ViewType,
 	length?: number
 ) {
+	const settings: Record<string, string> = {
+		modal: "modalSettings",
+		widget: "fabSettings",
+		"floating-action-button": "fabSettings",
+	};
+	const settingType = settings[viewType] as
+		| "modalSettings"
+		| "fabSettings"
+		| "fabSettings";
 	if (!length) {
-		viewType === "modal"
-			? (plugin.settings.modalSettings.historyIndex = -1)
-			: (plugin.settings.widgetSettings.historyIndex = -1);
+		plugin.settings[settingType].historyIndex = -1;
 		plugin.saveSettings();
 		return;
 	}
-	viewType === "modal"
-		? (plugin.settings.modalSettings.historyIndex = length - 1)
-		: (plugin.settings.widgetSettings.historyIndex = length - 1);
+	plugin.settings[settingType].historyIndex = length - 1;
 	plugin.saveSettings();
 }
 

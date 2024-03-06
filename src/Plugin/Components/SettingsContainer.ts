@@ -17,10 +17,11 @@ export class SettingsContainer {
 		const settings: Record<string, string> = {
 			modal: "modalSettings",
 			widget: "widgetSettings",
-		};
-		const settingType: "modalSettings" | "widgetSettings" = settings[
+			"floating-action-button": "fabSettings"
+		}
+		const settingType = settings[
 			this.viewType
-		] as "modalSettings" | "widgetSettings";
+		] as "modalSettings" | "widgetSettings" | "fabSettings";
 
 		const modelOptions = new Setting(parentContainer)
 			.setName("Models")
@@ -66,7 +67,7 @@ export class SettingsContainer {
 						this.plugin.settings.promptHistory[index].modelName =
 							modelName;
 					}
-					this.plugin.saveSettings();
+					this.plugin.saveSettings()
 					Header.setHeader(modelName);
 				});
 				dropdown.setValue(this.plugin.settings[settingType].model);
