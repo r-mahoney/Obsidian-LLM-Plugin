@@ -36,7 +36,7 @@ export class FAB {
 		const chatContainer = new ChatContainer(
 			this.plugin,
 			"floating-action-button"
-		);
+		)
 		const historyContainer = new HistoryContainer(
 			this.plugin,
 			"floating-action-button"

@@ -320,6 +320,7 @@
 .fab-chat-history-container {
 	overflow-y: auto;
 	max-height: 300px;
+	min-height: 300px;
 }
 
 .fab-settings-container {
@@ -333,22 +334,25 @@
 }
 
 .fab-chat-container {
-	margin-top: 0;
+	margin: 10px 0;
 }
 
 :root {
 	--size-ratio: 1;
 	--scroll-to-top-bottom: 1.4em;
-	--scroll-to-top-left: -.3em;
+	--scroll-to-top-left: -0.3em;
 }
 
 .floating-action-button {
 	position: absolute;
-	right: calc(var(--scroll-to-top-left) * var(--size-ratio) + var(--size-4-2));
-	bottom: calc(var(--scroll-to-top-bottom) * var(--size-ratio) + var(--size-4-2));
+	right: calc(
+		var(--scroll-to-top-left) * var(--size-ratio) + var(--size-4-2)
+	);
+	bottom: calc(
+		var(--scroll-to-top-bottom) * var(--size-ratio) + var(--size-4-2)
+	);
 	overflow: hidden;
 	z-index: 16;
-	
 }
 
 .fab-view-area {
@@ -360,6 +364,7 @@
 	border: 1px solid var(--background-modifier-border-focus);
 	border-radius: 6px;
 	margin-bottom: var(--size-4-2);
+	margin-right: 3px;
 }
 
 #_floating-action-button {
