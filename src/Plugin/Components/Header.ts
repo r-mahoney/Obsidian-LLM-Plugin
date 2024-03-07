@@ -124,9 +124,9 @@ export class Header {
 			setHistoryIndex(this.plugin, this.viewType)
 		});
 
-		leftButtonDiv.className = "one left-buttons-div";
-		rightButtonsDiv.className = "one right-buttons-div";
-		titleContainer.className = "four title";
+		leftButtonDiv.addClass("one", "left-buttons-div", "flex");
+		rightButtonsDiv.addClass("one", "right-buttons-div", "flex");
+		titleContainer.addClass("four",  "title", "flex");
 		this.chatHistoryButton.buttonEl.addClass(
 			"clickable-icon",
 			"chat-history"
