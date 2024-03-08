@@ -61,7 +61,7 @@ export class Header {
 		const rightA = rightButtonsDiv.createDiv();
 		const rightB = rightButtonsDiv.createDiv();
 
-		titleDiv.className = "title-div";
+		titleDiv.addClass("title-div", "flex");
 		this.titleEl.innerHTML = "LLM Plugin";
 		this.modelEl = titleContainer.createDiv();
 		this.modelEl.addClass("model-name");
@@ -136,8 +136,8 @@ export class Header {
 			"clickable-icon",
 			"new-chat-button"
 		);
-		rightA.className = "flex-end";
-		rightB.className = "flex-end";
+		rightA.addClass("flex-end", "flex");
+		rightB.addClass("flex-end", "flex");
 		this.chatHistoryButton.setIcon("bullet-list");
 		settingsButton.setIcon("sliders-horizontal");
 		this.newChatButton.setIcon("plus");

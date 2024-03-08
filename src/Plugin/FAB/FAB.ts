@@ -66,16 +66,18 @@ export class FAB {
 		settingsContainerDiv.setAttr("style", "display: none");
 		settingsContainerDiv.addClass(
 			"settings-container",
-			"fab-settings-container"
+			"fab-settings-container",
+			"flex"
 		);
 		chatHistoryContainer.setAttr("style", "display: none");
 		chatHistoryContainer.addClass(
 			"chat-history-container",
-			"fab-chat-history-container"
+			"fab-chat-history-container",
+			"flex"
 		);
 		lineBreak.className =
 			classNames["floating-action-button"]["title-border"];
-		chatContainerDiv.addClass("chat-container", "fab-chat-container");
+		chatContainerDiv.addClass("chat-container", "fab-chat-container", "flex");
 
 		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(

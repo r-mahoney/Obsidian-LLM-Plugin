@@ -99,14 +99,14 @@ export class HistoryContainer {
 			const text = item.createEl("p");
 			text.innerHTML = historyItem.prompt;
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div");
+			buttonsDiv.addClass("history-buttons-div", "flex");
 			const editPrompt = new ButtonComponent(buttonsDiv);
 			const savePrompt = new ButtonComponent(buttonsDiv);
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item");
+			item.addClass("history-item", "flex");
 			savePrompt.buttonEl.setAttr("style", "display: none");
 			editPrompt.buttonEl.addClass("edit-prompt-button");
 			savePrompt.buttonEl.addClass("save-prompt-button");

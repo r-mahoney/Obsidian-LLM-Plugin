@@ -59,12 +59,11 @@ export class WidgetView extends ItemView {
 		const settingsContainerDiv = container.createDiv();
 
 		settingsContainerDiv.setAttr("style", "display: none");
-		settingsContainerDiv.className = "settings-container";
+		settingsContainerDiv.addClass("widget-settings-container", "flex");
 		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.className = "chat-history-container";
+		chatHistoryContainer.addClass("widget-chat-history-container", "flex");
 		lineBreak.className = classNames["widget"]["title-border"];
-		// chatContainerDiv.className = "chat-container";
-		chatContainerDiv.className = "widget-chat-container";
+		chatContainerDiv.addClass("widget-chat-container", "flex");
 
 		header.generateHeader(
 			container,

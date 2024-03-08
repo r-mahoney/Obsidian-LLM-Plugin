@@ -149,8 +149,10 @@ export class ChatContainer {
 		const promptField = new TextComponent(promptContainer);
 		const sendButton = new ButtonComponent(promptContainer);
 
-		promptContainer.className =
-			classNames[this.viewType]["prompt-container"];
+		if(this.viewType === "floating-action-button") {
+			promptContainer.addClass("flex");
+		}
+		promptContainer.addClass(classNames[this.viewType]["prompt-container"]);
 		promptField.inputEl.className = classNames[this.viewType]["text-area"];
 		promptField.inputEl.id = "chat-prompt-text-area";
 		sendButton.buttonEl.addClass(
@@ -220,7 +222,8 @@ export class ChatContainer {
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
 			"flex-end",
-			"im-like-message-container"
+			"im-like-message-container",
+			"flex"
 		);
 		this.historyMessages.scroll(0, 9999);
 
@@ -251,13 +254,13 @@ export class ChatContainer {
 		const imLikeMessage = imLikeMessageContainer.createDiv();
 		icon.innerHTML = "A";
 		imLikeMessage.innerHTML = `<img src=${image} alt="image generated with ${this.prompt}" width="250" height="300">`;
-		imLikeMessageContainer.addClass("im-like-message-container");
+		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		icon.addClass("message-icon");
 		imLikeMessage.addClass("im-like-message");
 		if (length % 2 === 0) {
-			imLikeMessageContainer.addClass("flex-start");
+			imLikeMessageContainer.addClass("flex-start", "flex");
 		} else {
-			imLikeMessageContainer.addClass("flex-end");
+			imLikeMessageContainer.addClass("flex-end", "flex");
 		}
 		this.historyMessages.scroll(0, 9999);
 	}
@@ -271,14 +274,14 @@ export class ChatContainer {
 		addText.setIcon("files");
 		icon.innerHTML = role[0];
 		imLikeMessage.innerHTML = content;
-		imLikeMessageContainer.addClass("im-like-message-container");
+		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		addText.buttonEl.addClass("add-text", "hide");
 		icon.addClass("message-icon");
 		imLikeMessage.addClass("im-like-message", classNames[this.viewType]["chat-message"]);
 		if (index % 2 === 0) {
-			imLikeMessageContainer.addClass("flex-start");
+			imLikeMessageContainer.addClass("flex-start", "flex");
 		} else {
-			imLikeMessageContainer.addClass("flex-end");
+			imLikeMessageContainer.addClass("flex-end", "flex");
 		}
 
 		imLikeMessageContainer.addEventListener("mouseenter", () => {
