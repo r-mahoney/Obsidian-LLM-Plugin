@@ -6,7 +6,7 @@ import LLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
 import { classNames } from "utils/classNames";
 
-const ROOT_WORKSPACE_CLASS = ".app-container";
+const ROOT_WORKSPACE_CLASS = ".mod-vertical.mod-root";
 
 export class FAB {
 	plugin: LLMPlugin;

@@ -305,14 +305,15 @@
 }
 
 /* FAB VIEW CSS */
-.fab-send-button, .widget-send-button {
+.fab-send-button,
+.widget-send-button {
 	position: relative;
 	top: 5px;
 	right: 38px;
 	height: 32px;
 }
 .widget-send-button {
-	top: 13px
+	top: 13px;
 }
 
 .fab-chat-prompt-text-area {
@@ -348,17 +349,18 @@
 
 :root {
 	--size-ratio: 1;
-	--scroll-to-top-bottom: 1.4em;
-	--scroll-to-top-left: -0.3em;
+	--fab-bottom: 1.6em;
+	--fab-left: -0.2em;
+	--fab-bottom-no-bar: -0.2em;
 }
 
 .floating-action-button {
 	position: absolute;
 	right: calc(
-		var(--scroll-to-top-left) * var(--size-ratio) + var(--size-4-2)
+		var(--fab-left) * var(--size-ratio) + var(--size-4-2)
 	);
 	bottom: calc(
-		var(--scroll-to-top-bottom) * var(--size-ratio) + var(--size-4-2)
+		var(--fab-bottom) * var(--size-ratio) + var(--size-4-2)
 	);
 	overflow: hidden;
 	z-index: 16;
@@ -377,15 +379,24 @@
 }
 
 #_floating-action-button {
+	height: auto;
+	width: auto;
 	padding: 3px;
 }
 
+#_floating-action-button > .buttonItem > svg.svg-icon {
+	height: var(--icon-s);
+	width: var(--icon-s);
+}
+
 #_floating-action-button .buttonItem {
+	height: 32px;
+	width: 32px;
 	float: right;
 	margin: 2px;
 	cursor: pointer;
 	padding: 5px 6px;
-	box-shadow: none;
+	box-shadow: var(--input-shadow);
 	margin-left: 3px;
 	border-radius: 3px;
 	font-size: initial !important;
