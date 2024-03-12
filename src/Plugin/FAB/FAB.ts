@@ -36,7 +36,7 @@ export class FAB {
 		const chatContainer = new ChatContainer(
 			this.plugin,
 			"floating-action-button"
-		)
+		);
 		const historyContainer = new HistoryContainer(
 			this.plugin,
 			"floating-action-button"
@@ -64,15 +64,9 @@ export class FAB {
 		let history = this.plugin.settings.promptHistory;
 
 		settingsContainerDiv.setAttr("style", "display: none");
-		settingsContainerDiv.addClass(
-			"fab-settings-container",
-			"flex"
-		);
+		settingsContainerDiv.addClass("fab-settings-container", "flex");
 		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.addClass(
-			"fab-chat-history-container",
-			"flex"
-		);
+		chatHistoryContainer.addClass("fab-chat-history-container", "flex");
 		lineBreak.className =
 			classNames["floating-action-button"]["title-border"];
 		chatContainerDiv.addClass("fab-chat-container", "flex");
@@ -110,14 +104,14 @@ export class FAB {
 	}
 
 	removeFab() {
-		const FAB = document.getElementById("_floating-action-button")
-		if(FAB) {
-			FAB.remove()
+		const FAB = document.getElementById("_floating-action-button");
+		if (FAB) {
+			FAB.remove();
 		}
 	}
 
 	regenerateFAB() {
 		this.removeFab();
-		this.generateFAB()
+		this.generateFAB();
 	}
 }
