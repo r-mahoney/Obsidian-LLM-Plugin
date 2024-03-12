@@ -133,12 +133,14 @@
 }
 
 #chat-prompt-text-area {
-	padding: 10px 60px 10px 10px;
+	padding: 10px 45px 10px 10px;
 	font-size: 16px;
+	resize: none;
 }
 
 .modal-chat-prompt-text-area,
 .widget-chat-prompt-text-area {
+	height: 1px;
 	width: 100%;
 	min-height: 3rem;
 }
@@ -162,7 +164,7 @@
 
 .modal-send-button {
 	position: absolute;
-	top: 9px;
+	bottom: 14px;
 	right: 9px;
 }
 
@@ -315,8 +317,9 @@ FAB MESSAGE ICON CSS
 	height: calc(100% - 70px);
 }
 
-.widget-send-button {
-	top: 13px;
+.widget-send-button, .fab-send-button {
+	margin-top: auto;
+	top: -8px;
 }
 
 /* FAB VIEW CSS */
@@ -363,12 +366,9 @@ FAB MESSAGE ICON CSS
 	background-color: var(--background-secondary);
 }
 
-.fab-send-button {
-	top: 5px;
-	right: 38px;
-}
-
 .fab-chat-prompt-text-area {
+	height: 50px;
+	margin-right: -40px;
 	max-width: 100%;
 }
 

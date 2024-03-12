@@ -1,7 +1,12 @@
 import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
 import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LLMPlugin from "main";
-import { ButtonComponent, Notice, TextComponent } from "obsidian";
+import {
+	ButtonComponent,
+	Notice,
+	TextAreaComponent,
+	TextComponent,
+} from "obsidian";
 import { classNames } from "utils/classNames";
 import {
 	getViewInfo,
@@ -140,21 +145,34 @@ export class ChatContainer {
 	// 	parentElement.getElementsByClassName(`${classNames[this.viewType]}["text-area"]`)
 	// }
 
+	auto_height(elem: TextAreaComponent, parentElement: Element) {
+		/* javascript */
+		if(this.viewType === "floating-action-button") elem.inputEl.style.height ='50px'
+		const height = elem.inputEl.scrollHeight - 5
+		if(!(height > Number(elem.inputEl.style.height.slice(0,2)))) return
+		elem.inputEl.style.height = `${height}px`;
+		elem.inputEl.style.overflow = 'hidden';
+		parentElement.scrollTo(0,9999)
+	}
+
 	generateChatContainer(parentElement: Element, header: Header) {
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();
 		this.historyMessages.className =
 			classNames[this.viewType]["messages-div"];
 		const promptContainer = parentElement.createDiv();
-		const promptField = new TextComponent(promptContainer);
+		const promptField = new TextAreaComponent(promptContainer);
 		const sendButton = new ButtonComponent(promptContainer);
 
-		if(this.viewType === "floating-action-button") {
+		if (this.viewType === "floating-action-button") {
 			promptContainer.addClass("flex");
 		}
 		promptContainer.addClass(classNames[this.viewType]["prompt-container"]);
 		promptField.inputEl.className = classNames[this.viewType]["text-area"];
 		promptField.inputEl.id = "chat-prompt-text-area";
+		promptContainer.addEventListener("input", () => {
+			this.auto_height(promptField, parentElement);
+		});
 		sendButton.buttonEl.addClass(
 			classNames[this.viewType].button,
 			"send-button"
@@ -277,7 +295,10 @@ export class ChatContainer {
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		addText.buttonEl.addClass("add-text", "hide");
 		icon.addClass("message-icon");
-		imLikeMessage.addClass("im-like-message", classNames[this.viewType]["chat-message"]);
+		imLikeMessage.addClass(
+			"im-like-message",
+			classNames[this.viewType]["chat-message"]
+		);
 		if (index % 2 === 0) {
 			imLikeMessageContainer.addClass("flex-start", "flex");
 		} else {
@@ -289,7 +310,7 @@ export class ChatContainer {
 		});
 
 		imLikeMessageContainer.addEventListener("mouseleave", () => {
-			addText.buttonEl.addClass("hide")
+			addText.buttonEl.addClass("hide");
 		});
 
 		addText.setTooltip("Copy to clipboard");
