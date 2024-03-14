@@ -36,8 +36,9 @@ export class ChatContainer {
 		this.viewType = viewType;
 	}
 
-	async handleGenerateClick(header: Header) {
+	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
 		header.disableButtons();
+		sendButton.setDisabled(true);
 		const { model, modelName, modelType, endpointURL, modelEndpoint } =
 			getViewInfo(this.plugin, this.viewType);
 		if (this.historyMessages.children.length < 1) {
@@ -65,6 +66,7 @@ export class ChatContainer {
 						this.appendNewMessage(response);
 						this.historyPush(params);
 						header.enableButtons();
+						sendButton.setDisabled(false);
 					})
 					.catch((err) => {
 						throw new Error(err.message);
@@ -94,6 +96,7 @@ export class ChatContainer {
 						content: previewText,
 					});
 					header.enableButtons();
+					sendButton.setDisabled(false);
 				}
 				if (modelEndpoint === "images") {
 					this.setDiv(false);
@@ -187,13 +190,13 @@ export class ChatContainer {
 		promptField.inputEl.addEventListener("keydown", (event) => {
 			if (event.code == "Enter") {
 				event.preventDefault();
-				this.handleGenerateClick(header);
+				this.handleGenerateClick(header, sendButton);
 				promptField.inputEl.setText("");
 				promptField.setValue("");
 			}
 		});
 		sendButton.onClick(() => {
-			this.handleGenerateClick(header);
+			this.handleGenerateClick(header, sendButton);
 			promptField.inputEl.setText("");
 			promptField.setValue("");
 		});

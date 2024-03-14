@@ -82,7 +82,9 @@ export default class LLMPlugin extends Plugin {
 		this.history = new History(this);
 	}
 
-	onunload() {}
+	onunload() {
+		this.fab.removeFab()
+	}
 
 	private registerCommands() {
 		const openChat = this.addCommand({
