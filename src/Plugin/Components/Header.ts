@@ -157,7 +157,7 @@ export class Header {
 		);
 		rightA.addClass("flex-end", "flex");
 		rightB.addClass("flex-end", "flex");
-		this.chatHistoryButton.setIcon("bullet-list");
+		this.chatHistoryButton.setIcon("menu");
 		this.settingsButton.setIcon("sliders-horizontal");
 		this.newChatButton.setIcon("plus");
 

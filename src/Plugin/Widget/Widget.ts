@@ -31,6 +31,7 @@ export class WidgetView extends ItemView {
 	}
 
 	async onOpen() {
+		this.icon = "message-circle"
 		const widgetSettings = this.plugin.settings.widgetSettings;
 		widgetSettings.historyIndex =
 			DEFAULT_SETTINGS.widgetSettings.historyIndex;
