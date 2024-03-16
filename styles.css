@@ -317,7 +317,8 @@ FAB MESSAGE ICON CSS
 	height: calc(100% - 70px);
 }
 
-.widget-send-button, .fab-send-button {
+.widget-send-button,
+.fab-send-button {
 	margin-top: auto;
 	top: -8px;
 }
@@ -329,11 +330,12 @@ FAB MESSAGE ICON CSS
 	min-width: 260px;
 	max-width: 260px;
 	max-height: 500px;
-	background-color: var(--background-secondary);
+	background-color: var(--background-primary);
 	border: 1px solid var(--background-modifier-border-focus);
-	border-radius: 6px;
+	border-radius: var(--radius-m);
 	margin-bottom: var(--size-4-2);
 	margin-right: 3px;
+	box-shadow: var(--shadow-s);
 }
 
 #_floating-action-button {
@@ -402,8 +404,8 @@ FAB MESSAGE ICON CSS
 	overflow: hidden;
 	z-index: 16;
 }
-	
-	/* LOADING ANIMATION TO USE BEFORE WE GET STREAMING UP */
+
+/* LOADING ANIMATION TO USE BEFORE WE GET STREAMING UP */
 .dot {
 	color: var(--interactive-accent);
 	font-size: 18pt;
@@ -432,4 +434,30 @@ FAB MESSAGE ICON CSS
 	66% {
 		transform: none;
 	}
+}
+
+.icon-wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	> svg {
+		color: var(--color-accent-1);
+		width: 90px;
+		height: 90px;
+	}
+}
+
+#settings-credits {
+	text-align: center;
+}
+
+#settings-credits > h2 {
+	margin: 0;
+}
+
+#settings-credits > p {
+	font-size: 10pt;
+	margin: 0;
 }
