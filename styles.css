@@ -435,3 +435,29 @@ FAB MESSAGE ICON CSS
 		transform: none;
 	}
 }
+
+.icon-wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	> svg {
+		color: var(--color-accent-1);
+		width: 90px;
+		height: 90px;
+	}
+}
+
+#settings-credits {
+	text-align: center;
+}
+
+#settings-credits > h2 {
+	margin: 0;
+}
+
+#settings-credits > p {
+	font-size: 10pt;
+	margin: 0;
+}
