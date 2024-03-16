@@ -26,6 +26,7 @@ export interface LLMPluginSettings {
 	promptHistory: ChatHistoryItem[];
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
+	showFAB: boolean;
 }
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
@@ -59,6 +60,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	promptHistory: [],
 	openAIAPIKey: "",
 	GPT4AllStreaming: false,
+	showFAB: true,
 };
 
 export default class LLMPlugin extends Plugin {
@@ -76,11 +78,13 @@ export default class LLMPlugin extends Plugin {
 		this.activateView();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SettingsView(this.app, this));
 		this.fab = new FAB(this);
-		setTimeout(() => {
-			this.fab.regenerateFAB();
-		}, 500);
+		this.addSettingTab(new SettingsView(this.app, this, this.fab));
+		if(this.settings.showFAB) {
+			setTimeout(() => {
+				this.fab.regenerateFAB();
+			}, 500);
+		}
 		this.history = new History(this);
 	}
 
