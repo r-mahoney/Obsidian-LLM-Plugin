@@ -25,6 +25,7 @@ export interface LLMPluginSettings {
 	temperature: number;
 	promptHistory: ChatHistoryItem[];
 	openAIAPIKey: string;
+	GPT4AllStreaming: boolean;
 }
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
@@ -57,6 +58,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	temperature: 0.65,
 	promptHistory: [],
 	openAIAPIKey: "",
+	GPT4AllStreaming: false,
 };
 
 export default class LLMPlugin extends Plugin {
@@ -78,12 +80,12 @@ export default class LLMPlugin extends Plugin {
 		this.fab = new FAB(this);
 		setTimeout(() => {
 			this.fab.regenerateFAB();
-		}, 500)
+		}, 500);
 		this.history = new History(this);
 	}
 
 	onunload() {
-		this.fab.removeFab()
+		this.fab.removeFab();
 	}
 
 	private registerCommands() {

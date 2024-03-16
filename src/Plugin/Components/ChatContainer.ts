@@ -1,12 +1,9 @@
 import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
 import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LLMPlugin from "main";
-import {
-	ButtonComponent,
-	Notice,
-	TextAreaComponent,
-	TextComponent,
-} from "obsidian";
+import { ButtonComponent, Notice, TextAreaComponent } from "obsidian";
+import { ChatCompletionChunk } from "openai/resources";
+import { Stream } from "openai/streaming";
 import { classNames } from "utils/classNames";
 import {
 	getViewInfo,
@@ -15,8 +12,6 @@ import {
 	setHistoryIndex,
 } from "utils/utils";
 import { Header } from "./Header";
-import { Stream } from "openai/streaming";
-import { ChatCompletionChunk } from "openai/resources";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -57,7 +52,10 @@ export class ChatContainer {
 				throw new Error("Incorrect Settings");
 			}
 			this.appendNewMessage({ role: "user", content: this.prompt });
+			if (this.plugin.settings.GPT4AllStreaming)
+				throw new Error("GPT4All streaming");
 			if (modelType === "GPT4All") {
+				this.plugin.settings.GPT4AllStreaming = true;
 				this.setDiv(false);
 				messageGPT4AllServer(params, endpointURL)
 					.then((response: Message) => {
@@ -65,11 +63,21 @@ export class ChatContainer {
 						this.messages.push(response);
 						this.appendNewMessage(response);
 						this.historyPush(params);
-						header.enableButtons();
-						sendButton.setDisabled(false);
 					})
 					.catch((err) => {
-						throw new Error(err.message);
+						this.removeLodingDiv();
+						errorMessages(err, params);
+						if (this.messages.length > 0) {
+							setTimeout(() => {
+								this.removeMessage(header, modelName);
+							}, 1000);
+						}
+					})
+					.finally(() => {
+						this.prompt = "";
+						header.enableButtons();
+						sendButton.setDisabled(false);
+						this.plugin.settings.GPT4AllStreaming = false;
 					});
 			} else {
 				const API_KEY = this.plugin.settings.openAIAPIKey;
@@ -114,6 +122,9 @@ export class ChatContainer {
 				}
 			}
 		} catch (error) {
+			header.enableButtons();
+			sendButton.setDisabled(false);
+			this.prompt = "";
 			errorMessages(error, params);
 			if (this.messages.length > 0) {
 				setTimeout(() => {

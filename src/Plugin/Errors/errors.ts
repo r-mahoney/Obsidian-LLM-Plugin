@@ -28,4 +28,8 @@ export function errorMessages(error: Error, params: GPT4AllParams) {
     if(error.message === "No API Key") {
         new Notice("You must have an API Key to access OpenAI models")
     }
+
+    if(error.message === "GPT4All streaming") {
+        new Notice("GPT4All is already working on another request. Please wait until that request is done to submit another prompt.")
+    }
 }
