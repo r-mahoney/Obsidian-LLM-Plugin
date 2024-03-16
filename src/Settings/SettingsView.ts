@@ -9,14 +9,17 @@ import {
 import { DEFAULT_DIRECTORY } from "utils/utils";
 import { models, modelNames } from "utils/models";
 import logo from "assets/LLMguy.svg";
+import { FAB } from "Plugin/FAB/FAB";
 const fs = require("fs");
 
 export default class SettingsView extends PluginSettingTab {
 	plugin: LLMPlugin;
+	fab: FAB;
 
-	constructor(app: App, plugin: LLMPlugin) {
+	constructor(app: App, plugin: LLMPlugin, fab: FAB) {
 		super(app, plugin);
 		this.plugin = plugin;
+		this.fab = fab;
 	}
 
 	display(): void {
@@ -98,6 +101,22 @@ export default class SettingsView extends PluginSettingTab {
 					this.plugin.saveSettings();
 				});
 				dropdown.setValue(this.plugin.settings.modalSettings.model);
+			});
+
+		const toggleFAB = new Setting(containerEl)
+			.setName("Toggle FAB")
+			.setDesc("Toggles the LLM floating action button")
+			.addToggle((value) => {
+				value
+					.setValue(this.plugin.settings.showFAB)
+					.onChange(async (value) => {
+						this.fab.removeFab();
+						this.plugin.settings.showFAB = value;
+						await this.plugin.saveSettings();
+						if (value) {
+							this.fab.regenerateFAB();
+						}
+					});
 			});
 
 		const donate = new Setting(containerEl)
