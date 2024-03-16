@@ -124,6 +124,7 @@ export class ChatContainer {
 		} catch (error) {
 			header.enableButtons();
 			sendButton.setDisabled(false);
+			this.plugin.settings.GPT4AllStreaming = false;
 			this.prompt = "";
 			errorMessages(error, params);
 			if (this.messages.length > 0) {

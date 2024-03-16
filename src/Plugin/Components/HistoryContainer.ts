@@ -39,7 +39,15 @@ export class HistoryContainer {
 			this.modelType = this.plugin.settings.modalSettings.modelType;
 			this.modelType = this.plugin.settings.modalSettings.modelType;
 			this.historyIndex = this.plugin.settings.modalSettings.historyIndex;
-		} else {
+		}
+		if (this.viewType === "floating-action-button") {
+			this.model = this.plugin.settings.fabSettings.model;
+			this.modelName = this.plugin.settings.fabSettings.modelName;
+			this.modelType = this.plugin.settings.fabSettings.modelType;
+			this.modelType = this.plugin.settings.fabSettings.modelType;
+			this.historyIndex = this.plugin.settings.fabSettings.historyIndex;
+		}
+		if (this.viewType === "widget") {
 			this.model = this.plugin.settings.widgetSettings.model;
 			this.modelName = this.plugin.settings.widgetSettings.modelName;
 			this.modelType = this.plugin.settings.widgetSettings.modelType;

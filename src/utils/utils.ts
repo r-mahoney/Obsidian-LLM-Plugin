@@ -146,12 +146,12 @@ export function setHistoryIndex(
 ) {
 	const settings: Record<string, string> = {
 		modal: "modalSettings",
-		widget: "fabSettings",
+		widget: "widgetSettings",
 		"floating-action-button": "fabSettings",
 	};
 	const settingType = settings[viewType] as
 		| "modalSettings"
-		| "fabSettings"
+		| "widgetSettings"
 		| "fabSettings";
 	if (!length) {
 		plugin.settings[settingType].historyIndex = -1;
