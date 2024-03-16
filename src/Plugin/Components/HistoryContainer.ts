@@ -27,11 +27,12 @@ export class HistoryContainer {
 		const settings: Record<string, string> = {
 			modal: "modalSettings",
 			widget: "widgetSettings",
-			"floating-action-button": "fabSettings"
-		}
-		const settingType = settings[
-			this.viewType
-		] as "modalSettings" | "widgetSettings" | "fabSettings";
+			"floating-action-button": "fabSettings",
+		};
+		const settingType = settings[this.viewType] as
+			| "modalSettings"
+			| "widgetSettings"
+			| "fabSettings";
 		if (this.viewType === "modal") {
 			this.model = this.plugin.settings.modalSettings.model;
 			this.modelName = this.plugin.settings.modalSettings.modelName;
@@ -48,7 +49,7 @@ export class HistoryContainer {
 		}
 
 		const eventListener = () => {
-			chat.resetChat()
+			chat.resetChat();
 			hideContainer(parentElement);
 			showContainer(containerToShow);
 			chat.setMessages(true);
@@ -103,11 +104,16 @@ export class HistoryContainer {
 			const editPrompt = new ButtonComponent(buttonsDiv);
 			const savePrompt = new ButtonComponent(buttonsDiv);
 			const deleteHistory = new ButtonComponent(buttonsDiv);
+			savePrompt.buttonEl.setAttr(
+				"style",
+				"display: none; visibility: hidden"
+			);
+			editPrompt.buttonEl.setAttr("style", "visibility: hidden");
+			deleteHistory.buttonEl.setAttr("style", "visibility: hidden");
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
 			item.addClass("history-item", "flex");
-			savePrompt.buttonEl.setAttr("style", "display: none");
 			editPrompt.buttonEl.addClass("edit-prompt-button");
 			savePrompt.buttonEl.addClass("save-prompt-button");
 			editPrompt.setIcon("pencil");
@@ -123,6 +129,30 @@ export class HistoryContainer {
 				this.plugin.saveSettings();
 			});
 
+			item.addEventListener("mouseenter", () => {
+				if (
+					text.contentEditable == "false" ||
+					text.contentEditable == "inherit"
+				) {
+					editPrompt.buttonEl.setAttr("style", "visibility: visible");
+					deleteHistory.buttonEl.setAttr(
+						"style",
+						"visibility: visible"
+					);
+				}
+			});
+			item.addEventListener("mouseleave", () => {
+				if (
+					text.contentEditable == "false" ||
+					text.contentEditable == "inherit"
+				) {
+					editPrompt.buttonEl.setAttr("style", "visibility: hidden");
+					deleteHistory.buttonEl.setAttr(
+						"style",
+						"visibility: hidden"
+					);
+				}
+			});
 			item.addEventListener("click", eventListener);
 
 			deleteHistory.setIcon("trash");
