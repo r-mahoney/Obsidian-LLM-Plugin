@@ -15,6 +15,7 @@ export class Header {
 	titleEl?: HTMLElement;
 	chatHistoryButton: ButtonComponent;
 	newChatButton: ButtonComponent;
+	settingsButton: ButtonComponent;
 
 	setHeader(modelName: string, title?: string) {
 		if (title) {
@@ -40,6 +41,18 @@ export class Header {
 		}
 	}
 
+	disableButtons() {
+		this.chatHistoryButton.setDisabled(true);
+		this.newChatButton.setDisabled(true);
+		this.settingsButton.setDisabled(true);
+	}
+
+	enableButtons() {
+		this.chatHistoryButton.setDisabled(false);
+		this.newChatButton.setDisabled(false);
+		this.settingsButton.setDisabled(false);
+	}
+	
 	generateHeader(
 		parentElement: Element,
 		chatContainerDiv: HTMLElement,
@@ -49,14 +62,14 @@ export class Header {
 		historyContainer: HistoryContainer,
 		settingsContainer: SettingsContainer,
 		showContainer: (container: HTMLElement) => void,
-		hideContainer: (container: HTMLElement) => void,
+		hideContainer: (container: HTMLElement) => void
 	) {
-		const { modelName } = getViewInfo(this.plugin, this.viewType)
+		const { modelName } = getViewInfo(this.plugin, this.viewType);
 		const titleDiv = createDiv();
 		const leftButtonDiv = titleDiv.createDiv();
 		const titleContainer = titleDiv.createDiv();
 		this.titleEl = titleContainer.createDiv();
-		this.titleEl.addClass("llm-title")
+		this.titleEl.addClass("llm-title");
 		const rightButtonsDiv = titleDiv.createDiv();
 		const rightA = rightButtonsDiv.createDiv();
 		const rightB = rightButtonsDiv.createDiv();
@@ -68,7 +81,7 @@ export class Header {
 		this.modelEl.innerHTML = modelName;
 
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
-		this.chatHistoryButton.setTooltip("Chats")
+		this.chatHistoryButton.setTooltip("Chats");
 		this.chatHistoryButton.onClick(() => {
 			historyContainer.resetHistory(chatHistoryContainerDiv);
 			historyContainer.generateHistoryContainer(
@@ -80,7 +93,7 @@ export class Header {
 				chatContainer,
 				this
 			);
-			this.clickHandler(this.chatHistoryButton, [settingsButton]);
+			this.clickHandler(this.chatHistoryButton, [this.settingsButton]);
 			if (chatHistoryContainerDiv.style.display === "none") {
 				showContainer(chatHistoryContainerDiv);
 				hideContainer(settingsContainerDiv);
@@ -91,12 +104,15 @@ export class Header {
 			}
 		});
 
-		const settingsButton = new ButtonComponent(rightA);
-		settingsButton.setTooltip("Chat Settings")
-		settingsButton.onClick(() => {
+		this.settingsButton = new ButtonComponent(rightA);
+		this.settingsButton.setTooltip("Chat Settings");
+		this.settingsButton.onClick(() => {
 			settingsContainer.resetSettings(settingsContainerDiv);
-			settingsContainer.generateSettingsContainer(settingsContainerDiv, this)
-			this.clickHandler(settingsButton, [this.chatHistoryButton]);
+			settingsContainer.generateSettingsContainer(
+				settingsContainerDiv,
+				this
+			);
+			this.clickHandler(this.settingsButton, [this.chatHistoryButton]);
 			if (settingsContainerDiv.style.display === "none") {
 				showContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
@@ -108,11 +124,11 @@ export class Header {
 		});
 
 		this.newChatButton = new ButtonComponent(rightB);
-		this.newChatButton.setTooltip("New Chat")
+		this.newChatButton.setTooltip("New Chat");
 		this.newChatButton.onClick(() => {
-			const { modelName } = getViewInfo(this.plugin, this.viewType)
+			const { modelName } = getViewInfo(this.plugin, this.viewType);
 			this.clickHandler(this.newChatButton, [
-				settingsButton,
+				this.settingsButton,
 				this.chatHistoryButton,
 			]);
 			this.setHeader(modelName, "New Chat");
@@ -121,17 +137,20 @@ export class Header {
 			hideContainer(chatHistoryContainerDiv);
 			chatContainer.resetChat();
 			chatContainer.resetMessages();
-			setHistoryIndex(this.plugin, this.viewType)
+			setHistoryIndex(this.plugin, this.viewType);
 		});
 
 		leftButtonDiv.addClass("one", "left-buttons-div", "flex");
 		rightButtonsDiv.addClass("one", "right-buttons-div", "flex");
-		titleContainer.addClass("four",  "title", "flex");
+		titleContainer.addClass("four", "title", "flex");
 		this.chatHistoryButton.buttonEl.addClass(
 			"clickable-icon",
 			"chat-history"
 		);
-		settingsButton.buttonEl.addClass("clickable-icon", "settings-button");
+		this.settingsButton.buttonEl.addClass(
+			"clickable-icon",
+			"settings-button"
+		);
 		this.newChatButton.buttonEl.addClass(
 			"clickable-icon",
 			"new-chat-button"
@@ -139,7 +158,7 @@ export class Header {
 		rightA.addClass("flex-end", "flex");
 		rightB.addClass("flex-end", "flex");
 		this.chatHistoryButton.setIcon("bullet-list");
-		settingsButton.setIcon("sliders-horizontal");
+		this.settingsButton.setIcon("sliders-horizontal");
 		this.newChatButton.setIcon("plus");
 
 		parentElement.prepend(titleDiv);

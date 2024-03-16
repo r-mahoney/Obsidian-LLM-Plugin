@@ -36,7 +36,9 @@ export class ChatContainer {
 		this.viewType = viewType;
 	}
 
-	async handleGenerateClick(header: Header) {
+	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
+		header.disableButtons();
+		sendButton.setDisabled(true);
 		const { model, modelName, modelType, endpointURL, modelEndpoint } =
 			getViewInfo(this.plugin, this.viewType);
 		if (this.historyMessages.children.length < 1) {
@@ -63,6 +65,8 @@ export class ChatContainer {
 						this.messages.push(response);
 						this.appendNewMessage(response);
 						this.historyPush(params);
+						header.enableButtons();
+						sendButton.setDisabled(false);
 					})
 					.catch((err) => {
 						throw new Error(err.message);
@@ -91,6 +95,8 @@ export class ChatContainer {
 						role: "assistant",
 						content: previewText,
 					});
+					header.enableButtons();
+					sendButton.setDisabled(false);
 				}
 				if (modelEndpoint === "images") {
 					this.setDiv(false);
@@ -141,18 +147,15 @@ export class ChatContainer {
 		}
 	}
 
-	// setFocus(parentElement: Element) {
-	// 	parentElement.getElementsByClassName(`${classNames[this.viewType]}["text-area"]`)
-	// }
-
 	auto_height(elem: TextAreaComponent, parentElement: Element) {
 		/* javascript */
-		if(this.viewType === "floating-action-button") elem.inputEl.style.height ='50px'
-		const height = elem.inputEl.scrollHeight - 5
-		if(!(height > Number(elem.inputEl.style.height.slice(0,2)))) return
+		if (this.viewType === "floating-action-button")
+			elem.inputEl.style.height = "50px";
+		const height = elem.inputEl.scrollHeight - 5;
+		if (!(height > Number(elem.inputEl.style.height.slice(0, 2)))) return;
 		elem.inputEl.style.height = `${height}px`;
-		elem.inputEl.style.overflow = 'hidden';
-		parentElement.scrollTo(0,9999)
+		elem.inputEl.style.overflow = "hidden";
+		parentElement.scrollTo(0, 9999);
 	}
 
 	generateChatContainer(parentElement: Element, header: Header) {
@@ -185,14 +188,17 @@ export class ChatContainer {
 			promptField.setValue(change);
 		});
 		promptField.inputEl.addEventListener("keydown", (event) => {
+			if (sendButton.disabled === true) return;
+
 			if (event.code == "Enter") {
-				this.handleGenerateClick(header);
+				event.preventDefault();
+				this.handleGenerateClick(header, sendButton);
 				promptField.inputEl.setText("");
 				promptField.setValue("");
 			}
 		});
 		sendButton.onClick(() => {
-			this.handleGenerateClick(header);
+			this.handleGenerateClick(header, sendButton);
 			promptField.inputEl.setText("");
 			promptField.setValue("");
 		});
