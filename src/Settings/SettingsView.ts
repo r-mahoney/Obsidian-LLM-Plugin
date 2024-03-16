@@ -7,7 +7,8 @@ import {
 	Setting,
 } from "obsidian";
 import { DEFAULT_DIRECTORY } from "utils/utils";
-import {  models, modelNames  } from "utils/models";
+import { models, modelNames } from "utils/models";
+import logo from "assets/LLMguy.svg";
 const fs = require("fs");
 
 export default class SettingsView extends PluginSettingTab {
@@ -98,5 +99,23 @@ export default class SettingsView extends PluginSettingTab {
 				});
 				dropdown.setValue(this.plugin.settings.modalSettings.model);
 			});
+
+		const donate = new Setting(containerEl)
+			.setName("Donate")
+			.setDesc("Consider donating to support development.")
+			.addButton((button: ButtonComponent) => {
+				button.setButtonText("Donate");
+				button.onClick(() => {
+					window.open("https://www.buymeacoffee.com/johnny1093");
+				});
+			});
+
+		const llmGuy = containerEl.createDiv();
+		llmGuy.addClass("icon-wrapper");
+		llmGuy.innerHTML = logo;
+		const credits = llmGuy.createDiv();
+		credits.id = "settings-credits";
+		credits.innerHTML =
+			"<h2>LLM Plugin</h2>\n<p>By Johnny✨ and Ryan Mahoney</p>";
 	}
 }
