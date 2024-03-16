@@ -117,7 +117,7 @@ export function getViewInfo(
 			endpointURL: plugin.settings.fabSettings.endpointURL,
 		};
 	}
-	
+
 	if (viewType === "floating-action-button") {
 		return {
 			model: plugin.settings.fabSettings.model,
