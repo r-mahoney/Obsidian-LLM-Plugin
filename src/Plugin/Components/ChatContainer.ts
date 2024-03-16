@@ -188,6 +188,8 @@ export class ChatContainer {
 			promptField.setValue(change);
 		});
 		promptField.inputEl.addEventListener("keydown", (event) => {
+			if (sendButton.disabled === true) return;
+
 			if (event.code == "Enter") {
 				event.preventDefault();
 				this.handleGenerateClick(header, sendButton);
