@@ -193,6 +193,8 @@ export class ChatContainer {
 		sendButton.setIcon("up-arrow-with-tail");
 		sendButton.setTooltip("Send Prompt");
 
+		promptField.setPlaceholder("Send a message...")
+
 		promptField.onChange((change: string) => {
 			this.prompt = change;
 			promptField.setValue(change);
