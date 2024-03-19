@@ -160,9 +160,7 @@ export class ChatContainer {
 	}
 
 	auto_height(elem: TextAreaComponent, parentElement: Element) {
-		/* javascript */
-		if (this.viewType === "floating-action-button")
-			elem.inputEl.style.height = "50px";
+		elem.inputEl.style.height = "50px";
 		const height = elem.inputEl.scrollHeight - 5;
 		if (!(height > Number(elem.inputEl.style.height.slice(0, 2)))) return;
 		elem.inputEl.style.height = `${height}px`;
