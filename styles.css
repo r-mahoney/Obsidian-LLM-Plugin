@@ -386,6 +386,11 @@ FAB MESSAGE ICON CSS
 	min-height: 300px;
 }
 
+.fab-messages-div {
+	overflow-y: auto;
+	max-height: 240px;
+}
+
 .fab-settings-container,
 .widget-settings-container {
 	.setting-item {

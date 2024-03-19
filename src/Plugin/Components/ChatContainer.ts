@@ -160,9 +160,7 @@ export class ChatContainer {
 	}
 
 	auto_height(elem: TextAreaComponent, parentElement: Element) {
-		/* javascript */
-		if (this.viewType === "floating-action-button")
-			elem.inputEl.style.height = "50px";
+		elem.inputEl.style.height = "50px";
 		const height = elem.inputEl.scrollHeight - 5;
 		if (!(height > Number(elem.inputEl.style.height.slice(0, 2)))) return;
 		elem.inputEl.style.height = `${height}px`;
@@ -261,7 +259,6 @@ export class ChatContainer {
 			"im-like-message-container",
 			"flex"
 		);
-		this.historyMessages.scroll(0, 9999);
 
 		if (streaming) {
 			this.loadingDivContainer.addEventListener("mouseenter", () => {
@@ -298,7 +295,7 @@ export class ChatContainer {
 		} else {
 			imLikeMessageContainer.addClass("flex-end", "flex");
 		}
-		this.historyMessages.scroll(0, 9999);
+		
 	}
 
 	private createMessage(role: string, content: string, index: number) {
@@ -336,13 +333,14 @@ export class ChatContainer {
 			await navigator.clipboard.writeText(content);
 			new Notice("Text copied to clipboard");
 		});
-		this.historyMessages.scroll(0, 9999);
 	}
 
 	generateIMLikeMessgaes(messages: Message[]) {
 		messages.map(({ role, content }, index) => {
 			this.createMessage(role, content, index);
 		});
+		console.log(this.historyMessages)
+		this.historyMessages.scroll(0, 9999);
 	}
 
 	appendNewMessage(message: Message) {
@@ -350,8 +348,6 @@ export class ChatContainer {
 		const { role, content } = message;
 
 		this.createMessage(role, content, length);
-
-		this.historyMessages.scroll(0, 9999);
 	}
 
 	removeMessage(header: Header, modelName: string) {
