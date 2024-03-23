@@ -1,7 +1,12 @@
 import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
 import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LLMPlugin from "main";
-import { ButtonComponent, Notice, TextAreaComponent } from "obsidian";
+import {
+	ButtonComponent,
+	MarkdownRenderer,
+	Notice,
+	TextAreaComponent,
+} from "obsidian";
 import { ChatCompletionChunk } from "openai/resources";
 import { Stream } from "openai/streaming";
 import { classNames } from "utils/classNames";
@@ -12,6 +17,7 @@ import {
 	setHistoryIndex,
 } from "utils/utils";
 import { Header } from "./Header";
+import { marked } from "marked";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -22,6 +28,7 @@ export class ChatContainer {
 	loadingDivContainer: HTMLElement;
 	streamingDiv: HTMLElement;
 	viewType: ViewType;
+	previewText: string;
 	// closeModal?: () => void;
 	constructor(
 		private plugin: LLMPlugin,
@@ -84,7 +91,7 @@ export class ChatContainer {
 				if (!API_KEY) {
 					throw new Error("No API Key");
 				}
-				let previewText = "";
+				this.previewText = "";
 				if (modelEndpoint === "chat") {
 					const stream = await openAIMessage(
 						params,
@@ -94,15 +101,30 @@ export class ChatContainer {
 					);
 					this.setDiv(true);
 					for await (const chunk of stream as Stream<ChatCompletionChunk>) {
-						previewText += chunk.choices[0]?.delta?.content || "";
-						this.streamingDiv.innerHTML = previewText;
+						this.previewText +=
+							chunk.choices[0]?.delta?.content || "";
+						this.streamingDiv.innerHTML = this.previewText;
 						this.historyMessages.scroll(0, 9999);
 					}
-					this.historyPush(params);
+					this.streamingDiv.innerHTML = "";
+					MarkdownRenderer.render(
+						this.plugin.app,
+						this.previewText,
+						this.streamingDiv,
+						"",
+						this.plugin
+					);
+					const copyButton = this.streamingDiv.querySelectorAll(
+						".copy-code-button"
+					) as NodeListOf<HTMLElement>;
+					copyButton.forEach((item) => {
+						item.setAttribute("style", "display: none");
+					});
 					this.messages.push({
 						role: "assistant",
-						content: previewText,
+						content: this.previewText,
 					});
+					this.historyPush(params);
 					header.enableButtons();
 					sendButton.setDisabled(false);
 				}
@@ -193,7 +215,7 @@ export class ChatContainer {
 		sendButton.setIcon("up-arrow-with-tail");
 		sendButton.setTooltip("Send Prompt");
 
-		promptField.setPlaceholder("Send a message...")
+		promptField.setPlaceholder("Send a message...");
 
 		promptField.onChange((change: string) => {
 			this.prompt = change;
@@ -273,7 +295,7 @@ export class ChatContainer {
 		}
 
 		addText.onClick(async () => {
-			await navigator.clipboard.writeText(this.streamingDiv.innerHTML);
+			await navigator.clipboard.writeText(this.previewText);
 			new Notice("Text copied to clipboard");
 		});
 	}
@@ -297,7 +319,6 @@ export class ChatContainer {
 		} else {
 			imLikeMessageContainer.addClass("flex-end", "flex");
 		}
-		
 	}
 
 	private createMessage(role: string, content: string, index: number) {
@@ -308,7 +329,20 @@ export class ChatContainer {
 
 		addText.setIcon("files");
 		icon.innerHTML = role[0];
-		imLikeMessage.innerHTML = content;
+		// imLikeMessage.innerHTML = content;
+		MarkdownRenderer.render(
+			this.plugin.app,
+			content,
+			imLikeMessage,
+			"",
+			this.plugin
+		);
+		const copyButton = imLikeMessage.querySelectorAll(
+			".copy-code-button"
+		) as NodeListOf<HTMLElement>;
+		copyButton.forEach((item) => {
+			item.setAttribute("style", "display: none");
+		});
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		addText.buttonEl.addClass("add-text", "hide");
 		icon.addClass("message-icon");
@@ -341,7 +375,6 @@ export class ChatContainer {
 		messages.map(({ role, content }, index) => {
 			this.createMessage(role, content, index);
 		});
-		console.log(this.historyMessages)
 		this.historyMessages.scroll(0, 9999);
 	}
 
