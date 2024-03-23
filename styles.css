@@ -223,6 +223,12 @@
 
 .im-like-message {
 	padding: 5px 10px;
+	p {
+		margin: 0;
+	}
+}
+div.im-like-message.widget-chat-message > p {
+	margin: 0;
 }
 
 .message-icon {
