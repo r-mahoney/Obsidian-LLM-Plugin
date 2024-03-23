@@ -52,7 +52,7 @@ export class Header {
 		this.newChatButton.setDisabled(false);
 		this.settingsButton.setDisabled(false);
 	}
-	
+
 	generateHeader(
 		parentElement: Element,
 		chatContainerDiv: HTMLElement,
@@ -69,10 +69,8 @@ export class Header {
 		const leftButtonDiv = titleDiv.createDiv();
 		const titleContainer = titleDiv.createDiv();
 		this.titleEl = titleContainer.createDiv();
-		this.titleEl.addClass("llm-title");
+		this.titleEl.addClass(`${this.viewType}-llm-title`);
 		const rightButtonsDiv = titleDiv.createDiv();
-		const rightA = rightButtonsDiv.createDiv();
-		const rightB = rightButtonsDiv.createDiv();
 
 		titleDiv.addClass("title-div", "flex");
 		this.titleEl.innerHTML = "LLM Plugin";
@@ -104,7 +102,21 @@ export class Header {
 			}
 		});
 
-		this.settingsButton = new ButtonComponent(rightA);
+		if (this.viewType === "floating-action-button") {
+			this.newChatButton = new ButtonComponent(leftButtonDiv);
+			this.settingsButton = new ButtonComponent(rightButtonsDiv);
+			const closeButton = new ButtonComponent(rightButtonsDiv);
+			closeButton.buttonEl.addClass("clickable-icon");
+			closeButton.setIcon("cross")
+			closeButton.onClick(() => {
+				const FAV = document.querySelectorAll('.fab-view-area')[0]
+				hideContainer(FAV as HTMLElement)
+			})
+		} else {
+			this.newChatButton = new ButtonComponent(rightButtonsDiv);
+			this.settingsButton = new ButtonComponent(leftButtonDiv);
+		}
+
 		this.settingsButton.setTooltip("Chat Settings");
 		this.settingsButton.onClick(() => {
 			settingsContainer.resetSettings(settingsContainerDiv);
@@ -123,7 +135,6 @@ export class Header {
 			}
 		});
 
-		this.newChatButton = new ButtonComponent(rightB);
 		this.newChatButton.setTooltip("New Chat");
 		this.newChatButton.onClick(() => {
 			const { modelName } = getViewInfo(this.plugin, this.viewType);
@@ -155,8 +166,6 @@ export class Header {
 			"clickable-icon",
 			"new-chat-button"
 		);
-		rightA.addClass("flex-end", "flex");
-		rightB.addClass("flex-end", "flex");
 		this.chatHistoryButton.setIcon("menu");
 		this.settingsButton.setIcon("sliders-horizontal");
 		this.newChatButton.setIcon("plus");
