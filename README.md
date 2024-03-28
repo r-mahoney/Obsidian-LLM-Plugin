@@ -1,4 +1,8 @@
-# LLM Plugin
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/r-mahoney/Obsidian-LLM-Plugin/assets/46250921/bda9f3e8-c4c8-4087-838c-f467c1f30910">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/r-mahoney/Obsidian-LLM-Plugin/assets/46250921/27317c62-3026-4e45-9ef1-f433cbd58442">
+  <img alt="Shows project promo image in light and dark mode" src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
+</picture>
 
 This is a sample plugin for Obsidian (https://obsidian.md).
 
