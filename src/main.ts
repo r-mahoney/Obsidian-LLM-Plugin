@@ -15,6 +15,13 @@ type ViewSettings = {
 	endpointURL: string;
 	historyIndex: number;
 };
+type imageAdvSettings = {
+	numberOfimages: number;
+	quality: string;
+	response_format: "url" | "b64_json";
+	size: string;
+	style: "vivid" | "natural"
+}
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -27,6 +34,7 @@ export interface LLMPluginSettings {
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
 	showFAB: boolean;
+	imageAdvSettings: imageAdvSettings
 }
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
@@ -54,6 +62,13 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 		modelEndpoint: "chat",
 		endpointURL: "/v1/chat/completions",
 		historyIndex: -1,
+	},
+	imageAdvSettings: {
+		numberOfimages: 1,
+		quality: "hd",
+		response_format: "url",
+		size: "1024x1024",
+		style: "vivid"
 	},
 	tokens: 300,
 	temperature: 0.65,
