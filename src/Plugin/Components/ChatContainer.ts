@@ -1,5 +1,3 @@
-import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
-import { GPT4AllParams, Message, ViewType } from "Types/types";
 import LLMPlugin from "main";
 import {
 	ButtonComponent,
@@ -7,8 +5,18 @@ import {
 	Notice,
 	TextAreaComponent,
 } from "obsidian";
-import { ChatCompletionChunk } from "openai/resources";
+import { ChatCompletionChunk, Images } from "openai/resources";
 import { Stream } from "openai/streaming";
+import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
+import {
+	ChatHistoryItem,
+	ChatParams,
+	HistoryItem,
+	ImageHistoryItem,
+	ImageParams,
+	Message,
+	ViewType,
+} from "Types/types";
 import { classNames } from "utils/classNames";
 import {
 	getViewInfo,
@@ -17,7 +25,6 @@ import {
 	setHistoryIndex,
 } from "utils/utils";
 import { Header } from "./Header";
-import { marked } from "marked";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -38,6 +45,35 @@ export class ChatContainer {
 		this.viewType = viewType;
 	}
 
+	getParams(endpoint: string, model: string) {
+		if (endpoint === "images") {
+			const params: ImageParams = {
+				prompt: this.prompt,
+				messages: this.messages,
+				model,
+				numberOfImages:
+					this.plugin.settings.imageAdvSettings.numberOfImages,
+				response_format:
+					this.plugin.settings.imageAdvSettings.response_format,
+				size: this.plugin.settings.imageAdvSettings.size,
+				style: this.plugin.settings.imageAdvSettings.style,
+				quality: this.plugin.settings.imageAdvSettings.quality,
+			};
+			return params;
+		}
+
+		if (endpoint === "chat") {
+			const params: ChatParams = {
+				prompt: this.prompt,
+				messages: this.messages,
+				temperature: this.plugin.settings.temperature,
+				tokens: this.plugin.settings.tokens,
+				model,
+			};
+			return params;
+		}
+	}
+
 	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
 		header.disableButtons();
 		sendButton.setDisabled(true);
@@ -47,13 +83,7 @@ export class ChatContainer {
 			header.setHeader(modelName, this.prompt);
 		}
 		this.messages.push({ role: "user", content: this.prompt });
-		const params: GPT4AllParams = {
-			prompt: this.prompt,
-			messages: this.messages,
-			temperature: this.plugin.settings.temperature,
-			tokens: this.plugin.settings.tokens,
-			model,
-		};
+		const params = this.getParams(modelEndpoint, model);
 		try {
 			if (settingsErrorHandling(params).length > 0) {
 				throw new Error("Incorrect Settings");
@@ -64,12 +94,12 @@ export class ChatContainer {
 			if (modelType === "GPT4All") {
 				this.plugin.settings.GPT4AllStreaming = true;
 				this.setDiv(false);
-				messageGPT4AllServer(params, endpointURL)
+				messageGPT4AllServer(params as ChatParams, endpointURL)
 					.then((response: Message) => {
 						this.removeLodingDiv();
 						this.messages.push(response);
 						this.appendNewMessage(response);
-						this.historyPush(params);
+						this.historyPush(params as ChatHistoryItem);
 					})
 					.catch((err) => {
 						this.removeLodingDiv();
@@ -94,7 +124,7 @@ export class ChatContainer {
 				this.previewText = "";
 				if (modelEndpoint === "chat") {
 					const stream = await openAIMessage(
-						params,
+						params as ChatParams,
 						this.plugin.settings.openAIAPIKey,
 						endpointURL,
 						modelEndpoint
@@ -124,24 +154,31 @@ export class ChatContainer {
 						role: "assistant",
 						content: this.previewText,
 					});
-					this.historyPush(params);
-					header.enableButtons();
-					sendButton.setDisabled(false);
+					this.historyPush(params as ChatHistoryItem);
 				}
 				if (modelEndpoint === "images") {
 					this.setDiv(false);
 					await openAIMessage(
-						params,
+						params as ImageParams,
 						this.plugin.settings.openAIAPIKey,
 						endpointURL,
 						modelEndpoint
-					).then((response: string) => {
+					).then((response: string[]) => {
+						let content = "";
+						response.map(url => {
+							content += `![created with prompt ${this.prompt}](${url})`
+						})
 						this.removeLodingDiv();
-						// this.messages.push(response);
+						this.messages.push({
+							role: "assistant",
+							content
+						});
 						this.appendImage(response);
-						// this.historyPush(params);
+						this.historyPush(params as ImageHistoryItem);
 					});
 				}
+				header.enableButtons();
+				sendButton.setDisabled(false);
 			}
 		} catch (error) {
 			header.enableButtons();
@@ -157,28 +194,54 @@ export class ChatContainer {
 		}
 	}
 
-	historyPush(params: GPT4AllParams) {
-		const { modelName, historyIndex } = getViewInfo(
+	historyPush(params: HistoryItem) {
+		const { modelName, historyIndex, modelEndpoint } = getViewInfo(
 			this.plugin,
 			this.viewType
 		);
 		if (historyIndex > -1) {
 			this.plugin.history.overwriteHistory(this.messages, historyIndex);
-		} else {
+		}
+
+		if (modelEndpoint === "chat") {
+			const { temperature, tokens, messages, model } =
+				params as ChatHistoryItem;
 			this.plugin.history.push({
 				prompt: this.prompt,
 				processedPrompt: this.processedPrompt,
-				messages: params.messages,
-				temperature: params.temperature,
-				tokens: params.tokens,
+				messages,
+				temperature,
+				tokens,
 				modelName: modelName,
-				model: params.model,
+				model,
 			});
-			const length = this.plugin.settings.promptHistory.length;
-			setHistoryIndex(this.plugin, this.viewType, length);
-			this.plugin.saveSettings();
-			this.prompt = "";
 		}
+		if (modelEndpoint === "images") {
+			const {
+				model,
+				messages,
+				numberOfImages,
+				response_format,
+				size,
+				style,
+				quality,
+			} = params as ImageHistoryItem;
+			this.plugin.history.push({
+				prompt: this.prompt,
+				messages,
+				model,
+				modelName: modelName,
+				numberOfImages,
+				response_format,
+				size,
+				style,
+				quality,
+			} as ImageHistoryItem);
+		}
+		const length = this.plugin.settings.promptHistory.length;
+		setHistoryIndex(this.plugin, this.viewType, length);
+		this.plugin.saveSettings();
+		this.prompt = "";
 	}
 
 	auto_height(elem: TextAreaComponent, parentElement: Element) {
@@ -304,13 +367,15 @@ export class ChatContainer {
 		this.loadingDivContainer.remove();
 	}
 
-	appendImage(image: string) {
+	appendImage(imageURLs: string[]) {
 		const length = this.historyMessages.childNodes.length;
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const icon = imLikeMessageContainer.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
 		icon.innerHTML = "A";
-		imLikeMessage.innerHTML = `<img src=${image} alt="image generated with ${this.prompt}" width="250" height="300">`;
+		imageURLs.map(url => {
+			imLikeMessage.innerHTML += `<img src=${url} alt="image generated with ${this.prompt}">\n`;
+		})
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		icon.addClass("message-icon");
 		imLikeMessage.addClass("im-like-message");

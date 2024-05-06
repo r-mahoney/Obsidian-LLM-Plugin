@@ -1,15 +1,12 @@
-import {
-	GPT4AllParams,
-	Message,
-	Model,
-	ViewSettings,
-	ViewType,
-} from "Types/types";
 import { existsSync } from "fs";
 import LLMPlugin from "main";
 import { Editor } from "obsidian";
 import OpenAI from "openai";
-import { Stream } from "openai/streaming";
+import {
+	ChatParams,
+	ImageParams, ViewSettings,
+	ViewType
+} from "Types/types";
 
 const path = require("path");
 const homeDir = require("os").homedir();
@@ -25,7 +22,7 @@ export function modelLookup(modelName: string) {
 	return existsSync(model);
 }
 
-export async function messageGPT4AllServer(params: GPT4AllParams, url: string) {
+export async function messageGPT4AllServer(params: ChatParams, url: string) {
 	const response = await fetch(`http://localhost:4891${url}`, {
 		method: "POST",
 		body: JSON.stringify({
@@ -40,7 +37,7 @@ export async function messageGPT4AllServer(params: GPT4AllParams, url: string) {
 
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
-	params: GPT4AllParams,
+	params: ChatParams | ImageParams,
 	OpenAI_API_Key: string,
 	endpoint: string,
 	endpointType: string
@@ -49,9 +46,10 @@ export async function openAIMessage(
 		apiKey: OpenAI_API_Key,
 		dangerouslyAllowBrowser: true,
 	});
-	const { prompt, model, messages, tokens, temperature } = params;
 
 	if (endpointType === "chat") {
+		const { prompt, model, messages, tokens, temperature } =
+			params as ChatParams;
 		const stream = await openai.chat.completions.create(
 			{
 				model,
@@ -67,15 +65,31 @@ export async function openAIMessage(
 	}
 
 	if (endpointType === "images") {
+		const {
+			prompt,
+			model,
+			messages,
+			quality,
+			size,
+			style,
+			numberOfImages,
+		} = params as ImageParams;
 		const image = await openai.images.generate({
 			model,
 			prompt,
-			size: "1024x1024",
-			quality: "standard",
-			n: 1,
+			size: size as "256x256" | "512x512" | "1024x1024" | "1792x1024" | "1024x1792",
+			quality,
+			n: numberOfImages,
+			style,
 		});
-
-		return image.data[0].url;
+		let imageURLs:string[] = [];
+		image.data.map(image => {
+			return imageURLs.push(image.url!)
+		})
+		// return image.data[0].url;
+		console.log(image.data)
+		console.log(imageURLs)
+		return imageURLs
 	}
 }
 

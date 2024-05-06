@@ -1,5 +1,5 @@
 import { Plugin, WorkspaceLeaf } from "obsidian";
-import { ChatHistoryItem } from "./Types/types";
+import { HistoryItem } from "./Types/types";
 
 import { History } from "History/HistoryHandler";
 import { ChatModal2 } from "Plugin/Modal/ChatModal2";
@@ -16,12 +16,12 @@ type ViewSettings = {
 	historyIndex: number;
 };
 type imageAdvSettings = {
-	numberOfimages: number;
-	quality: string;
+	numberOfImages: number;
 	response_format: "url" | "b64_json";
 	size: string;
-	style: "vivid" | "natural"
-}
+	style: "vivid" | "natural";
+	quality?: "hd" | "standard";
+};
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -30,45 +30,39 @@ export interface LLMPluginSettings {
 	fabSettings: ViewSettings;
 	tokens: number;
 	temperature: number;
-	promptHistory: ChatHistoryItem[];
+	promptHistory: HistoryItem[];
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
 	showFAB: boolean;
-	imageAdvSettings: imageAdvSettings
+	imageAdvSettings: imageAdvSettings;
 }
+
+const defaultSettings = {
+	model: "gpt-3.5-turbo",
+	modelName: "ChatGPT-3.5 Turbo",
+	modelType: "openAI",
+	modelEndpoint: "chat",
+	endpointURL: "/chat/completions",
+	historyIndex: -1,
+};
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	appName: "Local LLM Plugin",
 	modalSettings: {
-		model: "mistral-7b-openorca.Q4_0.gguf",
-		modelName: "Mistral OpenOrca",
-		modelType: "GPT4All",
-		modelEndpoint: "chat",
-		endpointURL: "/v1/chat/completions",
-		historyIndex: -1,
+		...defaultSettings
 	},
 	widgetSettings: {
-		model: "mistral-7b-openorca.Q4_0.gguf",
-		modelName: "Mistral OpenOrca",
-		modelType: "GPT4All",
-		modelEndpoint: "chat",
-		endpointURL: "/v1/chat/completions",
-		historyIndex: -1,
+		...defaultSettings
 	},
 	fabSettings: {
-		model: "mistral-7b-openorca.Q4_0.gguf",
-		modelName: "Mistral OpenOrca",
-		modelType: "GPT4All",
-		modelEndpoint: "chat",
-		endpointURL: "/v1/chat/completions",
-		historyIndex: -1,
+		...defaultSettings
 	},
 	imageAdvSettings: {
-		numberOfimages: 1,
-		quality: "hd",
+		numberOfImages: 1,
 		response_format: "url",
 		size: "1024x1024",
-		style: "vivid"
+		style: "vivid",
+		quality: "standard",
 	},
 	tokens: 300,
 	temperature: 0.65,
@@ -95,7 +89,7 @@ export default class LLMPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.fab = new FAB(this);
 		this.addSettingTab(new SettingsView(this.app, this, this.fab));
-		if(this.settings.showFAB) {
+		if (this.settings.showFAB) {
 			setTimeout(() => {
 				this.fab.regenerateFAB();
 			}, 500);
@@ -108,6 +102,7 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	private registerCommands() {
+		//modal command that will be removed when modal is depricated
 		const openChat = this.addCommand({
 			id: "open-conversation-modal",
 			name: "Open LLM Modal",
@@ -116,6 +111,7 @@ export default class LLMPlugin extends Plugin {
 			},
 		});
 
+		//widget command
 		const openWidget = this.addCommand({
 			id: "open-LLM-widget",
 			name: "Open LLM Widget",

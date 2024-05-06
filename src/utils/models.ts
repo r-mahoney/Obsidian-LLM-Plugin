@@ -79,18 +79,18 @@ export const models: Record<string, Model> = {
 	// 	endpoint: "embeddings",
 	// 	url: "/embeddings",
 	// },
-	// "DALL·E 3": {
-	// 	model: "dall-e-3",
-	// 	type: "openAI",
-	// 	endpoint: "images",
-	// 	url: "/images/generations",
-	// // },
-	// "DALL·E 2": {
-	// 	model: "dall-e-2",
-	// 	type: "openAI",
-	// 	endpoint: "images",
-	// 	url: "/images/generations",
-	// },
+	"DALL·E 3": {
+		model: "dall-e-3",
+		type: "openAI",
+		endpoint: "images",
+		url: "/images/generations",
+	},
+	"DALL·E 2": {
+		model: "dall-e-2",
+		type: "openAI",
+		endpoint: "images",
+		url: "/images/generations",
+	},
 };
 
 export const modelNames: Record<string, string> = {
@@ -107,15 +107,6 @@ export const modelNames: Record<string, string> = {
 	"em_german_mistral_v01.Q4_0.gguf": "EM German Mistral",
 	"gpt-3.5-turbo": "ChatGPT-3.5 Turbo",
 	// "text-embedding-3-small": "Text Embedding 3 (Small)",
-	// "dall-e-3": "DALL·E 3",
-	// "dall-e-2": "DALL·E 2",
+	"dall-e-3": "DALL·E 3",
+	"dall-e-2": "DALL·E 2",
 };
-
-// export function getModelNames():Record<string, string> {
-//     let modelNames = Object.keys(models)
-//     let names:Record<string, string> = {}
-//     for(const name of modelNames) {
-//         names[models[name].model] = name
-//     }
-// 	return names
-// }

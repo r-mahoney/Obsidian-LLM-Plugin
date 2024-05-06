@@ -1,4 +1,4 @@
-import { ChatHistoryItem, ViewType } from "Types/types";
+import { HistoryItem, ViewType } from "Types/types";
 import LLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { ButtonComponent, Notice } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
@@ -17,7 +17,7 @@ export class HistoryContainer {
 
 	generateHistoryContainer(
 		parentElement: HTMLElement,
-		history: ChatHistoryItem[],
+		history: HistoryItem[],
 		hideContainer: (container: HTMLElement) => void,
 		showContainer: (container: HTMLElement) => void,
 		containerToShow: HTMLElement,
@@ -67,7 +67,7 @@ export class HistoryContainer {
 			const index = this.historyIndex;
 			const header = this.plugin.settings.promptHistory[index].prompt;
 			const modelName =
-				this.plugin.settings.promptHistory[index].modelName;
+			this.plugin.settings.promptHistory[index].modelName;
 			this.plugin.settings[settingType].modelName = modelName;
 			this.plugin.settings[settingType].model = models[modelName].model;
 			this.plugin.settings[settingType].modelType =
@@ -103,7 +103,7 @@ export class HistoryContainer {
 			element.setAttr("contenteditable", toggle);
 		};
 
-		history.map((historyItem: ChatHistoryItem, index: number) => {
+		history.map((historyItem: HistoryItem, index: number) => {
 			const item = parentElement.createDiv();
 			const text = item.createEl("p");
 			text.innerHTML = historyItem.prompt;

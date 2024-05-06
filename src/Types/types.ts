@@ -1,19 +1,32 @@
-export type GPT4AllParams = {
+type InitialParams = {
 	prompt: string;
 	messages: Message[];
+	model: string;
+}
+export type ChatParams = InitialParams & {
 	temperature: number;
 	tokens: number;
-	model: string;
 };
-export type ChatHistoryItem = {
-	prompt: string;
+
+export type ImageParams = InitialParams & {
+	numberOfImages: number;
+	response_format: "url" | "b64_json";
+	size: string;
+	style: "vivid" | "natural"
+	quality?: "hd" |  "standard";
+}
+export type ChatHistoryItem = InitialParams & ChatParams & {
 	processedPrompt: string;
-	messages: Message[];
-	temperature: number;
-	tokens: number;
 	modelName: string;
-	model: string;
 };
+
+export type ImageHistoryItem = InitialParams & ImageParams & {
+	modelName: string
+}
+
+export type HistoryItem = ChatHistoryItem | ImageHistoryItem & {
+
+}
 
 export type TokenParams = {
 	prefix: string[];
