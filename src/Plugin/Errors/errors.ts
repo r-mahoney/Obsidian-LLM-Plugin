@@ -1,10 +1,10 @@
-import { GPT4AllParams } from "Types/types";
 import { Notice } from "obsidian";
 
-export function settingsErrorHandling(params:GPT4AllParams) {
+export function settingsErrorHandling(params:any) {
     const settings = Object.keys(params)
     const errors: string[] = []
-    settings.map((setting: keyof GPT4AllParams) => {
+    settings.map((setting) => {
+        if(params[setting] === "quality") return;
         if(!params[setting]) {
             errors.push(`Request must include ${setting.toUpperCase()}`)
         }
@@ -13,7 +13,7 @@ export function settingsErrorHandling(params:GPT4AllParams) {
     return errors
 }
 
-export function errorMessages(error: Error, params: GPT4AllParams) {
+export function errorMessages(error: Error, params: any) {
     if(error.message === "Incorrect Settings") {
         settingsErrorHandling(params).forEach(wrongSetting => {
             new Notice(wrongSetting)

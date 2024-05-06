@@ -1,10 +1,10 @@
-import { ChatHistoryItem, Message } from "Types/types";
+import { ChatHistoryItem, HistoryItem, Message } from "Types/types";
 import LLMPlugin from "main";
 
 export class History {
 	constructor(private plugin: LLMPlugin) {}
 
-	push(message_context: ChatHistoryItem) {
+	push(message_context: HistoryItem) {
 		try {
 			let history = this.plugin.settings.promptHistory;
 			history.push(message_context);

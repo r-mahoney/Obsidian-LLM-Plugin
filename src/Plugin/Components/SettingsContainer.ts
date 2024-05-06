@@ -14,6 +14,12 @@ export class SettingsContainer {
 	}
 
 	generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
+		this.resetSettings(parentContainer);
+		this.generateModels(parentContainer, Header);
+		this.generateModelSettings(parentContainer);
+	}
+
+	generateModels(parentContainer: HTMLElement, Header: Header) {
 		const settings: Record<string, string> = {
 			modal: "modalSettings",
 			widget: "widgetSettings",
@@ -70,25 +76,49 @@ export class SettingsContainer {
 					}
 					this.plugin.saveSettings();
 					Header.setHeader(modelName);
-					if(models[modelName].endpoint === "images") {
-						let settings = parentContainer.innerHTML
-						settings += this.generateImageSettings(parentContainer)
-					}
+					this.generateSettingsContainer(parentContainer, Header);
 				});
 				dropdown.setValue(this.plugin.settings[settingType].model);
-				
 			});
-
-		if (this.plugin.settings[settingType].modelEndpoint === "image") {
-			
-		}
 	}
 
 	resetSettings(parentContainer: Element) {
 		parentContainer.innerHTML = "";
 	}
 
-	generateImageSettings(parentContainer: HTMLElement) {
+	generateModelSettings(parentContainer: HTMLElement) {
+		const settings: Record<string, string> = {
+			modal: "modalSettings",
+			widget: "widgetSettings",
+			"floating-action-button": "fabSettings",
+		};
+		const settingType = settings[this.viewType] as
+			| "modalSettings"
+			| "widgetSettings"
+			| "fabSettings";
+		const endpoint = this.plugin.settings[settingType].modelEndpoint;
+		if (endpoint === "images") {
+			this.generateImageSettings(
+				parentContainer,
+				this.plugin.settings[settingType].model
+			);
+		}
+		if (endpoint === "TTS") {
+			this.generateTTSSettings(parentContainer);
+		}
+		if (endpoint === "moderations") {
+			this.generateModerationsSettings(parentContainer);
+		}
+		if (endpoint === "chat") {
+			this.generateChatSettings(parentContainer);
+		}
+	}
+
+	generateImageSettings(parentContainer: HTMLElement, model: string) {
+		const imageSizes = {
+			dallE2: ["256x256", "512x512", "1024x1024"],
+			dallE3: ["1024x1024", "1792x1024", "1024x1792"],
+		};
 		const numberOfImages = new Setting(parentContainer)
 			.setName("Number of Images")
 			.setDesc(
@@ -96,48 +126,89 @@ export class SettingsContainer {
 			)
 			.addText((text) => {
 				text.setValue(
-					`${this.plugin.settings.imageAdvSettings.numberOfimages}`
+					`${this.plugin.settings.imageAdvSettings.numberOfImages}`
 				);
 				text.inputEl.type = "number";
 				text.onChange((change) => {
-					this.plugin.settings.imageAdvSettings.numberOfimages =
+					this.plugin.settings.imageAdvSettings.numberOfImages =
 						parseInt(change);
 					this.plugin.saveSettings();
 				});
 			});
 
-		const quality = new Setting(parentContainer)
-			.setName("Quality")
+		const responseFormat = new Setting(parentContainer)
+			.setName("Response Format")
 			.setDesc(
-				"The quality of the image that will be generated. hd creates images with finer details and greater consistency across the image. This param is only supported for dall-e-3."
+				"The format in which the generated images are returned. Must be one of url or b64_json. URLs are only valid for 60 minutes after the image has been generated."
 			)
-			.addToggle((value) => {
-				value.onChange(async (value) => {
-					if (value) {
-						this.plugin.settings.imageAdvSettings.quality = "hd";
-					} else {
-						this.plugin.settings.imageAdvSettings.quality = ""
-					}
-
-					await this.plugin.saveSettings()
+			.addDropdown((dropdown: DropdownComponent) => {
+				dropdown.addOption("", "Select a Format");
+				dropdown.addOption("url", "URL");
+				dropdown.addOption("b64_json", "Base64 JSON");
+				dropdown.onChange((change) => {
+					this.plugin.settings.imageAdvSettings.response_format =
+						change as "url" | "b64_json";
 				});
 			});
 
-			const response_format = new Setting(parentContainer)
-			.setName("Response Format")
-			.setDesc("The format in which the generated images are returned. Must be one of url or b64_json. URLs are only valid for 60 minutes after the image has been generated.")
+		const imageSize = new Setting(parentContainer)
+			.setName("Image Size")
+			.setDesc(
+				"The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024 for dall-e-2. Must be one of 1024x1024, 1792x1024, or 1024x1792 for dall-e-3 models."
+			)
 			.addDropdown((dropdown: DropdownComponent) => {
-				dropdown.addOption("", "Select a Format")
-				dropdown.addOption("url", "URL")
-				dropdown.addOption("b64_json", "Base64 JSON")
+				if (model === "dall-e-2") {
+					dropdown.addOption("", "Dall-E 2 Sizes");
+					imageSizes["dallE2"].map((size) => {
+						dropdown.addOption(size, size);
+					});
+				}
+				if (model === "dall-e-3") {
+					dropdown.addOption("", "Dall-E 3 Sizes");
+					imageSizes["dallE3"].map((size) => {
+						dropdown.addOption(size, size);
+					});
+				}
+
 				dropdown.onChange((change) => {
-					// this.plugin.settings.imageAdvSettings.response_format = change
-					console.log(change)
-				})
-			})
+					this.plugin.settings.imageAdvSettings.size = change;
+				});
+			});
+
+		if (model === "dall-e-3") {
+			const imageStyle = new Setting(parentContainer)
+				.setName("Image Style")
+				.setDesc(
+					"Defaults to vivid. Must be one of vivid or natural. Vivid causes the model to lean towards generating hyper-real and dramatic images. Natural causes the model to produce more natural, less hyper-real looking images. This param is only supported for dall-e-3."
+				)
+				.addDropdown((dropdown: DropdownComponent) => {
+					dropdown.addOption("", "Select Style");
+					dropdown.addOption("natural", "Natural");
+					dropdown.addOption("vivid", "Vivid");
+				});
+
+			const quality = new Setting(parentContainer)
+				.setName("Quality")
+				.setDesc(
+					"The quality of the image that will be generated. hd creates images with finer details and greater consistency across the image. This param is only supported for dall-e-3."
+				)
+				.addToggle((value) => {
+					value.onChange(async (value) => {
+						if (value) {
+							this.plugin.settings.imageAdvSettings.quality =
+								"hd";
+						} else {
+							this.plugin.settings.imageAdvSettings.quality =
+								"standard";
+						}
+
+						await this.plugin.saveSettings();
+					});
+				});
+		}
 	}
 
-	generateChatSettings(parentContainer: HTMLElement, modelType: string) {
+	generateChatSettings(parentContainer: HTMLElement) {
 		const tempSetting = new Setting(parentContainer)
 			.setName("Temperature")
 			.setDesc(
@@ -163,16 +234,9 @@ export class SettingsContainer {
 					this.plugin.saveSettings();
 				});
 			});
-		if(modelType === "openAI" || modelType === "gemeni") {
-
-		}
-
-		if(modelType ==="GPT4All") {
-
-		}
 	}
 
-	generateTTSSettings() {}
+	generateTTSSettings(parentContainer: HTMLElement) {}
 
-	generateModerationsSettings() {}
+	generateModerationsSettings(parentContainer: HTMLElement) {}
 }
