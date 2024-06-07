@@ -135,6 +135,10 @@ export default class SettingsView extends PluginSettingTab {
 		const credits = llmGuy.createDiv();
 		credits.id = "settings-credits";
 		credits.innerHTML =
-			"<h2>LLM Plugin</h2>\n<p>By Johnny✨ and Ryan Mahoney</p>";
+			`<div>
+			<h2>LLM Plugin</h2>\n<p>By Johnny✨ and Ryan Mahoney </p>
+			v${this.plugin.manifest.version}
+			</div>
+			`;
 	}
 }
