@@ -137,7 +137,7 @@ export default class SettingsView extends PluginSettingTab {
 		credits.innerHTML =
 			`<div>
 			<h2>LLM Plugin</h2>\n<p>By Johnny✨ and Ryan Mahoney </p>
-			v${this.plugin.manifest.version}
+			${this.plugin.manifest.version}
 			</div>
 			`;
 	}
