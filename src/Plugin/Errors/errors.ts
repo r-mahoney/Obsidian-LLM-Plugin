@@ -14,6 +14,7 @@ export function settingsErrorHandling(params:any) {
 }
 
 export function errorMessages(error: Error, params: any) {
+    console.error('..', error)
     if(error.message === "Incorrect Settings") {
         settingsErrorHandling(params).forEach(wrongSetting => {
             new Notice(wrongSetting)

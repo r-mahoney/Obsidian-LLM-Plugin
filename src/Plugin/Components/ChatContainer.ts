@@ -74,6 +74,58 @@ export class ChatContainer {
 		}
 	}
 
+	async regenerateOutput() {
+		// Rm the most recent assistant message
+		this.messages.pop()
+		const lastUserMessage = this.messages[this.messages.length-1]
+		// TODO - Delete the last message on the ui
+		// this.historyPop()
+		// TODO - do not copy paste && support more than chatgpt
+		const API_KEY = this.plugin.settings.openAIAPIKey;
+		if (!API_KEY) {
+			throw new Error("No API Key");
+		}
+		this.previewText = "";
+		const { model, endpointURL, modelEndpoint } =
+		getViewInfo(this.plugin, this.viewType);
+		const params = this.getParams(modelEndpoint, model)
+		if (modelEndpoint === "chat") {
+			const stream = await openAIMessage(
+				params as ChatParams,
+				this.plugin.settings.openAIAPIKey,
+				endpointURL,
+				modelEndpoint
+			);
+			this.setDiv(true);
+			for await (const chunk of stream as Stream<ChatCompletionChunk>) {
+				this.previewText +=
+					chunk.choices[0]?.delta?.content || "";
+				this.streamingDiv.innerHTML = this.previewText;
+				this.historyMessages.scroll(0, 9999);
+			}
+			this.streamingDiv.innerHTML = "";
+			MarkdownRenderer.render(
+				this.plugin.app,
+				this.previewText,
+				this.streamingDiv,
+				"",
+				this.plugin
+			);
+			const copyButton = this.streamingDiv.querySelectorAll(
+				".copy-code-button"
+			) as NodeListOf<HTMLElement>;
+			copyButton.forEach((item) => {
+				item.setAttribute("style", "display: none");
+			});
+			this.messages.push({
+				role: "assistant",
+				content: this.previewText,
+			});
+			console.log("what are our params", params)
+			this.historyPush(params as ChatHistoryItem);
+		}
+	}
+
 	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
 		header.disableButtons();
 		sendButton.setDisabled(true);
@@ -168,6 +220,7 @@ export class ChatContainer {
 						response.map(url => {
 							content += `![created with prompt ${this.prompt}](${url})`
 						})
+						// Patch spelling
 						this.removeLodingDiv();
 						this.messages.push({
 							role: "assistant",
@@ -194,11 +247,16 @@ export class ChatContainer {
 		}
 	}
 
+	// historyPop() {
+	// 	this.plugin.history.pop()
+	// }
+
 	historyPush(params: HistoryItem) {
 		const { modelName, historyIndex, modelEndpoint } = getViewInfo(
 			this.plugin,
 			this.viewType
 		);
+		// console.log("what we got? ", historyIndex)
 		if (historyIndex > -1) {
 			this.plugin.history.overwriteHistory(this.messages, historyIndex);
 		}
@@ -370,6 +428,11 @@ export class ChatContainer {
 			await navigator.clipboard.writeText(this.previewText);
 			new Notice("Text copied to clipboard");
 		});
+		
+		refreshButton.onClick(async () => {
+			new Notice("Regenerating response...")
+			this.regenerateOutput()
+		})
 	}
 
 	removeLodingDiv() {
