@@ -332,9 +332,16 @@ export class ChatContainer {
 		this.loadingDivContainer = this.historyMessages.createDiv();
 		const loadingIcon = this.loadingDivContainer.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
+
 		const copyToClipboardButton = new ButtonComponent(this.loadingDivContainer);
 		copyToClipboardButton.setIcon("files");
+
+		const refreshButton = new ButtonComponent(this.loadingDivContainer);
+		refreshButton.setIcon("refresh-cw");
+
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
+		refreshButton.buttonEl.addClass("add-text", "hide");
+
 		streaming
 			? (this.streamingDiv.innerHTML = "")
 			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
@@ -350,10 +357,12 @@ export class ChatContainer {
 		if (streaming) {
 			this.loadingDivContainer.addEventListener("mouseenter", () => {
 				copyToClipboardButton.buttonEl.removeClass("hide");
+				refreshButton.buttonEl.removeClass("hide");
 			});
 
 			this.loadingDivContainer.addEventListener("mouseleave", () => {
 				copyToClipboardButton.buttonEl.addClass("hide");
+				refreshButton.buttonEl.addClass("hide");
 			});
 		}
 
