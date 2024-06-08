@@ -332,9 +332,9 @@ export class ChatContainer {
 		this.loadingDivContainer = this.historyMessages.createDiv();
 		const loadingIcon = this.loadingDivContainer.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
-		const addText = new ButtonComponent(this.loadingDivContainer);
-		addText.setIcon("files");
-		addText.buttonEl.addClass("add-text", "hide");
+		const copyToClipboardButton = new ButtonComponent(this.loadingDivContainer);
+		copyToClipboardButton.setIcon("files");
+		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
 		streaming
 			? (this.streamingDiv.innerHTML = "")
 			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
@@ -349,15 +349,15 @@ export class ChatContainer {
 
 		if (streaming) {
 			this.loadingDivContainer.addEventListener("mouseenter", () => {
-				addText.buttonEl.removeClass("hide");
+				copyToClipboardButton.buttonEl.removeClass("hide");
 			});
 
 			this.loadingDivContainer.addEventListener("mouseleave", () => {
-				addText.buttonEl.addClass("hide");
+				copyToClipboardButton.buttonEl.addClass("hide");
 			});
 		}
 
-		addText.onClick(async () => {
+		copyToClipboardButton.onClick(async () => {
 			await navigator.clipboard.writeText(this.previewText);
 			new Notice("Text copied to clipboard");
 		});
@@ -390,9 +390,9 @@ export class ChatContainer {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const icon = imLikeMessageContainer.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
-		const addText = new ButtonComponent(imLikeMessageContainer);
+		const copyToClipboardButton = new ButtonComponent(imLikeMessageContainer);
 
-		addText.setIcon("files");
+		copyToClipboardButton.setIcon("files");
 		icon.innerHTML = role[0];
 		// imLikeMessage.innerHTML = content;
 		MarkdownRenderer.render(
@@ -409,7 +409,7 @@ export class ChatContainer {
 			item.setAttribute("style", "display: none");
 		});
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
-		addText.buttonEl.addClass("add-text", "hide");
+		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
 		icon.addClass("message-icon");
 		imLikeMessage.addClass(
 			"im-like-message",
@@ -422,15 +422,15 @@ export class ChatContainer {
 		}
 
 		imLikeMessageContainer.addEventListener("mouseenter", () => {
-			addText.buttonEl.removeClass("hide");
+			copyToClipboardButton.buttonEl.removeClass("hide");
 		});
 
 		imLikeMessageContainer.addEventListener("mouseleave", () => {
-			addText.buttonEl.addClass("hide");
+			copyToClipboardButton.buttonEl.addClass("hide");
 		});
 
-		addText.setTooltip("Copy to clipboard");
-		addText.onClick(async () => {
+		copyToClipboardButton.setTooltip("Copy to clipboard");
+		copyToClipboardButton.onClick(async () => {
 			await navigator.clipboard.writeText(content);
 			new Notice("Text copied to clipboard");
 		});
