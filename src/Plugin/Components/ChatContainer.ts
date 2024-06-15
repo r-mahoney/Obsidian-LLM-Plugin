@@ -77,10 +77,12 @@ export class ChatContainer {
 	async regenerateOutput() {
 		this.removeLastMessageAndHistoryMessage()
 		// TODO - do not copy paste && support more than chatgpt
-		const API_KEY = this.plugin.settings.openAIAPIKey;
-		if (!API_KEY) {
-			throw new Error("No API Key");
-		}
+		this.handleGenerate()
+	}
+
+	async handleGenerate() {
+		// TODO - do not copy paste && support more than chatgpt
+
 		this.previewText = "";
 		const { model, endpointURL, modelEndpoint } =
 		getViewInfo(this.plugin, this.viewType);
@@ -120,6 +122,7 @@ export class ChatContainer {
 		}
 	}
 
+
 	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
 		header.disableButtons();
 		sendButton.setDisabled(true);
@@ -153,21 +156,6 @@ export class ChatContainer {
 						this.appendNewMessage(response);
 						this.historyPush(params as ChatHistoryItem);
 					})
-					.catch((err) => {
-						this.removeLodingDiv();
-						errorMessages(err, params);
-						if (this.messages.length > 0) {
-							setTimeout(() => {
-								this.removeMessage(header, modelName);
-							}, 1000);
-						}
-					})
-					.finally(() => {
-						this.prompt = "";
-						header.enableButtons();
-						sendButton.setDisabled(false);
-						this.plugin.settings.GPT4AllStreaming = false;
-					});
 			} else {
 				const API_KEY = this.plugin.settings.openAIAPIKey;
 				if (!API_KEY) {
@@ -175,39 +163,9 @@ export class ChatContainer {
 				}
 				this.previewText = "";
 				if (modelEndpoint === "chat") {
-					const stream = await openAIMessage(
-						params as ChatParams,
-						this.plugin.settings.openAIAPIKey,
-						endpointURL,
-						modelEndpoint
-					);
-					this.setDiv(true);
-					for await (const chunk of stream as Stream<ChatCompletionChunk>) {
-						this.previewText +=
-							chunk.choices[0]?.delta?.content || "";
-						this.streamingDiv.innerHTML = this.previewText;
-						this.historyMessages.scroll(0, 9999);
-					}
-					this.streamingDiv.innerHTML = "";
-					MarkdownRenderer.render(
-						this.plugin.app,
-						this.previewText,
-						this.streamingDiv,
-						"",
-						this.plugin
-					);
-					const copyButton = this.streamingDiv.querySelectorAll(
-						".copy-code-button"
-					) as NodeListOf<HTMLElement>;
-					copyButton.forEach((item) => {
-						item.setAttribute("style", "display: none");
-					});
-					this.messages.push({
-						role: "assistant",
-						content: this.previewText,
-					});
-					this.historyPush(params as ChatHistoryItem);
+					this.handleGenerate()
 				}
+
 				if (modelEndpoint === "images") {
 					this.setDiv(false);
 					await openAIMessage(
