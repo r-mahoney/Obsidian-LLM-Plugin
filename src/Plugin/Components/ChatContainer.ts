@@ -392,7 +392,7 @@ export class ChatContainer {
 		refreshButton.setIcon("refresh-cw");
 
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
-		refreshButton.buttonEl.addClass("add-text", "hide");
+		refreshButton.buttonEl.addClass("refresh-output", "hide");
 
 		streaming
 			? (this.streamingDiv.innerHTML = "")
