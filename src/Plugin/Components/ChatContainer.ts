@@ -75,11 +75,7 @@ export class ChatContainer {
 	}
 
 	async regenerateOutput() {
-		// Rm the most recent assistant message
-		this.messages.pop()
-		const lastUserMessage = this.messages[this.messages.length-1]
-		// TODO - Delete the last message on the ui
-		// this.historyPop()
+		this.removeLastMessageAndHistoryMessage()
 		// TODO - do not copy paste && support more than chatgpt
 		const API_KEY = this.plugin.settings.openAIAPIKey;
 		if (!API_KEY) {
@@ -121,8 +117,6 @@ export class ChatContainer {
 				role: "assistant",
 				content: this.previewText,
 			});
-			console.log("what are our params", params)
-			this.historyPush(params as ChatHistoryItem);
 		}
 	}
 
@@ -521,10 +515,13 @@ export class ChatContainer {
 
 		this.createMessage(role, content, length);
 	}
-
-	removeMessage(header: Header, modelName: string) {
+	removeLastMessageAndHistoryMessage() {
 		this.messages.pop();
 		this.historyMessages.lastElementChild?.remove();
+	}
+
+	removeMessage(header: Header, modelName: string) {
+		this.removeLastMessageAndHistoryMessage()
 		if (this.historyMessages.children.length < 1) {
 			header.setHeader(modelName, "LLM Plugin");
 		}
