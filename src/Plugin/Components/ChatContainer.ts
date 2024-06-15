@@ -76,12 +76,11 @@ export class ChatContainer {
 
 	async regenerateOutput() {
 		this.removeLastMessageAndHistoryMessage()
-		// TODO - do not copy paste && support more than chatgpt
 		this.handleGenerate()
 	}
 
 	async handleGenerate() {
-		// TODO - do not copy paste && support more than chatgpt
+		// TODO - support more than chatgpt
 
 		this.previewText = "";
 		const { model, endpointURL, modelEndpoint } =
