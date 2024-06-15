@@ -34,6 +34,7 @@ export type TokenParams = {
 };
 
 export type Message = {
+	// TODO - abstract role 'user' into a const
 	role: "user" | "assistant";
 	content: string;
 };
