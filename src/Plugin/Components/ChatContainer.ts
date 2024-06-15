@@ -247,16 +247,12 @@ export class ChatContainer {
 		}
 	}
 
-	// historyPop() {
-	// 	this.plugin.history.pop()
-	// }
 
 	historyPush(params: HistoryItem) {
 		const { modelName, historyIndex, modelEndpoint } = getViewInfo(
 			this.plugin,
 			this.viewType
 		);
-		// console.log("what we got? ", historyIndex)
 		if (historyIndex > -1) {
 			this.plugin.history.overwriteHistory(this.messages, historyIndex);
 		}
