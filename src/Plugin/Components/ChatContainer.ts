@@ -123,6 +123,12 @@ export class ChatContainer {
 	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
 		header.disableButtons();
 		sendButton.setDisabled(true);
+
+		// The refresh button should only be displayed on the most recent
+		// assistant message.
+		const refreshButton = this.historyMessages.querySelector('.refresh-output')
+		refreshButton?.remove()
+
 		const { model, modelName, modelType, endpointURL, modelEndpoint } =
 			getViewInfo(this.plugin, this.viewType);
 		if (this.historyMessages.children.length < 1) {
