@@ -87,18 +87,6 @@ export class ChatContainer {
 			};
 			return params;
 		}
-
-		if (endpoint === "speech") {
-			const params: SpeechParams = {
-				input: this.prompt,
-				model,
-				voice: this.plugin.settings[settingType].speechSettings.voice,
-				responseFormat: this.plugin.settings[settingType].speechSettings.responseFormat,
-				speed: this.plugin.settings[settingType].speechSettings.speed
-			}
-
-			return params
-		}
 	}
 
 	async regenerateOutput() {
@@ -110,9 +98,9 @@ export class ChatContainer {
 		// TODO - support more than chatgpt
 
 		this.previewText = "";
-		const { model, endpointURL, modelEndpoint, modelType } =
+		const { model, endpointURL, modelEndpoint } =
 		getViewInfo(this.plugin, this.viewType);
-		const params = this.getParams(modelEndpoint, model, modelType)
+		const params = this.getParams(modelEndpoint, model)
 		if (modelEndpoint === "chat") {
 			const stream = await openAIMessage(
 				params as ChatParams,
@@ -164,11 +152,11 @@ export class ChatContainer {
 			header.setHeader(modelName, this.prompt);
 		}
 		this.messages.push({ role: "user", content: this.prompt });
-		const params = this.getParams(modelEndpoint, model, modelType);
+		const params = this.getParams(modelEndpoint, model);
 		try {
-			// if (settingsErrorHandling(params).length > 0) {
-			// 	throw new Error("Incorrect Settings");
-			// }
+			if (settingsErrorHandling(params).length > 0) {
+				throw new Error("Incorrect Settings");
+			}
 			this.appendNewMessage({ role: "user", content: this.prompt });
 			if (this.plugin.settings.GPT4AllStreaming)
 				throw new Error("GPT4All streaming");
