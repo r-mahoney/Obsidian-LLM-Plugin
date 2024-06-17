@@ -87,6 +87,19 @@ export class ChatContainer {
 			};
 			return params;
 		}
+
+		if (endpoint === "speech") {
+			const params: SpeechParams = {
+				model,
+				input: this.prompt,
+				voice: this.plugin.settings[settingType].speechSettings.voice,
+				responseFormat:
+					this.plugin.settings[settingType].speechSettings.responseFormat,
+				speed:
+					this.plugin.settings[settingType].speechSettings.speed,
+			}
+			return params
+		}
 	}
 
 	async regenerateOutput() {
@@ -98,9 +111,9 @@ export class ChatContainer {
 		// TODO - support more than chatgpt
 
 		this.previewText = "";
-		const { model, endpointURL, modelEndpoint } =
+		const { model, endpointURL, modelEndpoint, modelType } =
 		getViewInfo(this.plugin, this.viewType);
-		const params = this.getParams(modelEndpoint, model)
+		const params = this.getParams(modelEndpoint, model, modelType)
 		if (modelEndpoint === "chat") {
 			const stream = await openAIMessage(
 				params as ChatParams,
@@ -133,6 +146,7 @@ export class ChatContainer {
 				role: "assistant",
 				content: this.previewText,
 			});
+			this.historyPush({...params, messages: this.messages} as ChatHistoryItem);
 		}
 	}
 
@@ -152,11 +166,11 @@ export class ChatContainer {
 			header.setHeader(modelName, this.prompt);
 		}
 		this.messages.push({ role: "user", content: this.prompt });
-		const params = this.getParams(modelEndpoint, model);
+		const params = this.getParams(modelEndpoint, model, modelType);
 		try {
-			if (settingsErrorHandling(params).length > 0) {
-				throw new Error("Incorrect Settings");
-			}
+			// if (settingsErrorHandling(params).length > 0) {
+			// 	throw new Error("Incorrect Settings");
+			// }
 			this.appendNewMessage({ role: "user", content: this.prompt });
 			if (this.plugin.settings.GPT4AllStreaming)
 				throw new Error("GPT4All streaming");
@@ -177,7 +191,7 @@ export class ChatContainer {
 				}
 				this.previewText = "";
 				if (modelEndpoint === "chat") {
-					this.handleGenerate()
+					this.handleGenerate();
 				}
 
 				if (modelEndpoint === "images") {
@@ -199,7 +213,8 @@ export class ChatContainer {
 							content
 						});
 						this.appendImage(response);
-						this.historyPush(params as ImageHistoryItem);
+						this.historyPush({...params, messages: this.messages} as ImageHistoryItem);
+
 					});
 				}
 				if(modelEndpoint === "speech") {
