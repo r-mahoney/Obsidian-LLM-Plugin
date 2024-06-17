@@ -27,7 +27,7 @@ export class WidgetView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return "Example View";
+		return "LLM Plugin View";
 	}
 
 	async onOpen() {

@@ -49,13 +49,13 @@ const defaultSettings = {
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	appName: "Local LLM Plugin",
 	modalSettings: {
-		...defaultSettings
+		...defaultSettings,
 	},
 	widgetSettings: {
-		...defaultSettings
+		...defaultSettings,
 	},
 	fabSettings: {
-		...defaultSettings
+		...defaultSettings,
 	},
 	imageAdvSettings: {
 		numberOfImages: 1,
@@ -148,7 +148,7 @@ export default class LLMPlugin extends Plugin {
 		}
 
 		// "Reveal" the leaf in case it is in a collapsed sidebar
-		// workspace.revealLeaf(leaf);
+		workspace.revealLeaf(leaf);
 	}
 
 	async loadSettings() {
