@@ -169,7 +169,6 @@ export class SettingsContainer {
 					dropdown.addOption("", "Select Style");
 					dropdown.addOption("natural", "Natural");
 					dropdown.addOption("vivid", "Vivid");
-
 					dropdown.onChange((change: "vivid" | "natural") => {
 						viewSettings.imageSettings.style = change;
 						this.plugin.saveSettings();
