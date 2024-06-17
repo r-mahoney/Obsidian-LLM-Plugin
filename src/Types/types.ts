@@ -3,9 +3,16 @@ type InitialParams = {
 	messages: Message[];
 	model: string;
 };
+
 export type ChatParams = InitialParams & {
 	temperature: number;
 	tokens: number;
+	frequencyPenalty?: number | null;
+	logProbs?: boolean | null;
+	topLogProbs?: number | null;
+	presencePenalty?: number | null;
+	responseFormat?: string | null;
+	topP?: number | null;
 };
 
 export type ImageParams = InitialParams & {
@@ -18,7 +25,7 @@ export type ImageParams = InitialParams & {
 
 export type SpeechParams = {
 	model: string;
-	input: string
+	input: string;
 	voice: string;
 	responseFormat: string;
 	speed: number;
