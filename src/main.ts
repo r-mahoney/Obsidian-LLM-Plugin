@@ -104,9 +104,9 @@ export default class LLMPlugin extends Plugin {
 	private registerCommands() {
 		//modal command that will be removed when modal is depricated
 		const openChat = this.addCommand({
-			id: "open-conversation-modal",
+			id: "open-llm-modal",
 			name: "Open LLM Modal",
-			editorCallback: () => {
+			callback: () => {
 				new ChatModal2(this).open();
 			},
 		});
