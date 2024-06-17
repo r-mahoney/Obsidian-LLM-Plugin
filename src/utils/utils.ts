@@ -1,14 +1,17 @@
 import { existsSync } from "fs";
+import fs from "fs";
+import path from "path";
 import LLMPlugin from "main";
 import { Editor } from "obsidian";
 import OpenAI from "openai";
 import {
 	ChatParams,
-	ImageParams, ViewSettings,
-	ViewType
+	ImageParams,
+	SpeechParams,
+	ViewSettings,
+	ViewType,
 } from "Types/types";
 
-const path = require("path");
 const homeDir = require("os").homedir();
 export const DEFAULT_DIRECTORY = path.resolve(
 	homeDir,
@@ -37,7 +40,7 @@ export async function messageGPT4AllServer(params: ChatParams, url: string) {
 
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
-	params: ChatParams | ImageParams,
+	params: ChatParams | ImageParams | SpeechParams,
 	OpenAI_API_Key: string,
 	endpoint: string,
 	endpointType: string
@@ -77,19 +80,44 @@ export async function openAIMessage(
 		const image = await openai.images.generate({
 			model,
 			prompt,
-			size: size as "256x256" | "512x512" | "1024x1024" | "1792x1024" | "1024x1792",
+			size: size as
+				| "256x256"
+				| "512x512"
+				| "1024x1024"
+				| "1792x1024"
+				| "1024x1792",
 			quality,
 			n: numberOfImages,
 			style,
 		});
-		let imageURLs:string[] = [];
-		image.data.map(image => {
-			return imageURLs.push(image.url!)
-		})
-		// return image.data[0].url;
-		console.log(image.data)
-		console.log(imageURLs)
-		return imageURLs
+		let imageURLs: string[] = [];
+		image.data.map((image) => {
+			return imageURLs.push(image.url!);
+		});
+		return imageURLs;
+	}
+
+	if (endpointType === "speech") {
+		const { input, model, voice, responseFormat, speed } =
+			params as SpeechParams;
+		const filename = input.split(" ")[0]
+		const speechfile = path.resolve(`./${filename}.${responseFormat}`);
+
+		const response = await openai.audio.speech.create({
+			model,
+			voice: voice as
+				| "alloy"
+				| "echo"
+				| "fable"
+				| "onyx"
+				| "nova"
+				| "shimmer",
+			input,
+		});
+		console.log(response);
+		console.log(speechfile)
+		// const buffer = Buffer.from(await response.arrayBuffer());
+		// await fs.promises.writeFile(speechfile, buffer);
 	}
 }
 
@@ -198,4 +226,18 @@ export function appendMessage(editor: Editor, message: string, type?: string) {
 	editor.replaceRange(newLine, editor.getCursor());
 
 	moveCursorToEndOfFile(editor!);
+}
+
+export function getSettingType(viewType: ViewType) {
+	const settings: Record<string, string> = {
+		modal: "modalSettings",
+		widget: "widgetSettings",
+		"floating-action-button": "fabSettings",
+	};
+	const settingType = settings[viewType] as
+		| "modalSettings"
+		| "widgetSettings"
+		| "fabSettings";
+
+	return settingType;
 }

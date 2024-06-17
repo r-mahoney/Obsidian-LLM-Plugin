@@ -15,10 +15,12 @@ import {
 	ImageHistoryItem,
 	ImageParams,
 	Message,
+	SpeechParams,
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
 import {
+	getSettingType,
 	getViewInfo,
 	messageGPT4AllServer,
 	openAIMessage,
@@ -29,7 +31,6 @@ import { Header } from "./Header";
 export class ChatContainer {
 	historyMessages: HTMLElement;
 	prompt: string;
-	processedPrompt: string;
 	messages: Message[];
 	replaceChatHistory: boolean;
 	loadingDivContainer: HTMLElement;
@@ -45,49 +46,129 @@ export class ChatContainer {
 		this.viewType = viewType;
 	}
 
-	getParams(endpoint: string, model: string) {
+	getParams(endpoint: string, model: string, modelType: string) {
+		const settingType = getSettingType(this.viewType)
 		if (endpoint === "images") {
 			const params: ImageParams = {
 				prompt: this.prompt,
 				messages: this.messages,
 				model,
 				numberOfImages:
-					this.plugin.settings.imageAdvSettings.numberOfImages,
+					this.plugin.settings[settingType].imageSettings.numberOfImages,
 				response_format:
-					this.plugin.settings.imageAdvSettings.response_format,
-				size: this.plugin.settings.imageAdvSettings.size,
-				style: this.plugin.settings.imageAdvSettings.style,
-				quality: this.plugin.settings.imageAdvSettings.quality,
+					this.plugin.settings[settingType].imageSettings.response_format,
+				size: this.plugin.settings[settingType].imageSettings.size,
+				style: this.plugin.settings[settingType].imageSettings.style,
+				quality: this.plugin.settings[settingType].imageSettings.quality,
 			};
 			return params;
 		}
 
 		if (endpoint === "chat") {
+			if(modelType !== "GPT4All") {
+				const params: ChatParams = {
+					prompt: this.prompt,
+					messages: this.messages,
+					temperature: this.plugin.settings[settingType].chatSettings.temperature,
+					tokens: this.plugin.settings[settingType].chatSettings.maxTokens,
+					model,
+					...this.plugin.settings[settingType].chatSettings.openAI
+				};
+
+				return params
+			}
+
 			const params: ChatParams = {
 				prompt: this.prompt,
 				messages: this.messages,
-				temperature: this.plugin.settings.temperature,
-				tokens: this.plugin.settings.tokens,
+				temperature: this.plugin.settings[settingType].chatSettings.temperature,
+				tokens: this.plugin.settings[settingType].chatSettings.maxTokens,
 				model,
 			};
 			return params;
 		}
+
+		if (endpoint === "speech") {
+			const params: SpeechParams = {
+				input: this.prompt,
+				model,
+				voice: this.plugin.settings[settingType].speechSettings.voice,
+				responseFormat: this.plugin.settings[settingType].speechSettings.responseFormat,
+				speed: this.plugin.settings[settingType].speechSettings.speed
+			}
+
+			return params
+		}
 	}
+
+	async regenerateOutput() {
+		this.removeLastMessageAndHistoryMessage()
+		this.handleGenerate()
+	}
+
+	async handleGenerate() {
+		// TODO - support more than chatgpt
+
+		this.previewText = "";
+		const { model, endpointURL, modelEndpoint, modelType } =
+		getViewInfo(this.plugin, this.viewType);
+		const params = this.getParams(modelEndpoint, model, modelType)
+		if (modelEndpoint === "chat") {
+			const stream = await openAIMessage(
+				params as ChatParams,
+				this.plugin.settings.openAIAPIKey,
+				endpointURL,
+				modelEndpoint
+			);
+			this.setDiv(true);
+			for await (const chunk of stream as Stream<ChatCompletionChunk>) {
+				this.previewText +=
+					chunk.choices[0]?.delta?.content || "";
+				this.streamingDiv.innerHTML = this.previewText;
+				this.historyMessages.scroll(0, 9999);
+			}
+			this.streamingDiv.innerHTML = "";
+			MarkdownRenderer.render(
+				this.plugin.app,
+				this.previewText,
+				this.streamingDiv,
+				"",
+				this.plugin
+			);
+			const copyButton = this.streamingDiv.querySelectorAll(
+				".copy-code-button"
+			) as NodeListOf<HTMLElement>;
+			copyButton.forEach((item) => {
+				item.setAttribute("style", "display: none");
+			});
+			this.messages.push({
+				role: "assistant",
+				content: this.previewText,
+			});
+		}
+	}
+
 
 	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
 		header.disableButtons();
 		sendButton.setDisabled(true);
+
+		// The refresh button should only be displayed on the most recent
+		// assistant message.
+		const refreshButton = this.historyMessages.querySelector('.refresh-output')
+		refreshButton?.remove()
+
 		const { model, modelName, modelType, endpointURL, modelEndpoint } =
 			getViewInfo(this.plugin, this.viewType);
 		if (this.historyMessages.children.length < 1) {
 			header.setHeader(modelName, this.prompt);
 		}
 		this.messages.push({ role: "user", content: this.prompt });
-		const params = this.getParams(modelEndpoint, model);
+		const params = this.getParams(modelEndpoint, model, modelType);
 		try {
-			if (settingsErrorHandling(params).length > 0) {
-				throw new Error("Incorrect Settings");
-			}
+			// if (settingsErrorHandling(params).length > 0) {
+			// 	throw new Error("Incorrect Settings");
+			// }
 			this.appendNewMessage({ role: "user", content: this.prompt });
 			if (this.plugin.settings.GPT4AllStreaming)
 				throw new Error("GPT4All streaming");
@@ -101,21 +182,6 @@ export class ChatContainer {
 						this.appendNewMessage(response);
 						this.historyPush(params as ChatHistoryItem);
 					})
-					.catch((err) => {
-						this.removeLodingDiv();
-						errorMessages(err, params);
-						if (this.messages.length > 0) {
-							setTimeout(() => {
-								this.removeMessage(header, modelName);
-							}, 1000);
-						}
-					})
-					.finally(() => {
-						this.prompt = "";
-						header.enableButtons();
-						sendButton.setDisabled(false);
-						this.plugin.settings.GPT4AllStreaming = false;
-					});
 			} else {
 				const API_KEY = this.plugin.settings.openAIAPIKey;
 				if (!API_KEY) {
@@ -123,39 +189,9 @@ export class ChatContainer {
 				}
 				this.previewText = "";
 				if (modelEndpoint === "chat") {
-					const stream = await openAIMessage(
-						params as ChatParams,
-						this.plugin.settings.openAIAPIKey,
-						endpointURL,
-						modelEndpoint
-					);
-					this.setDiv(true);
-					for await (const chunk of stream as Stream<ChatCompletionChunk>) {
-						this.previewText +=
-							chunk.choices[0]?.delta?.content || "";
-						this.streamingDiv.innerHTML = this.previewText;
-						this.historyMessages.scroll(0, 9999);
-					}
-					this.streamingDiv.innerHTML = "";
-					MarkdownRenderer.render(
-						this.plugin.app,
-						this.previewText,
-						this.streamingDiv,
-						"",
-						this.plugin
-					);
-					const copyButton = this.streamingDiv.querySelectorAll(
-						".copy-code-button"
-					) as NodeListOf<HTMLElement>;
-					copyButton.forEach((item) => {
-						item.setAttribute("style", "display: none");
-					});
-					this.messages.push({
-						role: "assistant",
-						content: this.previewText,
-					});
-					this.historyPush(params as ChatHistoryItem);
+					this.handleGenerate()
 				}
+
 				if (modelEndpoint === "images") {
 					this.setDiv(false);
 					await openAIMessage(
@@ -168,6 +204,7 @@ export class ChatContainer {
 						response.map(url => {
 							content += `![created with prompt ${this.prompt}](${url})`
 						})
+						// Patch spelling
 						this.removeLodingDiv();
 						this.messages.push({
 							role: "assistant",
@@ -176,6 +213,14 @@ export class ChatContainer {
 						this.appendImage(response);
 						this.historyPush(params as ImageHistoryItem);
 					});
+				}
+				if(modelEndpoint === "speech") {
+					const response = await openAIMessage(
+						params as SpeechParams,
+						this.plugin.settings.openAIAPIKey,
+						endpointURL,
+						modelEndpoint
+					)
 				}
 				header.enableButtons();
 				sendButton.setDisabled(false);
@@ -194,13 +239,16 @@ export class ChatContainer {
 		}
 	}
 
+
 	historyPush(params: HistoryItem) {
 		const { modelName, historyIndex, modelEndpoint } = getViewInfo(
 			this.plugin,
 			this.viewType
 		);
+		console.log(historyIndex)
 		if (historyIndex > -1) {
 			this.plugin.history.overwriteHistory(this.messages, historyIndex);
+			return
 		}
 
 		if (modelEndpoint === "chat") {
@@ -208,7 +256,6 @@ export class ChatContainer {
 				params as ChatHistoryItem;
 			this.plugin.history.push({
 				prompt: this.prompt,
-				processedPrompt: this.processedPrompt,
 				messages,
 				temperature,
 				tokens,
@@ -332,9 +379,16 @@ export class ChatContainer {
 		this.loadingDivContainer = this.historyMessages.createDiv();
 		const loadingIcon = this.loadingDivContainer.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
-		const addText = new ButtonComponent(this.loadingDivContainer);
-		addText.setIcon("files");
-		addText.buttonEl.addClass("add-text", "hide");
+
+		const copyToClipboardButton = new ButtonComponent(this.loadingDivContainer);
+		copyToClipboardButton.setIcon("files");
+
+		const refreshButton = new ButtonComponent(this.loadingDivContainer);
+		refreshButton.setIcon("refresh-cw");
+
+		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
+		refreshButton.buttonEl.addClass("refresh-output", "hide");
+
 		streaming
 			? (this.streamingDiv.innerHTML = "")
 			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
@@ -349,18 +403,25 @@ export class ChatContainer {
 
 		if (streaming) {
 			this.loadingDivContainer.addEventListener("mouseenter", () => {
-				addText.buttonEl.removeClass("hide");
+				copyToClipboardButton.buttonEl.removeClass("hide");
+				refreshButton.buttonEl.removeClass("hide");
 			});
 
 			this.loadingDivContainer.addEventListener("mouseleave", () => {
-				addText.buttonEl.addClass("hide");
+				copyToClipboardButton.buttonEl.addClass("hide");
+				refreshButton.buttonEl.addClass("hide");
 			});
 		}
 
-		addText.onClick(async () => {
+		copyToClipboardButton.onClick(async () => {
 			await navigator.clipboard.writeText(this.previewText);
 			new Notice("Text copied to clipboard");
 		});
+		
+		refreshButton.onClick(async () => {
+			new Notice("Regenerating response...")
+			this.regenerateOutput()
+		})
 	}
 
 	removeLodingDiv() {
@@ -390,9 +451,9 @@ export class ChatContainer {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const icon = imLikeMessageContainer.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
-		const addText = new ButtonComponent(imLikeMessageContainer);
+		const copyToClipboardButton = new ButtonComponent(imLikeMessageContainer);
 
-		addText.setIcon("files");
+		copyToClipboardButton.setIcon("files");
 		icon.innerHTML = role[0];
 		// imLikeMessage.innerHTML = content;
 		MarkdownRenderer.render(
@@ -409,7 +470,7 @@ export class ChatContainer {
 			item.setAttribute("style", "display: none");
 		});
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
-		addText.buttonEl.addClass("add-text", "hide");
+		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
 		icon.addClass("message-icon");
 		imLikeMessage.addClass(
 			"im-like-message",
@@ -422,15 +483,15 @@ export class ChatContainer {
 		}
 
 		imLikeMessageContainer.addEventListener("mouseenter", () => {
-			addText.buttonEl.removeClass("hide");
+			copyToClipboardButton.buttonEl.removeClass("hide");
 		});
 
 		imLikeMessageContainer.addEventListener("mouseleave", () => {
-			addText.buttonEl.addClass("hide");
+			copyToClipboardButton.buttonEl.addClass("hide");
 		});
 
-		addText.setTooltip("Copy to clipboard");
-		addText.onClick(async () => {
+		copyToClipboardButton.setTooltip("Copy to clipboard");
+		copyToClipboardButton.onClick(async () => {
 			await navigator.clipboard.writeText(content);
 			new Notice("Text copied to clipboard");
 		});
@@ -449,10 +510,13 @@ export class ChatContainer {
 
 		this.createMessage(role, content, length);
 	}
-
-	removeMessage(header: Header, modelName: string) {
+	removeLastMessageAndHistoryMessage() {
 		this.messages.pop();
 		this.historyMessages.lastElementChild?.remove();
+	}
+
+	removeMessage(header: Header, modelName: string) {
+		this.removeLastMessageAndHistoryMessage()
 		if (this.historyMessages.children.length < 1) {
 			header.setHeader(modelName, "LLM Plugin");
 		}

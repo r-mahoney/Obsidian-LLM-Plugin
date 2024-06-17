@@ -217,7 +217,7 @@
 	}
 }
 
-.add-text {
+.add-text, .refresh-output {
 	margin-top: auto;
 }
 
@@ -300,6 +300,7 @@ FAB MESSAGE ICON CSS
 .edit-prompt-button,
 .save-prompt-button,
 .add-text,
+.refresh-output,
 #delete-history-button {
 	padding: 4px;
 }
