@@ -52,6 +52,7 @@ export class SettingsContainer {
 						this.viewType
 					);
 					const modelName = modelNames[change];
+					if (!models[modelName]) return;
 					const index = historyIndex;
 					viewSettings.model = change;
 					viewSettings.modelName = modelName;
