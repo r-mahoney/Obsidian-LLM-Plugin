@@ -56,7 +56,6 @@ export class SettingsContainer {
 					viewSettings.model = change;
 					viewSettings.modelName = modelName;
 					viewSettings.modelType = models[modelName].type;
-					console.log(viewSettings.modelType)
 					viewSettings.endpointURL = models[modelName].url;
 					viewSettings.modelEndpoint = models[modelName].endpoint;
 					if (index > -1) {
@@ -82,7 +81,6 @@ export class SettingsContainer {
 		const viewSettings = this.plugin.settings[settingType];
 		const endpoint = viewSettings.modelEndpoint;
 		const modelType = viewSettings.modelType;
-		console.log(modelType)
 		if (endpoint === "images") {
 			this.generateImageSettings(parentContainer, viewSettings.model);
 		}
