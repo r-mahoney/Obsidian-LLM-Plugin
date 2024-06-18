@@ -14,27 +14,63 @@ type ViewSettings = {
 	modelEndpoint: string;
 	endpointURL: string;
 	historyIndex: number;
+	imageSettings: ImageSettings;
+	chatSettings: ChatSettings;
+	speechSettings: SpeechSettings;
 };
-type imageAdvSettings = {
+
+export type ResponseFormat = "url" | "b64_json";
+export type ImageStyle = "vivid" | "natural";
+export type ImageQuality = "hd" | "standard";
+export type ImageSize =
+	| "256x256"
+	| "512x512"
+	| "1024x1024"
+	| "1024x1024"
+	| "1792x1024"
+	| "1024x1792";
+
+type SpeechSettings = {
+	voice: string;
+	responseFormat: string;
+	speed: number;
+};
+
+type ImageSettings = {
 	numberOfImages: number;
-	response_format: "url" | "b64_json";
-	size: string;
-	style: "vivid" | "natural";
-	quality?: "hd" | "standard";
+	response_format: ResponseFormat;
+	size: ImageSize;
+	style: ImageStyle;
+	quality: ImageQuality;
 };
+
+type ChatSettings = {
+	maxTokens: number;
+	temperature: number;
+	GPT4All?: GPT4AllSettings;
+	openAI?: OpenAISettings;
+};
+
+type OpenAISettings = {
+	frequencyPenalty: number;
+	logProbs: boolean;
+	topLogProbs: number | null;
+	presencePenalty: number;
+	responseFormat: string;
+	topP: number;
+};
+
+type GPT4AllSettings = {};
 
 export interface LLMPluginSettings {
 	appName: string;
 	modalSettings: ViewSettings;
 	widgetSettings: ViewSettings;
 	fabSettings: ViewSettings;
-	tokens: number;
-	temperature: number;
 	promptHistory: HistoryItem[];
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
 	showFAB: boolean;
-	imageAdvSettings: imageAdvSettings;
 }
 
 const defaultSettings = {
@@ -44,6 +80,31 @@ const defaultSettings = {
 	modelEndpoint: "chat",
 	endpointURL: "/chat/completions",
 	historyIndex: -1,
+	imageSettings: {
+		numberOfImages: 1,
+		response_format: "url" as ResponseFormat,
+		size: "1024x1024" as ImageSize,
+		style: "vivid" as ImageStyle,
+		quality: "standard" as ImageQuality,
+	},
+	chatSettings: {
+		maxTokens: 300,
+		temperature: 0.65,
+		GPT4All: {},
+		openAI: {
+			frequencyPenalty: 0,
+			logProbs: false,
+			topLogProbs: null,
+			presencePenalty: 0,
+			responseFormat: "",
+			topP: 1,
+		},
+	},
+	speechSettings: {
+		voice: "alloy",
+		responseFormat: "mp3",
+		speed: 1.0,
+	},
 };
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
@@ -57,15 +118,6 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	fabSettings: {
 		...defaultSettings,
 	},
-	imageAdvSettings: {
-		numberOfImages: 1,
-		response_format: "url",
-		size: "1024x1024",
-		style: "vivid",
-		quality: "standard",
-	},
-	tokens: 300,
-	temperature: 0.65,
 	promptHistory: [],
 	openAIAPIKey: "",
 	GPT4AllStreaming: false,
@@ -122,6 +174,7 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	private registerRibbonIcons() {
+		//modal ribbon icon will be removed when modal is depricated
 		const conversationalModalIcon = this.addRibbonIcon(
 			"bot",
 			"Ask A Question",
@@ -132,6 +185,7 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	async activateView() {
+		//starts widget view on plugin load
 		const { workspace } = this.app;
 
 		let leaf: WorkspaceLeaf | null = null;
