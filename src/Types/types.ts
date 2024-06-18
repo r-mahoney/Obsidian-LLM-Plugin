@@ -2,31 +2,54 @@ type InitialParams = {
 	prompt: string;
 	messages: Message[];
 	model: string;
-}
+};
+
 export type ChatParams = InitialParams & {
 	temperature: number;
 	tokens: number;
+	frequencyPenalty?: number | null;
+	logProbs?: boolean | null;
+	topLogProbs?: number | null;
+	presencePenalty?: number | null;
+	responseFormat?: string | null;
+	topP?: number | null;
 };
 
 export type ImageParams = InitialParams & {
 	numberOfImages: number;
 	response_format: "url" | "b64_json";
 	size: string;
-	style: "vivid" | "natural"
-	quality?: "hd" |  "standard";
-}
-export type ChatHistoryItem = InitialParams & ChatParams & {
-	processedPrompt: string;
-	modelName: string;
+	style: "vivid" | "natural";
+	quality?: "hd" | "standard";
 };
 
-export type ImageHistoryItem = InitialParams & ImageParams & {
-	modelName: string
-}
+export type SpeechParams = {
+	model: string;
+	input: string;
+	voice: string;
+	responseFormat: string;
+	speed: number;
+};
 
-export type HistoryItem = ChatHistoryItem | ImageHistoryItem & {
+export type ChatHistoryItem = InitialParams &
+	ChatParams & {
+		modelName: string;
+	};
 
-}
+export type ImageHistoryItem = InitialParams &
+	ImageParams & {
+		modelName: string;
+	};
+
+export type SpeechHistoryItem = InitialParams &
+	SpeechParams & {
+		modelName: string;
+	};
+
+export type HistoryItem =
+	| ChatHistoryItem
+	| ImageHistoryItem
+	| SpeechHistoryItem;
 
 export type TokenParams = {
 	prefix: string[];

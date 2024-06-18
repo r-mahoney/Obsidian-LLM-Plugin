@@ -73,11 +73,17 @@ export const models: Record<string, Model> = {
 		endpoint: "chat",
 		url: "/chat/completions",
 	},
-	// "Text Embedding 3 (Small)": {
-	// 	model: "text-embedding-3-small",
+	// "Text to Speech": {
+	// 	model: "tts-1",
 	// 	type: "openAI",
-	// 	endpoint: "embeddings",
-	// 	url: "/embeddings",
+	// 	endpoint: "speech",
+	// 	url: "/audio/speech",
+	// },
+	// "Text to Speech (HD)": {
+	// 	model: "tts-1-hd",
+	// 	type: "openAI",
+	// 	endpoint: "speech",
+	// 	url: "/audio/speech",
 	// },
 	"DALL·E 3": {
 		model: "dall-e-3",
@@ -109,4 +115,6 @@ export const modelNames: Record<string, string> = {
 	// "text-embedding-3-small": "Text Embedding 3 (Small)",
 	"dall-e-3": "DALL·E 3",
 	"dall-e-2": "DALL·E 2",
+	// "tts-1": "Text to Speech",
+	// "tts-1-hd": "Text to Speech (HD)"
 };
