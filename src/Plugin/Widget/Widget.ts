@@ -6,7 +6,8 @@ import LLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { ItemView, WorkspaceLeaf } from "obsidian";
 import { classNames } from "utils/classNames";
 
-export const VIEW_TYPE = "example-view";
+export const TAB_VIEW_TYPE = "tab-view";
+export const LEAF_VIEW_TYPE = "leaf-view";
 
 export class WidgetView extends ItemView {
 	plugin: LLMPlugin;
@@ -23,7 +24,11 @@ export class WidgetView extends ItemView {
 	}
 
 	getViewType(): string {
-		return VIEW_TYPE;
+		return "";
+		//return an empty tring because workspace.getLeavesOfType function in widget commands uses this to determine what
+		//view is open an causes issues if you want to be able to have commands that open a tab view and a sidebar view separately
+		//The only issue now is that users can open an infinite number of widgets which is probably not ideal behavior
+		//can either solve this issue with over engineering, leave it, or create a whole new class that exactly the same as this class for the tabs
 	}
 
 	getDisplayText(): string {
