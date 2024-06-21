@@ -11,9 +11,11 @@ export const LEAF_VIEW_TYPE = "leaf-view";
 
 export class WidgetView extends ItemView {
 	plugin: LLMPlugin;
-	constructor(leaf: WorkspaceLeaf, plugin: LLMPlugin) {
+	viewType: string
+	constructor(leaf: WorkspaceLeaf, plugin: LLMPlugin, viewType: string) {
 		super(leaf);
 		this.plugin = plugin;
+		this.viewType = viewType
 	}
 
 	hideContainer(container: HTMLElement) {
@@ -24,7 +26,7 @@ export class WidgetView extends ItemView {
 	}
 
 	getViewType(): string {
-		return "";
+		return (this.viewType === "tab" ? TAB_VIEW_TYPE : LEAF_VIEW_TYPE);
 		//return an empty tring because workspace.getLeavesOfType function in widget commands uses this to determine what
 		//view is open an causes issues if you want to be able to have commands that open a tab view and a sidebar view separately
 		//The only issue now is that users can open an infinite number of widgets which is probably not ideal behavior
