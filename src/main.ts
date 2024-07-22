@@ -139,8 +139,8 @@ export default class LLMPlugin extends Plugin {
 		this.registerRibbonIcons();
 		this.registerCommands();
 
-		this.registerView(TAB_VIEW_TYPE, (tab) => new WidgetView(tab, this));
-		this.registerView(LEAF_VIEW_TYPE, (leaf) => new WidgetView(leaf, this));
+		this.registerView(TAB_VIEW_TYPE, (tab) => new WidgetView(tab, this, "tab"));
+		this.registerView(LEAF_VIEW_TYPE, (leaf) => new WidgetView(leaf, this, "leaf"));
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.fab = new FAB(this);

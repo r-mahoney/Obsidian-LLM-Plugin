@@ -4,98 +4,72 @@
   <img alt="Shows project promo image in light and dark mode" src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
 </picture>
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+# A Plugin for accessing LLMs through Obsidian
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+This plugin allows Obsidian users to access local and web LLMs. Local LLMs are available via GPT4All. Currently, OpenAI models are the only web-based LLMs available for use in the plugin. We are working on adding additional support for Google Gemini in the near future.
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+# Installation
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
-
-## First time developing plugins?
-
-Quick starting guide for new plugin devs:
-
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
-
-## Releasing new releases
-
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
-
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
-
-## Adding your plugin to the community plugin list
-
-- Check https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
-
+This plugin in Beta and still under development so installation can be done either by cloning the repo:
 - Clone this repo.
 - Make sure your NodeJS is at least v16 (`node --version`).
 - `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+- Once the dependencies have been installed, run `npm run build` to build the plugin.
+- Once the plugin has been built, it should be ready to activate.
 
-## Manually installing the plugin
+or through the use of another Obsidian Plugin, Beta Reviewers Auto-update Tester ([BRAT](https://github.com/TfTHacker/obsidian42-brat)) - [Quick guide for using BRAT](https://tfthacker.com/Obsidian+Plugins+by+TfTHacker/BRAT+-+Beta+Reviewer's+Auto-update+Tool/Quick+guide+for+using+BRAT)
+- Search for "Obsidian42 - BRAT" in the Obsidian Community plugins.
+- Open the command palette and run the command `BRAT: Add a beta plugin for testing` 
+- Paste "https://github.com/r-mahoney/Obsidian-LLM-Plugin".
+- Click on "Add Plugin".
+- After BRAT confirms the installation, in Settings go to the Community plugins tab.
+- Refresh the list of plugins.
+- Find the Obsidian LLM Plugin and enable it.
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+# Requirements
+**GPT4All**
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+In order to use the GPT4All LLMs you must have the desktop client from [NomicAI](https://www.nomic.ai/gpt4all) downloaded to your local computer and have at least one GPT4All LLM downloaded. 
 
-## Funding URL
+ - No GPT4All models will be displayed in the Widget, FAB, or Modal settings unless you have them downloaded locally
+ - In order for the plugin to  have access to the GPT4All client, you must have the API Server enabled from the GPT4All settings
 
-You can include funding URLs where people who use your plugin can financially support it.
+We currenlty have local doc functionality working for GPT4All models which allows users to add their Obsidian Vault to the GPT4All client and allow 
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+**OpenAI**
 
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
+The OpenAI models we currently support come pre-loaded in the plugin. They include the chat models and image generation models. We are working on epxanding access to most if not all of the OpenAI endpoints. 
 
-If you have multiple URLs, you can also do:
+In order to access these models, you will need to have an OpenAI account with a generated API Key and credits allowing you to make API calls. You can either generate an API Key in the LLM Plugin settings using the "Generate Token" button, or just add your API Key to the input bar. Once your API Key is input, you should have full access to the OpenAI models that we support.
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
+# Features
 
-## API Documentation
+Users are able to access LLMs through a variety of ways: a modal, a floating action button(FAB), and a sidebar widget. The FAB can be toggled on and off through the plugin settings or through the command pallate. The widget can be used in the sidebar or in the place of a note tab. 
 
-See https://github.com/obsidianmd/obsidian-api
-# LLMPlugin
+- Note: The modal is being deprecated upon public release since the widget provides the same use cases.
+
+In each of the views, you have access to Model Settings, Chat History, and New Chat options
+<p align="center">
+  <img src="README_images/fabchat.png" alt="profiles_example">
+</p>
+<p align="center">
+  <img src="README_images/modalsettings.png" alt="profiles_example">
+</p>
+<p align="center">
+  <img src="README_images/widgethistory.png" alt="profiles_example">
+</p>
+
+Clicking the settings, or history button switches to that tab in the plugin view, to get back to the prompt tab, simply click on the highlighted button again.
+
+  - Note: If you haven't submitted any prompts then the chat history tab will appear as an empty page that users may confuse with a broken plugin. We are working on adding an empty state to make it more apparent which tab you are on
+
+  ## Local Docs for GPT4All
+
+  GPT4All makes creating a context out of all your valuts notes and bringing the information you have from files on-device into your LLM chats simple with just a few installation [steps](https://docs.gpt4all.io/gpt4all_desktop/localdocs.html#create-localdocs).
+  1. Click + Add Collection.
+  2. Name your collection and link it to a folder
+     * I have found that the best way to do this is by creating a "Context" folder in my Obsidian Vault and adding any notes I want in my Local Docs to the context folder and then linking to the context folder
+     * Doing this ensures that all of the other files in the vault, i.e: the .obsidian folder, are not included in the Local Docs. Otherwise GPT4All will take a long time indexing the files.
+  3. Click Create Collection. Progress for the collection is displayed on the LocalDocs page.
+     * You will see a green Ready indicator when the entire collection is ready. 
+  4. In the GPT4All Chat Client, open LocalDocs with button in top-right corner to give your LLM context from those files.
