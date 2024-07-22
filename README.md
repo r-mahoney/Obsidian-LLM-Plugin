@@ -10,14 +10,7 @@ This plugin allows Obsidian users to access local and web LLMs. Local LLMs are a
 
 # Installation
 
-This plugin in Beta and still under development so installation can be done either by cloning the repo:
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- Once the dependencies have been installed, run `npm run build` to build the plugin.
-- Once the plugin has been built, it should be ready to activate.
-
-or through the use of another Obsidian Plugin, Beta Reviewers Auto-update Tester ([BRAT](https://github.com/TfTHacker/obsidian42-brat)) - [Quick guide for using BRAT](https://tfthacker.com/Obsidian+Plugins+by+TfTHacker/BRAT+-+Beta+Reviewer's+Auto-update+Tool/Quick+guide+for+using+BRAT)
+This plugin in Beta and still under development so installation can be done either through the use of another Obsidian Plugin, Beta Reviewers Auto-update Tester ([BRAT](https://github.com/TfTHacker/obsidian42-brat)) - [Quick guide for using BRAT](https://tfthacker.com/Obsidian+Plugins+by+TfTHacker/BRAT+-+Beta+Reviewer's+Auto-update+Tool/Quick+guide+for+using+BRAT) (**Recommended**)
 - Search for "Obsidian42 - BRAT" in the Obsidian Community plugins.
 - Open the command palette and run the command `BRAT: Add a beta plugin for testing` 
 - Paste "https://github.com/r-mahoney/Obsidian-LLM-Plugin".
@@ -25,6 +18,13 @@ or through the use of another Obsidian Plugin, Beta Reviewers Auto-update Tester
 - After BRAT confirms the installation, in Settings go to the Community plugins tab.
 - Refresh the list of plugins.
 - Find the Obsidian LLM Plugin and enable it.
+
+or by cloning the repo:
+- Clone this repo.
+- Make sure your NodeJS is at least v16 (`node --version`).
+- `npm i` or `yarn` to install dependencies.
+- Once the dependencies have been installed, run `npm run build` to build the plugin.
+- Once the plugin has been built, it should be ready to activate.
 
 # Requirements
 **GPT4All**
