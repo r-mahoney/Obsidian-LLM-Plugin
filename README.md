@@ -50,13 +50,13 @@ Users are able to access LLMs through a variety of ways: a modal, a floating act
 
 In each of the views, you have access to Model Settings, Chat History, and New Chat options
 <p align="center">
-  <img src="README_images/fabchat.png" alt="profiles_example">
+  <img src="README_images/fabchat.png" alt="FAB chat example">
 </p>
 <p align="center">
-  <img src="README_images/modalsettings.png" alt="profiles_example">
+  <img src="README_images/modalsettings.png" alt="Modal settings example">
 </p>
 <p align="center">
-  <img src="README_images/widgethistory.png" alt="profiles_example">
+  <img src="README_images/widgethistory.png" alt="Widget chat history example">
 </p>
 
 Clicking the settings, or history button switches to that tab in the plugin view, to get back to the prompt tab, simply click on the highlighted button again.
