@@ -65,7 +65,7 @@ Clicking the settings, or history button switches to that tab in the plugin view
 
   ## Local Docs for GPT4All
 
-  GPT4All makes creating a context out of all your valuts notes and bringing the information you have from files on-device into your LLM chats simple with just a few installation [steps](https://docs.gpt4all.io/gpt4all_desktop/localdocs.html#create-localdocs).
+  GPT4All makes creating a context out of all your vaults notes and bringing the information you have from files on-device into your LLM chats simple with just a few installation [steps](https://docs.gpt4all.io/gpt4all_desktop/localdocs.html#create-localdocs).
   1. Click + Add Collection.
   2. Name your collection and link it to a folder
      * I have found that the best way to do this is by creating a "Context" folder in my Obsidian Vault and adding any notes I want in my Local Docs to the context folder and then linking to the context folder
