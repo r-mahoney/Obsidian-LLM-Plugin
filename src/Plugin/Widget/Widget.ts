@@ -1,3 +1,4 @@
+import { AssistantsContainer } from "Plugin/Components/AssistantsContainer";
 import { ChatContainer } from "Plugin/Components/ChatContainer";
 import { Header } from "Plugin/Components/Header";
 import { HistoryContainer } from "Plugin/Components/HistoryContainer";
@@ -60,14 +61,19 @@ export class WidgetView extends ItemView {
 		);
 		const historyContainer = new HistoryContainer(this.plugin, "widget");
 		const settingsContainer = new SettingsContainer(this.plugin, "widget");
+		const assistantsContainer = new AssistantsContainer(this.plugin, "widget")
 
 		const lineBreak = container.createDiv();
 		const chatContainerDiv = container.createDiv();
 		const chatHistoryContainer = container.createDiv();
 		const settingsContainerDiv = container.createDiv();
+		const assistantContainerDiv = container.createDiv();
 
 		settingsContainerDiv.setAttr("style", "display: none");
 		settingsContainerDiv.addClass("widget-settings-container", "flex");
+		assistantContainerDiv.setAttr("style", "display: none");
+		assistantContainerDiv.addClass("widget-assistant-container", "flex");
+		this.viewType === "tab" ? assistantContainerDiv.addClass("widget-tab-assistants") : assistantContainerDiv.addClass("widget-sidebar-assistants")
 		chatHistoryContainer.setAttr("style", "display: none");
 		chatHistoryContainer.addClass("widget-chat-history-container", "flex");
 		lineBreak.className = classNames["widget"]["title-border"];
@@ -78,9 +84,11 @@ export class WidgetView extends ItemView {
 			chatContainerDiv,
 			chatHistoryContainer,
 			settingsContainerDiv,
+			assistantContainerDiv,
 			chatContainer,
 			historyContainer,
 			settingsContainer,
+			assistantsContainer,
 			this.showContainer,
 			this.hideContainer
 		);
@@ -98,6 +106,7 @@ export class WidgetView extends ItemView {
 			settingsContainerDiv,
 			header
 		);
+		assistantsContainer.generateAssistantsContainer(settingsContainerDiv)
 	}
 
 	async onClose() {}

@@ -2,6 +2,7 @@ import { Plugin, WorkspaceLeaf } from "obsidian";
 import { HistoryItem } from "./Types/types";
 
 import { History } from "History/HistoryHandler";
+import { Assistants } from "Assistants/AssistantHandler";
 import { ChatModal2 } from "Plugin/Modal/ChatModal2";
 import SettingsView from "Settings/SettingsView";
 import {
@@ -10,8 +11,11 @@ import {
 	WidgetView,
 } from "Plugin/Widget/Widget";
 import { FAB } from "Plugin/FAB/FAB";
+import { Assistant } from "openai/resources/beta/assistants";
 
 type ViewSettings = {
+	assistant: boolean;
+	assistantId: string
 	model: string;
 	modelName: string;
 	modelType: string;
@@ -72,12 +76,15 @@ export interface LLMPluginSettings {
 	widgetSettings: ViewSettings;
 	fabSettings: ViewSettings;
 	promptHistory: HistoryItem[];
+	assistants: Assistant[];
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
 	showFAB: boolean;
 }
 
 const defaultSettings = {
+	assistant: false,
+	assistantId: "",
 	model: "gpt-3.5-turbo",
 	modelName: "ChatGPT-3.5 Turbo",
 	modelType: "openAI",
@@ -108,7 +115,7 @@ const defaultSettings = {
 		voice: "alloy",
 		responseFormat: "mp3",
 		speed: 1.0,
-	},
+	}
 };
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
@@ -123,6 +130,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 		...defaultSettings,
 	},
 	promptHistory: [],
+	assistants: [],
 	openAIAPIKey: "",
 	GPT4AllStreaming: false,
 	showFAB: true,
@@ -130,6 +138,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 
 export default class LLMPlugin extends Plugin {
 	settings: LLMPluginSettings;
+	assistants: Assistants;
 	history: History;
 	fab: FAB;
 
@@ -151,6 +160,7 @@ export default class LLMPlugin extends Plugin {
 			}, 500);
 		}
 		this.history = new History(this);
+		this.assistants = new Assistants(this)
 	}
 
 	onunload() {

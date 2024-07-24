@@ -1,3 +1,5 @@
+import { Assistant } from "openai/resources/beta/assistants";
+
 type InitialParams = {
 	prompt: string;
 	messages: Message[];
@@ -30,6 +32,9 @@ export type SpeechParams = {
 	responseFormat: string;
 	speed: number;
 };
+export type AIAssistant = Assistant & {
+	modelType: string
+}
 
 export type ChatHistoryItem = InitialParams &
 	ChatParams & {

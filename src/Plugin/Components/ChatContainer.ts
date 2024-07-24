@@ -20,6 +20,7 @@ import {
 } from "Types/types";
 import { classNames } from "utils/classNames";
 import {
+	assistantsMessage,
 	getSettingType,
 	getViewInfo,
 	messageGPT4AllServer,
@@ -116,6 +117,34 @@ export class ChatContainer {
 			this.viewType
 		);
 		const params = this.getParams(modelEndpoint, model, modelType);
+		if (modelEndpoint === "assistant") {
+			const stream = await assistantsMessage(
+				this.plugin.settings.openAIAPIKey,
+				this.messages,
+				this.plugin.settings.assistants[0].id
+			);
+			stream.on("textCreated", (text) => this.setDiv(true));
+			stream.on("textDelta", (textDelta, snapshot) => {
+				if (textDelta.value?.includes("【")) return;
+				this.previewText += textDelta.value;
+				this.streamingDiv.innerHTML = this.previewText;
+				this.historyMessages.scroll(0, 9999);
+			});
+			stream.on("end", () =>
+				this.messages.push({
+					role: "assistant",
+					content: this.previewText,
+				})
+			);
+			MarkdownRenderer.render(
+				this.plugin.app,
+				this.previewText,
+				this.streamingDiv,
+				"",
+				this.plugin
+			);
+		}
+
 		if (modelEndpoint === "chat") {
 			const stream = await openAIMessage(
 				params as ChatParams,
@@ -232,6 +261,9 @@ export class ChatContainer {
 						endpointURL,
 						modelEndpoint
 					);
+				}
+				if (modelEndpoint === "assistant") {
+					this.handleGenerate();
 				}
 				header.enableButtons();
 				sendButton.setDisabled(false);

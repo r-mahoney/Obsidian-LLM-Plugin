@@ -3,14 +3,16 @@ import fs from "fs";
 import path from "path";
 import LLMPlugin from "main";
 import { Editor } from "obsidian";
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 import {
 	ChatParams,
 	ImageParams,
+	Message,
 	SpeechParams,
 	ViewSettings,
 	ViewType,
 } from "Types/types";
+import { Assistant } from "openai/resources/beta/assistants";
 
 const homeDir = require("os").homedir();
 export const DEFAULT_DIRECTORY = path.resolve(
@@ -100,7 +102,7 @@ export async function openAIMessage(
 	if (endpointType === "speech") {
 		const { input, model, voice, responseFormat, speed } =
 			params as SpeechParams;
-		const filename = input.split(" ")[0]
+		const filename = input.split(" ")[0];
 		const speechfile = path.resolve(`./${filename}.${responseFormat}`);
 
 		const response = await openai.audio.speech.create({
@@ -115,10 +117,31 @@ export async function openAIMessage(
 			input,
 		});
 		console.log(response);
-		console.log(speechfile)
+		console.log(speechfile);
 		// const buffer = Buffer.from(await response.arrayBuffer());
 		// await fs.promises.writeFile(speechfile, buffer);
 	}
+}
+
+export async function assistantsMessage(
+	OpenAI_API_Key: string,
+	messages: Message[],
+	assistant_id: string
+) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+
+	const thread = await openai.beta.threads.create({
+		messages,
+	});
+
+	const stream = openai.beta.threads.runs.stream(thread.id, {
+		assistant_id,
+	});
+
+	return stream;
 }
 
 export function processReplacementTokens(prompt: string) {
@@ -240,4 +263,59 @@ export function getSettingType(viewType: ViewType) {
 		| "fabSettings";
 
 	return settingType;
+}
+
+export async function createAssistant(
+	assistantObj: any,
+	OpenAI_API_Key: string
+) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+
+	const assistant = await openai.beta.assistants.create(assistantObj);
+	return assistant;
+}
+
+export function getAssistant(plugin: LLMPlugin, assistant_id: string) {
+	return plugin.settings.assistants.find(
+		(assistant) => (assistant.id = assistant_id)
+	) as Assistant & { modelType: string };
+}
+
+export async function createVectorAndUpdate(
+	files: string[],
+	assistant: Assistant,
+	OpenAI_API_Key: string
+) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+
+	const file_ids = await Promise.all(
+		files.map(async (filePath) => {
+			const fileToUpload = await toFile(fs.createReadStream(filePath));
+			const file = await openai.files.create({
+				file: fileToUpload,
+				purpose: "assistants",
+			});
+			return file.id;
+		})
+	);
+
+	let vectorStore = await openai.beta.vectorStores.create({
+		name: "Assistant Files",
+	});
+
+	await openai.beta.vectorStores.fileBatches.create(vectorStore.id, {
+		file_ids,
+	});
+	
+	await openai.beta.assistants.update(assistant.id, {
+		tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
+	});
+
+	return vectorStore.id;
 }

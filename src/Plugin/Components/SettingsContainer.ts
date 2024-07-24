@@ -2,8 +2,14 @@ import { ViewType } from "Types/types";
 import LLMPlugin, { DEFAULT_SETTINGS, ImageSize } from "main";
 import { DropdownComponent, Setting } from "obsidian";
 import { modelNames, models } from "utils/models";
-import { DEFAULT_DIRECTORY, getSettingType, getViewInfo } from "utils/utils";
+import {
+	DEFAULT_DIRECTORY,
+	getAssistant,
+	getSettingType,
+	getViewInfo,
+} from "utils/utils";
 import { Header } from "./Header";
+import { Assistant } from "openai/resources/beta/assistants";
 const fs = require("fs");
 
 export class SettingsContainer {
@@ -46,26 +52,58 @@ export class SettingsContainer {
 						dropdown.addOption(models[model].model, model);
 					}
 				}
+				dropdown.addOption("", "---Select Assistant---");
+				const assistants = this.plugin.settings.assistants;
+				assistants.map((assistant: Assistant) => {
+					dropdown.addOption(`${assistant.id}`, `${assistant.name}`);
+				});
 				dropdown.onChange((change) => {
 					const { historyIndex } = getViewInfo(
 						this.plugin,
 						this.viewType
 					);
-					const modelName = modelNames[change];
 					const index = historyIndex;
-					viewSettings.model = change;
-					viewSettings.modelName = modelName;
-					viewSettings.modelType = models[modelName].type;
-					viewSettings.endpointURL = models[modelName].url;
-					viewSettings.modelEndpoint = models[modelName].endpoint;
-					if (index > -1) {
-						this.plugin.settings.promptHistory[index].model =
-							change;
-						this.plugin.settings.promptHistory[index].modelName =
-							modelName;
+					if (change.includes("asst")) {
+						viewSettings.assistant = true;
+						this.plugin.saveSettings();
 					}
-					this.plugin.saveSettings();
-					Header.setHeader(modelName);
+					if (!viewSettings.assistant) {
+						const modelName = modelNames[change];
+						viewSettings.model = change;
+						viewSettings.modelName = modelName;
+						viewSettings.modelType = models[modelName].type;
+						viewSettings.endpointURL = models[modelName].url;
+						viewSettings.modelEndpoint = models[modelName].endpoint;
+						if (index > -1) {
+							this.plugin.settings.promptHistory[index].model =
+								change;
+							this.plugin.settings.promptHistory[
+								index
+							].modelName = modelName;
+						}
+						this.plugin.saveSettings();
+						Header.setHeader(modelName);
+					}
+					if (viewSettings.assistant) {
+						viewSettings.assistantId = change;
+						const assistant = getAssistant(
+							this.plugin,
+							viewSettings.assistantId
+						);
+						viewSettings.model = assistant!.model;
+						viewSettings.modelName = modelNames[assistant!.model];
+						viewSettings.modelType = assistant!.modelType;
+						viewSettings.endpointURL = "";
+						viewSettings.modelEndpoint = "assistant";
+						if (index > -1) {
+							this.plugin.settings.promptHistory[index].model =
+								assistant!.model;
+							this.plugin.settings.promptHistory[
+								index
+							].modelName = modelNames[assistant!.model];
+						}
+						this.plugin.saveSettings();
+					}
 					this.generateSettingsContainer(parentContainer, Header);
 				});
 				dropdown.setValue(viewSettings.model);

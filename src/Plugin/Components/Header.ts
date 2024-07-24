@@ -1,10 +1,11 @@
 import LLMPlugin from "main";
-import { ButtonComponent } from "obsidian";
+import { ButtonComponent, setTooltip } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
 import { ViewType } from "Types/types";
 import { getViewInfo, setHistoryIndex } from "utils/utils";
 import { SettingsContainer } from "./SettingsContainer";
+import { AssistantsContainer } from "./AssistantsContainer";
 
 export class Header {
 	viewType: ViewType;
@@ -16,6 +17,7 @@ export class Header {
 	chatHistoryButton: ButtonComponent;
 	newChatButton: ButtonComponent;
 	settingsButton: ButtonComponent;
+	assistantsButton: ButtonComponent;
 
 	setHeader(modelName: string, title?: string) {
 		if (title) {
@@ -45,12 +47,14 @@ export class Header {
 		this.chatHistoryButton.setDisabled(true);
 		this.newChatButton.setDisabled(true);
 		this.settingsButton.setDisabled(true);
+		this.assistantsButton.setDisabled(true);
 	}
 
 	enableButtons() {
 		this.chatHistoryButton.setDisabled(false);
 		this.newChatButton.setDisabled(false);
 		this.settingsButton.setDisabled(false);
+		this.assistantsButton.setDisabled(false);
 	}
 
 	generateHeader(
@@ -58,9 +62,11 @@ export class Header {
 		chatContainerDiv: HTMLElement,
 		chatHistoryContainerDiv: HTMLElement,
 		settingsContainerDiv: HTMLElement,
+		assistantContainerDiv: HTMLElement,
 		chatContainer: ChatContainer,
 		historyContainer: HistoryContainer,
 		settingsContainer: SettingsContainer,
+		assistantsContainer: AssistantsContainer,
 		showContainer: (container: HTMLElement) => void,
 		hideContainer: (container: HTMLElement) => void
 	) {
@@ -91,14 +97,31 @@ export class Header {
 				chatContainer,
 				this
 			);
-			this.clickHandler(this.chatHistoryButton, [this.settingsButton]);
+			this.clickHandler(this.chatHistoryButton, [this.settingsButton, this.assistantsButton]);
 			if (chatHistoryContainerDiv.style.display === "none") {
 				showContainer(chatHistoryContainerDiv);
 				hideContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
+				hideContainer(assistantContainerDiv);
 			} else {
 				showContainer(chatContainerDiv);
 				hideContainer(chatHistoryContainerDiv);
+			}
+		});
+
+		this.assistantsButton = new ButtonComponent(rightButtonsDiv);
+		this.assistantsButton.setTooltip("Assistants");
+		assistantsContainer.generateAssistantsContainer(assistantContainerDiv);
+		this.assistantsButton.onClick(() => {
+			this.clickHandler(this.assistantsButton, [this.settingsButton, this.chatHistoryButton]);
+			if (assistantContainerDiv.style.display === "none") {
+				showContainer(assistantContainerDiv);
+				hideContainer(settingsContainerDiv);
+				hideContainer(chatContainerDiv);
+				hideContainer(chatHistoryContainerDiv)
+			} else {
+				showContainer(chatContainerDiv);
+				hideContainer(assistantContainerDiv);
 			}
 		});
 
@@ -107,11 +130,11 @@ export class Header {
 			this.settingsButton = new ButtonComponent(rightButtonsDiv);
 			const closeButton = new ButtonComponent(rightButtonsDiv);
 			closeButton.buttonEl.addClass("clickable-icon");
-			closeButton.setIcon("cross")
+			closeButton.setIcon("cross");
 			closeButton.onClick(() => {
-				const FAV = document.querySelectorAll('.fab-view-area')[0]
-				hideContainer(FAV as HTMLElement)
-			})
+				const FAV = document.querySelectorAll(".fab-view-area")[0];
+				hideContainer(FAV as HTMLElement);
+			});
 		} else {
 			this.newChatButton = new ButtonComponent(rightButtonsDiv);
 			this.settingsButton = new ButtonComponent(leftButtonDiv);
@@ -124,11 +147,12 @@ export class Header {
 				settingsContainerDiv,
 				this
 			);
-			this.clickHandler(this.settingsButton, [this.chatHistoryButton]);
+			this.clickHandler(this.settingsButton, [this.chatHistoryButton, this.assistantsButton]);
 			if (settingsContainerDiv.style.display === "none") {
 				showContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
 				hideContainer(chatHistoryContainerDiv);
+				hideContainer(assistantContainerDiv);
 			} else {
 				showContainer(chatContainerDiv);
 				hideContainer(settingsContainerDiv);
@@ -141,11 +165,13 @@ export class Header {
 			this.clickHandler(this.newChatButton, [
 				this.settingsButton,
 				this.chatHistoryButton,
+				this.assistantsButton
 			]);
 			this.setHeader(modelName, "New Chat");
 			showContainer(chatContainerDiv);
 			hideContainer(settingsContainerDiv);
 			hideContainer(chatHistoryContainerDiv);
+			hideContainer(assistantContainerDiv);
 			chatContainer.resetChat();
 			chatContainer.resetMessages();
 			setHistoryIndex(this.plugin, this.viewType);
@@ -166,9 +192,11 @@ export class Header {
 			"clickable-icon",
 			"new-chat-button"
 		);
+		this.assistantsButton.buttonEl.addClass("clickable-icon", "assistants");
 		this.chatHistoryButton.setIcon("menu");
 		this.settingsButton.setIcon("sliders-horizontal");
 		this.newChatButton.setIcon("plus");
+		this.assistantsButton.setIcon("bot");
 
 		parentElement.prepend(titleDiv);
 	}

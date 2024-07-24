@@ -1,4 +1,4 @@
-import { ChatHistoryItem, HistoryItem, Message } from "Types/types";
+import {  HistoryItem, Message } from "Types/types";
 import LLMPlugin from "main";
 
 export class History {
