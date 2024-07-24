@@ -13,6 +13,18 @@
 	display: flex;
 }
 
+.none {
+	display: none
+}
+
+.assistants-button-div {
+	justify-content: flex-end;
+}
+
+.assistants-button {
+	width: fit-content;
+}
+
 /* TITLE */
 .title {
 	flex-direction: column;
@@ -45,7 +57,7 @@
 }
 
 .right-buttons-div {
-	justify-content: space-evenly;
+	justify-content: flex-end;
 }
 
 .row-reverse {
@@ -61,7 +73,9 @@
 	flex: 4;
 }
 
-.floating-action-button-llm-title, .modal-llm-title, .widget-llm-title {
+.floating-action-button-llm-title,
+.modal-llm-title,
+.widget-llm-title {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	text-wrap: nowrap;
@@ -93,25 +107,30 @@
 
 .modal-chat-container,
 .modal-chat-history-container,
-.modal-settings-container {
+.modal-settings-container,
+.modal-assistants-container {
 	min-height: 50vh;
 }
 
 .modal-chat-container,
 .modal-chat-history-container,
-.modal-settings-container {
+.modal-settings-container,
+.modal-assistants-container {
 	max-height: var(--modal-view-max-height);
 }
 
 .modal-chat-container,
 .modal-chat-history-container,
 .modal-settings-container,
+.modal-assistants-container,
 .widget-chat-container,
 .widget-settings-container,
 .widget-chat-history-container,
+.widget-assistant-container,
 .fab-chat-container,
 .fab-settings-container,
-.fab-chat-history-container {
+.fab-chat-history-container,
+.fab-assistants-container {
 	flex-direction: column;
 	width: calc(100% - 4px);
 	padding: 0 2px 0 2px;
@@ -217,7 +236,8 @@
 	}
 }
 
-.add-text, .refresh-output {
+.add-text,
+.refresh-output {
 	margin-top: auto;
 }
 
@@ -404,6 +424,7 @@ FAB MESSAGE ICON CSS
 
 .fab-settings-container,
 .fab-chat-container,
+.fab-assistants-container,
 .fab-chat-history-container {
 	overflow-y: auto;
 	max-height: 300px;
@@ -416,17 +437,37 @@ FAB MESSAGE ICON CSS
 }
 
 .fab-settings-container,
+.fab-assistants-container,
 .widget-settings-container {
 	.setting-item {
 		flex-direction: column;
+		.setting-item-control {
+			justify-content: center;
+		}
 	}
 	.setting-item-description {
 		padding-bottom: var(--size-4-1);
 	}
 }
 
-.fab-settings-container .setting-item {
-	align-items: flex-start;
+.widget-sidebar-assistants {
+	.setting-item {
+		display: flex;
+		flex-direction: column;
+		.setting-item-control {
+			justify-content: center;
+		}
+	}
+	.assistants-button-div {
+		align-items: center;
+	}
+}
+
+.widget-tab-assistants {
+	.setting-item {
+		display: flex;
+		flex-direction: row;
+	}
 }
 
 .fab-chat-message {

@@ -1,70 +1,24 @@
 import { Plugin, WorkspaceLeaf } from "obsidian";
-import { HistoryItem } from "./Types/types";
-
-import { History } from "History/HistoryHandler";
-import { ChatModal2 } from "Plugin/Modal/ChatModal2";
-import SettingsView from "Settings/SettingsView";
 import {
-	TAB_VIEW_TYPE,
+	HistoryItem,
+	ImageQuality,
+	ImageSize,
+	ImageStyle,
+	ResponseFormat,
+	ViewSettings,
+} from "./Types/types";
+
+import { Assistants } from "Assistants/AssistantHandler";
+import { History } from "History/HistoryHandler";
+import { FAB } from "Plugin/FAB/FAB";
+import { ChatModal2 } from "Plugin/Modal/ChatModal2";
+import {
 	LEAF_VIEW_TYPE,
+	TAB_VIEW_TYPE,
 	WidgetView,
 } from "Plugin/Widget/Widget";
-import { FAB } from "Plugin/FAB/FAB";
-
-type ViewSettings = {
-	model: string;
-	modelName: string;
-	modelType: string;
-	modelEndpoint: string;
-	endpointURL: string;
-	historyIndex: number;
-	imageSettings: ImageSettings;
-	chatSettings: ChatSettings;
-	speechSettings: SpeechSettings;
-};
-
-export type ResponseFormat = "url" | "b64_json";
-export type ImageStyle = "vivid" | "natural";
-export type ImageQuality = "hd" | "standard";
-export type ImageSize =
-	| "256x256"
-	| "512x512"
-	| "1024x1024"
-	| "1024x1024"
-	| "1792x1024"
-	| "1024x1792";
-
-type SpeechSettings = {
-	voice: string;
-	responseFormat: string;
-	speed: number;
-};
-
-type ImageSettings = {
-	numberOfImages: number;
-	response_format: ResponseFormat;
-	size: ImageSize;
-	style: ImageStyle;
-	quality: ImageQuality;
-};
-
-type ChatSettings = {
-	maxTokens: number;
-	temperature: number;
-	GPT4All?: GPT4AllSettings;
-	openAI?: OpenAISettings;
-};
-
-type OpenAISettings = {
-	frequencyPenalty: number;
-	logProbs: boolean;
-	topLogProbs: number | null;
-	presencePenalty: number;
-	responseFormat: string;
-	topP: number;
-};
-
-type GPT4AllSettings = {};
+import SettingsView from "Settings/SettingsView";
+import { Assistant } from "openai/resources/beta/assistants";
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -72,12 +26,15 @@ export interface LLMPluginSettings {
 	widgetSettings: ViewSettings;
 	fabSettings: ViewSettings;
 	promptHistory: HistoryItem[];
+	assistants: Assistant[];
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
 	showFAB: boolean;
 }
 
 const defaultSettings = {
+	assistant: false,
+	assistantId: "",
 	model: "gpt-3.5-turbo",
 	modelName: "ChatGPT-3.5 Turbo",
 	modelType: "openAI",
@@ -123,6 +80,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 		...defaultSettings,
 	},
 	promptHistory: [],
+	assistants: [],
 	openAIAPIKey: "",
 	GPT4AllStreaming: false,
 	showFAB: true,
@@ -130,6 +88,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 
 export default class LLMPlugin extends Plugin {
 	settings: LLMPluginSettings;
+	assistants: Assistants;
 	history: History;
 	fab: FAB;
 
@@ -139,8 +98,14 @@ export default class LLMPlugin extends Plugin {
 		this.registerRibbonIcons();
 		this.registerCommands();
 
-		this.registerView(TAB_VIEW_TYPE, (tab) => new WidgetView(tab, this, "tab"));
-		this.registerView(LEAF_VIEW_TYPE, (leaf) => new WidgetView(leaf, this, "leaf"));
+		this.registerView(
+			TAB_VIEW_TYPE,
+			(tab) => new WidgetView(tab, this, "tab")
+		);
+		this.registerView(
+			LEAF_VIEW_TYPE,
+			(leaf) => new WidgetView(leaf, this, "leaf")
+		);
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.fab = new FAB(this);
@@ -151,6 +116,7 @@ export default class LLMPlugin extends Plugin {
 			}, 500);
 		}
 		this.history = new History(this);
+		this.assistants = new Assistants(this);
 	}
 
 	onunload() {
@@ -189,11 +155,13 @@ export default class LLMPlugin extends Plugin {
 			name: "Toggle LLM FAB",
 			callback: () => {
 				const currentFABState = this.settings.showFAB;
-				this.settings.showFAB = !currentFABState
+				this.settings.showFAB = !currentFABState;
 				this.saveSettings();
-				this.settings.showFAB ? this.fab.regenerateFAB() : this.fab.removeFab()
-			}
-		})
+				this.settings.showFAB
+					? this.fab.regenerateFAB()
+					: this.fab.removeFab();
+			},
+		});
 	}
 
 	private registerRibbonIcons() {

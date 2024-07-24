@@ -4,9 +4,10 @@ import { ButtonComponent, Notice } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { Header } from "./Header";
 import { models } from "utils/models";
+import { getSettingType } from "utils/utils";
 
 export class HistoryContainer {
-	viewType: string;
+	viewType: ViewType;
 	model: string;
 	modelName: string;
 	modelType: string;
@@ -24,37 +25,12 @@ export class HistoryContainer {
 		chat: ChatContainer,
 		Header: Header
 	) {
-		const settings: Record<string, string> = {
-			modal: "modalSettings",
-			widget: "widgetSettings",
-			"floating-action-button": "fabSettings",
-		};
-		const settingType = settings[this.viewType] as
-			| "modalSettings"
-			| "widgetSettings"
-			| "fabSettings";
-		if (this.viewType === "modal") {
-			this.model = this.plugin.settings.modalSettings.model;
-			this.modelName = this.plugin.settings.modalSettings.modelName;
-			this.modelType = this.plugin.settings.modalSettings.modelType;
-			this.modelType = this.plugin.settings.modalSettings.modelType;
-			this.historyIndex = this.plugin.settings.modalSettings.historyIndex;
-		}
-		if (this.viewType === "floating-action-button") {
-			this.model = this.plugin.settings.fabSettings.model;
-			this.modelName = this.plugin.settings.fabSettings.modelName;
-			this.modelType = this.plugin.settings.fabSettings.modelType;
-			this.modelType = this.plugin.settings.fabSettings.modelType;
-			this.historyIndex = this.plugin.settings.fabSettings.historyIndex;
-		}
-		if (this.viewType === "widget") {
-			this.model = this.plugin.settings.widgetSettings.model;
-			this.modelName = this.plugin.settings.widgetSettings.modelName;
-			this.modelType = this.plugin.settings.widgetSettings.modelType;
-			this.modelType = this.plugin.settings.widgetSettings.modelType;
-			this.historyIndex =
-				this.plugin.settings.widgetSettings.historyIndex;
-		}
+		const settingType = getSettingType(this.viewType);
+		this.model = this.plugin.settings[settingType].model;
+		this.modelName = this.plugin.settings[settingType].modelName;
+		this.modelType = this.plugin.settings[settingType].modelType;
+		this.modelType = this.plugin.settings[settingType].modelType;
+		this.historyIndex = this.plugin.settings[settingType].historyIndex;
 
 		const eventListener = () => {
 			chat.resetChat();
@@ -67,15 +43,28 @@ export class HistoryContainer {
 			const index = this.historyIndex;
 			const header = this.plugin.settings.promptHistory[index].prompt;
 			const modelName =
-			this.plugin.settings.promptHistory[index].modelName;
+				this.plugin.settings.promptHistory[index].modelName;
+			const model =
+				this.plugin.settings.promptHistory[index].model;
 			this.plugin.settings[settingType].modelName = modelName;
-			this.plugin.settings[settingType].model = models[modelName].model;
-			this.plugin.settings[settingType].modelType =
-				models[modelName].type;
-			this.plugin.settings[settingType].modelEndpoint =
-				models[modelName].endpoint;
-			this.plugin.settings[settingType].endpointURL =
-				models[modelName].url;
+			if (!model.includes("asst")) {
+				this.plugin.settings[settingType].model =
+					models[modelName].model;
+				this.plugin.settings[settingType].modelType =
+					models[modelName].type;
+				this.plugin.settings[settingType].modelEndpoint =
+					models[modelName].endpoint;
+				this.plugin.settings[settingType].endpointURL =
+					models[modelName].url;
+			} else {
+				this.plugin.settings[settingType].model =
+					this.plugin.settings.promptHistory[index].model;
+				this.plugin.settings[settingType].modelName =
+					this.plugin.settings.promptHistory[index].modelName;
+				this.plugin.settings[settingType].modelType = "assistant";
+				this.plugin.settings[settingType].modelEndpoint = "assistant";
+				this.plugin.settings[settingType].endpointURL = "";
+			}
 			this.plugin.saveSettings();
 			Header.setHeader(modelName, header);
 			Header.resetHistoryButton();

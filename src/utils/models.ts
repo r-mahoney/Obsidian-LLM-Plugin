@@ -73,6 +73,12 @@ export const models: Record<string, Model> = {
 		endpoint: "chat",
 		url: "/chat/completions",
 	},
+	"GPT-4o": {
+		model: "gpt-4o",
+		type: "openAI",
+		endpoint: "chat",
+		url: "/chat/completions",
+	},
 	// "Text to Speech": {
 	// 	model: "tts-1",
 	// 	type: "openAI",
@@ -112,6 +118,7 @@ export const modelNames: Record<string, string> = {
 	"gpt4all-13b-snoozy-q4_0.gguf": "Snoozy",
 	"em_german_mistral_v01.Q4_0.gguf": "EM German Mistral",
 	"gpt-3.5-turbo": "ChatGPT-3.5 Turbo",
+	"gpt-4o": "GPT-4o",
 	// "text-embedding-3-small": "Text Embedding 3 (Small)",
 	"dall-e-3": "DALL·E 3",
 	"dall-e-2": "DALL·E 2",
