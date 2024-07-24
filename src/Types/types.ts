@@ -32,10 +32,16 @@ export type SpeechParams = {
 	responseFormat: string;
 	speed: number;
 };
-export type AIAssistant = Assistant & {
-	modelType: string
-}
 
+export type AIAssistant = Assistant & {
+	modelType: string;
+};
+export type AssistantParams = InitialParams;
+
+export type AssistantHistoryItem = InitialParams & {
+	assistant_id: string;
+	modelName: string;
+};
 export type ChatHistoryItem = InitialParams &
 	ChatParams & {
 		modelName: string;
@@ -54,7 +60,8 @@ export type SpeechHistoryItem = InitialParams &
 export type HistoryItem =
 	| ChatHistoryItem
 	| ImageHistoryItem
-	| SpeechHistoryItem;
+	| SpeechHistoryItem
+	| AssistantHistoryItem;
 
 export type TokenParams = {
 	prefix: string[];
@@ -77,10 +84,58 @@ export type Model = {
 export type ViewType = "modal" | "widget" | "floating-action-button";
 
 export type ViewSettings = {
+	assistant: boolean;
+	assistantId: string
 	model: string;
 	modelName: string;
 	modelType: string;
-	historyIndex: number;
 	modelEndpoint: string;
 	endpointURL: string;
+	historyIndex: number;
+	imageSettings: ImageSettings;
+	chatSettings: ChatSettings;
+	speechSettings: SpeechSettings;
 };
+
+export type ResponseFormat = "url" | "b64_json";
+export type ImageStyle = "vivid" | "natural";
+export type ImageQuality = "hd" | "standard";
+export type ImageSize =
+	| "256x256"
+	| "512x512"
+	| "1024x1024"
+	| "1024x1024"
+	| "1792x1024"
+	| "1024x1792";
+
+type SpeechSettings = {
+	voice: string;
+	responseFormat: string;
+	speed: number;
+};
+
+type ImageSettings = {
+	numberOfImages: number;
+	response_format: ResponseFormat;
+	size: ImageSize;
+	style: ImageStyle;
+	quality: ImageQuality;
+};
+
+type ChatSettings = {
+	maxTokens: number;
+	temperature: number;
+	GPT4All?: GPT4AllSettings;
+	openAI?: OpenAISettings;
+};
+
+type OpenAISettings = {
+	frequencyPenalty: number;
+	logProbs: boolean;
+	topLogProbs: number | null;
+	presencePenalty: number;
+	responseFormat: string;
+	topP: number;
+};
+
+type GPT4AllSettings = {};

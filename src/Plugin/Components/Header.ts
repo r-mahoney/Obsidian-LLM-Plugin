@@ -128,13 +128,13 @@ export class Header {
 		if (this.viewType === "floating-action-button") {
 			this.newChatButton = new ButtonComponent(leftButtonDiv);
 			this.settingsButton = new ButtonComponent(rightButtonsDiv);
-			const closeButton = new ButtonComponent(rightButtonsDiv);
-			closeButton.buttonEl.addClass("clickable-icon");
-			closeButton.setIcon("cross");
-			closeButton.onClick(() => {
-				const FAV = document.querySelectorAll(".fab-view-area")[0];
-				hideContainer(FAV as HTMLElement);
-			});
+		// 	const closeButton = new ButtonComponent(rightButtonsDiv);
+		// 	closeButton.buttonEl.addClass("clickable-icon");
+		// 	closeButton.setIcon("cross");
+		// 	closeButton.onClick(() => {
+		// 		const FAV = document.querySelectorAll(".fab-view-area")[0];
+		// 		hideContainer(FAV as HTMLElement);
+			// });
 		} else {
 			this.newChatButton = new ButtonComponent(rightButtonsDiv);
 			this.settingsButton = new ButtonComponent(leftButtonDiv);

@@ -109,45 +109,44 @@ export class AssistantsContainer {
 
 		submitButton.onClick(async (e: MouseEvent) => {
 			e.preventDefault();
-            //@ts-ignore
-            const basePath = app.vault.adapter.basePath
+			//@ts-ignore
+			const basePath = app.vault.adapter.basePath;
 
 			this.assistantFiles = this.files.split(",").map((file) => {
 				return `${basePath}\\${file.trim()}`;
 			});
+            
+			const assistantObj = {
+				name: this.assistantName,
+				instructions: this.assistantIntructions,
+				model: this.assistantModel,
+				tools: [{ type: this.assistantToolType }],
+			};
+			const assistant = await createAssistant(
+				assistantObj,
+				this.plugin.settings.openAIAPIKey
+			);
 
-            console.log(this.assistantFiles)
-			// const assistantObj = {
-			// 	name: this.assistantName,
-			// 	instructions: this.assistantIntructions,
-			// 	model: this.assistantModel,
-			// 	tools: [{ type: this.assistantToolType }],
-			// };
-			// const assistant = await createAssistant(
-			// 	assistantObj,
-			// 	this.plugin.settings.openAIAPIKey
-			// );
+			const vector_store_id = await createVectorAndUpdate(
+				this.assistantFiles,
+				assistant,
+				this.plugin.settings.openAIAPIKey
+			);
 
-			// const vector_store_id = await createVectorAndUpdate(
-			// 	this.assistantFiles,
-			// 	assistant,
-			// 	this.plugin.settings.openAIAPIKey
-			// );
+			this.plugin.assistants.push({
+				...assistant,
+				modelType: "assistant",
+				tool_resources: {
+					file_search: { vector_store_ids: [vector_store_id] },
+				},
+			});
 
-			// this.plugin.assistants.push({
-			// 	...assistant,
-			// 	modelType: "assistant",
-			// 	tool_resources: {
-			// 		file_search: { vector_store_ids: [vector_store_id] },
-			// 	},
-			// });
-
-            // this.resetContainer(parentContainer)
+			this.resetContainer(parentContainer);
 		});
 	}
 
-    resetContainer(parentContainer: HTMLElement) {
-        parentContainer.innerHTML = "";
-        this.generateAssistantsContainer(parentContainer)
-    }
+	resetContainer(parentContainer: HTMLElement) {
+		parentContainer.innerHTML = "";
+		this.generateAssistantsContainer(parentContainer);
+	}
 }

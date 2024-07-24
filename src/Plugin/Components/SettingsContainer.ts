@@ -1,6 +1,7 @@
-import { ViewType } from "Types/types";
-import LLMPlugin, { DEFAULT_SETTINGS, ImageSize } from "main";
+import { ImageSize, ViewType } from "Types/types";
+import LLMPlugin from "main";
 import { DropdownComponent, Setting } from "obsidian";
+import { Assistant } from "openai/resources/beta/assistants";
 import { modelNames, models } from "utils/models";
 import {
 	DEFAULT_DIRECTORY,
@@ -9,7 +10,6 @@ import {
 	getViewInfo,
 } from "utils/utils";
 import { Header } from "./Header";
-import { Assistant } from "openai/resources/beta/assistants";
 const fs = require("fs");
 
 export class SettingsContainer {
@@ -66,6 +66,10 @@ export class SettingsContainer {
 					if (change.includes("asst")) {
 						viewSettings.assistant = true;
 						this.plugin.saveSettings();
+					} else {
+						viewSettings.assistant = false;
+						viewSettings.assistantId = "";
+						this.plugin.saveSettings();
 					}
 					if (!viewSettings.assistant) {
 						const modelName = modelNames[change];
@@ -90,8 +94,8 @@ export class SettingsContainer {
 							this.plugin,
 							viewSettings.assistantId
 						);
-						viewSettings.model = assistant!.model;
-						viewSettings.modelName = modelNames[assistant!.model];
+						viewSettings.model = assistant!.id;
+						viewSettings.modelName = assistant!.name as string;
 						viewSettings.modelType = assistant!.modelType;
 						viewSettings.endpointURL = "";
 						viewSettings.modelEndpoint = "assistant";
@@ -103,6 +107,7 @@ export class SettingsContainer {
 							].modelName = modelNames[assistant!.model];
 						}
 						this.plugin.saveSettings();
+						Header.setHeader(assistant.name as string);
 					}
 					this.generateSettingsContainer(parentContainer, Header);
 				});

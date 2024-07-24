@@ -23,6 +23,8 @@ export class ChatModal2 extends Modal {
 		this.modalEl
 			.getElementsByClassName("modal-close-button")[0]
 			.setAttr("style", "display: none");
+		modalSettings.assistant = DEFAULT_SETTINGS.modalSettings.assistant;
+		modalSettings.assistantId = DEFAULT_SETTINGS.modalSettings.assistantId;
 		modalSettings.historyIndex =
 			DEFAULT_SETTINGS.modalSettings.historyIndex;
 		modalSettings.model = DEFAULT_SETTINGS.modalSettings.model;
@@ -44,7 +46,10 @@ export class ChatModal2 extends Modal {
 		);
 		const historyContainer = new HistoryContainer(this.plugin, "modal");
 		const settingsContainer = new SettingsContainer(this.plugin, "modal");
-		const assistantsContainer = new AssistantsContainer(this.plugin, "modal")
+		const assistantsContainer = new AssistantsContainer(
+			this.plugin,
+			"modal"
+		);
 
 		const lineBreak = contentEl.createDiv();
 		const chatContainerDiv = contentEl.createDiv();
@@ -62,7 +67,7 @@ export class ChatModal2 extends Modal {
 			settingsContainer,
 			assistantsContainer,
 			this.showContainer,
-			this.hideContainer,
+			this.hideContainer
 		);
 		let history = this.plugin.settings.promptHistory;
 

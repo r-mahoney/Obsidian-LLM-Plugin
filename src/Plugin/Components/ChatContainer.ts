@@ -9,6 +9,8 @@ import { ChatCompletionChunk, Images } from "openai/resources";
 import { Stream } from "openai/streaming";
 import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
 import {
+	AssistantHistoryItem,
+	AssistantParams,
 	ChatHistoryItem,
 	ChatParams,
 	HistoryItem,
@@ -49,6 +51,15 @@ export class ChatContainer {
 
 	getParams(endpoint: string, model: string, modelType: string) {
 		const settingType = getSettingType(this.viewType);
+
+		if (modelType === "assistant") {
+			const params: AssistantParams = {
+				prompt: this.prompt,
+				messages: this.messages,
+				model,
+			};
+			return params;
+		}
 		if (endpoint === "images") {
 			const params: ImageParams = {
 				prompt: this.prompt,
@@ -112,10 +123,14 @@ export class ChatContainer {
 		// TODO - support more than chatgpt
 
 		this.previewText = "";
-		const { model, endpointURL, modelEndpoint, modelType } = getViewInfo(
-			this.plugin,
-			this.viewType
-		);
+		const {
+			model,
+			endpointURL,
+			modelEndpoint,
+			modelType,
+			assistantId,
+			modelName,
+		} = getViewInfo(this.plugin, this.viewType);
 		const params = this.getParams(modelEndpoint, model, modelType);
 		if (modelEndpoint === "assistant") {
 			const stream = await assistantsMessage(
@@ -123,26 +138,35 @@ export class ChatContainer {
 				this.messages,
 				this.plugin.settings.assistants[0].id
 			);
-			stream.on("textCreated", (text) => this.setDiv(true));
+			stream.on("textCreated", () => this.setDiv(true));
 			stream.on("textDelta", (textDelta, snapshot) => {
 				if (textDelta.value?.includes("【")) return;
 				this.previewText += textDelta.value;
 				this.streamingDiv.innerHTML = this.previewText;
 				this.historyMessages.scroll(0, 9999);
 			});
-			stream.on("end", () =>
+			stream.on("end", () => {
+				this.streamingDiv.innerHTML = "";
+				MarkdownRenderer.render(
+					this.plugin.app,
+					this.previewText,
+					this.streamingDiv,
+					"",
+					this.plugin
+				);
+				this.historyMessages.scroll(0, 9999);
 				this.messages.push({
 					role: "assistant",
 					content: this.previewText,
-				})
-			);
-			MarkdownRenderer.render(
-				this.plugin.app,
-				this.previewText,
-				this.streamingDiv,
-				"",
-				this.plugin
-			);
+				});
+				const message_context = {
+					...params,
+					messages: this.messages,
+					assistant_id: assistantId,
+					modelName,
+				} as AssistantHistoryItem;
+				this.historyPush(message_context);
+			});
 		}
 
 		if (modelEndpoint === "chat") {
@@ -283,10 +307,8 @@ export class ChatContainer {
 	}
 
 	historyPush(params: HistoryItem) {
-		const { modelName, historyIndex, modelEndpoint } = getViewInfo(
-			this.plugin,
-			this.viewType
-		);
+		const { modelName, historyIndex, modelEndpoint, assistantId } =
+			getViewInfo(this.plugin, this.viewType);
 		if (historyIndex > -1) {
 			this.plugin.history.overwriteHistory(this.messages, historyIndex);
 			return;
@@ -302,6 +324,13 @@ export class ChatContainer {
 			this.plugin.history.push({
 				...(params as ImageHistoryItem),
 				modelName,
+			});
+		}
+		if (modelEndpoint === "assistant") {
+			this.plugin.history.push({
+				...(params as AssistantHistoryItem),
+				modelName,
+				assistant_id: assistantId,
 			});
 		}
 		const length = this.plugin.settings.promptHistory.length;

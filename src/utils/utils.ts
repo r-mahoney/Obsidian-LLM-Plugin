@@ -163,6 +163,11 @@ export function getViewInfo(
 ): ViewSettings {
 	if (viewType === "modal") {
 		return {
+			assistant: plugin.settings.modalSettings.assistant,
+			assistantId: plugin.settings.modalSettings.assistantId,
+			imageSettings: plugin.settings.modalSettings.imageSettings,
+			chatSettings: plugin.settings.modalSettings.chatSettings,
+			speechSettings: plugin.settings.modalSettings.speechSettings,
 			model: plugin.settings.modalSettings.model,
 			modelName: plugin.settings.modalSettings.modelName,
 			modelType: plugin.settings.modalSettings.modelType,
@@ -174,6 +179,11 @@ export function getViewInfo(
 
 	if (viewType === "widget") {
 		return {
+			assistant: plugin.settings.widgetSettings.assistant,
+			assistantId: plugin.settings.widgetSettings.assistantId,
+			imageSettings: plugin.settings.widgetSettings.imageSettings,
+			chatSettings: plugin.settings.widgetSettings.chatSettings,
+			speechSettings: plugin.settings.widgetSettings.speechSettings,
 			model: plugin.settings.widgetSettings.model,
 			modelName: plugin.settings.widgetSettings.modelName,
 			modelType: plugin.settings.widgetSettings.modelType,
@@ -185,6 +195,11 @@ export function getViewInfo(
 
 	if (viewType === "floating-action-button") {
 		return {
+			assistant: plugin.settings.fabSettings.assistant,
+			assistantId: plugin.settings.fabSettings.assistantId,
+			imageSettings: plugin.settings.fabSettings.imageSettings,
+			chatSettings: plugin.settings.fabSettings.chatSettings,
+			speechSettings: plugin.settings.fabSettings.speechSettings,
 			model: plugin.settings.fabSettings.model,
 			modelName: plugin.settings.fabSettings.modelName,
 			modelType: plugin.settings.fabSettings.modelType,
@@ -195,6 +210,17 @@ export function getViewInfo(
 	}
 
 	return {
+		assistant: false,
+		assistantId: "",
+		imageSettings: {
+			numberOfImages: 0,
+			response_format: "url",
+			size: "1024x1024",
+			style: "natural",
+			quality: "standard",
+		},
+		chatSettings: { maxTokens: 0, temperature: 0 },
+		speechSettings: { voice: "", responseFormat: "", speed: 0 },
 		model: "",
 		modelName: "",
 		modelType: "",
@@ -312,7 +338,7 @@ export async function createVectorAndUpdate(
 	await openai.beta.vectorStores.fileBatches.create(vectorStore.id, {
 		file_ids,
 	});
-	
+
 	await openai.beta.assistants.update(assistant.id, {
 		tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
 	});
