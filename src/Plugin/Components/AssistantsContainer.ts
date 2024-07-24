@@ -54,7 +54,7 @@ export class AssistantsContainer {
 			.addDropdown((dropdown: DropdownComponent) => {
 				dropdown.addOption("", "---Tool Type---");
 				dropdown.addOption("file_search", "File Search");
-				dropdown.addOption("code_interpreter", "Code Interpreter");
+				// dropdown.addOption("code_interpreter", "Code Interpreter");
 
 				dropdown.onChange((change) => {
 					this.assistantToolType = change;
