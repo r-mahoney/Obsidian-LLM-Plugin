@@ -136,7 +136,7 @@ export class ChatContainer {
 			const stream = await assistantsMessage(
 				this.plugin.settings.openAIAPIKey,
 				this.messages,
-				this.plugin.settings.assistants[0].id
+				assistantId
 			);
 			stream.on("textCreated", () => this.setDiv(true));
 			stream.on("textDelta", (textDelta, snapshot) => {

@@ -306,7 +306,7 @@ export async function createAssistant(
 
 export function getAssistant(plugin: LLMPlugin, assistant_id: string) {
 	return plugin.settings.assistants.find(
-		(assistant) => (assistant.id = assistant_id)
+		(assistant) => (assistant.id === assistant_id)
 	) as Assistant & { modelType: string };
 }
 
