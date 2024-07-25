@@ -1,6 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/r-mahoney/Obsidian-LLM-Plugin/assets/46250921/bda9f3e8-c4c8-4087-838c-f467c1f30910">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/r-mahoney/Obsidian-LLM-Plugin/assets/46250921/27317c62-3026-4e45-9ef1-f433cbd58442">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/84027811-e8cc-49e8-84f3-ed5bf8225f5c">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/f970181e-51a7-4669-a455-e4b4eecca750")
+">
   <img alt="Shows project promo image in light and dark mode" src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
 </picture>
 
@@ -37,7 +38,7 @@ In order to use the GPT4All LLMs you must have the desktop client from [NomicAI]
 -   No GPT4All models will be displayed in the Widget, FAB, or Modal settings unless you have them downloaded locally
 -   In order for the plugin to have access to the GPT4All client, you must have the API Server enabled from the GPT4All settings
 
-We currenlty have local doc functionality working for GPT4All models which allows users to add their Obsidian Vault to the GPT4All client and allow
+We currently have local doc functionality working for GPT4All models which allows users to add their Obsidian Vault to the GPT4All client and allows for chatting with models about local notes.
 
 **OpenAI**
 
@@ -47,7 +48,7 @@ In order to access these models, you will need to have an OpenAI account with a 
 
 # Features
 
-Users are able to access LLMs through a variety of ways: a modal, a floating action button(FAB), and a sidebar widget. The FAB can be toggled on and off through the plugin settings or through the command pallate. The widget can be used in the sidebar or in the place of a note tab.
+Users are able to access LLMs through a variety of ways: a modal, a floating action button (FAB), and a sidebar widget. The FAB can be toggled on and off through the plugin settings or through the command pallate. The widget can be used in the sidebar or in the place of a note tab.
 
 -   Note: The modal is being deprecated upon public release since the widget provides the same use cases.
 
@@ -69,7 +70,7 @@ Clicking the settings, or history button switches to that tab in the plugin view
 
 ## OpenAI Assistants for File Search
 
-The Assistants API allows you to build AI assistants within your own applications. An Assistant has instructions and can leverage models, tools, and files to respond to user queries. The Assistants API currently supports three types of tools: Code Interpreter, File Search, and Function calling. Our team currently only supports the File Search application
+The Assistants API allows you to build AI assistants within your own applications. An Assistant has instructions and can leverage models, tools, and files to respond to user queries. The Assistants API currently supports three types of tools: Code Interpreter, File Search, and Function calling. Our team currently only supports the File Search application.
 
 In order to use this tool, you first must navigate to the Assistants Creation tab in any of our three views by clicking on the Robot Icon in the header.
   <p align="center">
@@ -86,7 +87,7 @@ In order to use this tool, you first must navigate to the Assistants Creation ta
     <img src="README_images/filledassistant.png" alt="filled out settings for openAI assistant">
   </p>
   
-  Once you have created an assitant, the form will become blank again and you can head over to the settings tab where you will now see your assistant listed in the models drop down. Selecting your assistant will allow you to interact with the files you just uploaded by going back to the prompt screen
+  Once you have created an assistant, the form will become blank again and you can head over to the settings tab where you will now see your assistant listed in the models drop down. Selecting your assistant will allow you to interact with the files you just uploaded by going back to the prompt screen
   <p align="center">
     <img src="README_images/dropdownassistant.png" alt="assistant shown in settings model dropdown">
   </p>
