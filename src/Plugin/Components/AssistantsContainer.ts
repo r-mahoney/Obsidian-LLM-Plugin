@@ -11,6 +11,7 @@ import {
 	createAssistant,
 	createVectorAndUpdate,
 	DEFAULT_DIRECTORY,
+	isWindows,
 } from "utils/utils";
 const fs = require("fs");
 
@@ -111,9 +112,10 @@ export class AssistantsContainer {
 			e.preventDefault();
 			//@ts-ignore
 			const basePath = app.vault.adapter.basePath;
+			const slashToUse = isWindows() ? "\\" : "/" 
 
 			this.assistantFiles = this.files.split(",").map((file) => {
-				return `${basePath}\\${file.trim()}`;
+				return `${basePath}${slashToUse}${file.trim()}`;
 			});
             
 			const assistantObj = {

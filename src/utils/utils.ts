@@ -22,6 +22,10 @@ export const DEFAULT_DIRECTORY = path.resolve(
 		: "Library/Application Support/nomic.ai/GPT4All"
 );
 
+export function isWindows() {
+	return navigator.platform.indexOf("Win") > -1
+}
+
 export function modelLookup(modelName: string) {
 	const model = path.join(DEFAULT_DIRECTORY, modelName);
 	return existsSync(model);
