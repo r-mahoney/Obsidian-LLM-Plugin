@@ -10,7 +10,7 @@ import {
 	getViewInfo,
 } from "utils/utils";
 import { Header } from "./Header";
-const fs = require("fs/promises");
+const fs = require("fs");
 
 export class SettingsContainer {
 	viewType: ViewType;
