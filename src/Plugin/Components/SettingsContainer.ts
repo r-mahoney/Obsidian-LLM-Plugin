@@ -32,12 +32,12 @@ export class SettingsContainer {
 		const modelOptions = new Setting(parentContainer)
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
-			.addDropdown(async (dropdown: DropdownComponent) => {
+			.addDropdown((dropdown: DropdownComponent) => {
 				dropdown.addOption("", "---Select Model---");
 				let keys = Object.keys(models);
-				for await (let model of keys) {
+				for (let model of keys) {
 					if (models[model].type === "GPT4All") {
-						 fs.exists(
+						fs.exists(
 							`${DEFAULT_DIRECTORY}/${models[model].model}`,
 							(exists: boolean) => {
 								if (exists) {
