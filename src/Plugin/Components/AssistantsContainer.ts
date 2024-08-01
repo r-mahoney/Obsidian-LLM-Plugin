@@ -4,7 +4,6 @@ import {
 	DropdownComponent,
 	SearchComponent,
 	Setting,
-	TextAreaComponent,
 	TFile,
 	ToggleComponent,
 } from "obsidian";
@@ -46,7 +45,7 @@ export class AssistantsContainer {
 		this.viewType = viewType;
 	}
 
-	generateAssistantsContainer(parentContainer: HTMLElement) {
+	async generateAssistantsContainer(parentContainer: HTMLElement) {
 		const optionDropdown = new Setting(parentContainer)
 			.setName("Assistants Options")
 			.setDesc("What do you want to do?")
@@ -73,7 +72,10 @@ export class AssistantsContainer {
 							this.deleteAssistant(parentContainer);
 							return;
 						case "vect_create":
-							this.createSearch(parentContainer, this.vectorFilesToAdd);
+							this.createSearch(
+								parentContainer,
+								this.vectorFilesToAdd
+							);
 							return;
 						case "vect_update":
 							this.updateVector(parentContainer);
@@ -87,7 +89,11 @@ export class AssistantsContainer {
 	}
 
 	createAssistant(parentContainer: HTMLElement) {
-		const file_ids = this.createSearch(parentContainer, this.assistantFilesToAdd, true) as Setting
+		const file_ids = this.createSearch(
+			parentContainer,
+			this.assistantFilesToAdd,
+			true
+		) as Setting;
 		this.filesSetting = file_ids;
 		file_ids.settingEl.setAttr("style", "display:none");
 
@@ -264,7 +270,11 @@ export class AssistantsContainer {
 		});
 	}
 
-	createSearch(parentContainer: HTMLElement, array: string[], needsReturn?:boolean) {
+	createSearch(
+		parentContainer: HTMLElement,
+		array: string[],
+		needsReturn?: boolean
+	) {
 		array = [];
 		const files = app.vault.getFiles();
 		this.generateGenericSettings(parentContainer, "create");
@@ -282,9 +292,8 @@ export class AssistantsContainer {
 					searchDiv.innerHTML = "";
 					return;
 				}
-				const options = files.filter(
-					(file: TFile) =>
-						file.basename.toLowerCase().includes(change.toLowerCase())
+				const options = files.filter((file: TFile) =>
+					file.basename.toLowerCase().includes(change.toLowerCase())
 				);
 				options.map((option: TFile) => {
 					const item = searchDiv.createEl("option");
@@ -296,23 +305,18 @@ export class AssistantsContainer {
 					item.onClickEvent((click: MouseEvent) => {
 						if (array.includes(option.path)) {
 							item.removeClass("file-added");
-							array =
-								array.filter(
-									(file_path: string) =>
-										file_path !== option.path
-								);
+							array = array.filter(
+								(file_path: string) => file_path !== option.path
+							);
 						} else {
 							item.addClass("file-added");
-							array = [
-								...array,
-								option.path,
-							];
+							array = [...array, option.path];
 						}
 					});
 				});
 			});
 		});
-		if(needsReturn) return file_ids
+		if (needsReturn) return file_ids;
 	}
 
 	updateVector(parentContainer: HTMLElement) {}

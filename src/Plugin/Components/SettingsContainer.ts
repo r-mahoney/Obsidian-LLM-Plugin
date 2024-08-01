@@ -7,7 +7,7 @@ import {
 	DEFAULT_DIRECTORY,
 	getAssistant,
 	getSettingType,
-	getViewInfo,
+	getViewInfo
 } from "utils/utils";
 import { Header } from "./Header";
 const fs = require("fs");
@@ -58,6 +58,7 @@ export class SettingsContainer {
 					}
 				}
 				dropdown.onChange((change) => {
+					console.log(change)
 					const { historyIndex } = getViewInfo(
 						this.plugin,
 						this.viewType

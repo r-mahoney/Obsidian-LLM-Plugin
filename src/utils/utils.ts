@@ -325,6 +325,19 @@ export async function listAssistants(OpenAI_API_Key: string) {
 	  return myAssistants.data
 }
 
+export async function generateAssistantsList(plugin: LLMPlugin) {
+	const assisitantsFromOpenAI = await listAssistants(
+		plugin.settings.openAIAPIKey
+	);
+	const processedAssisitants = assisitantsFromOpenAI.map(
+		(assistant: Assistant & { modelType: string }) => ({
+			...assistant,
+			modelType: "assistant",
+		})
+	);
+	plugin.settings.assistants = processedAssisitants;
+}
+
 export async function deleteAssistant(OpenAI_API_Key: string, assistant_id: string) {
 	const openai = new OpenAI({
 		apiKey: OpenAI_API_Key,
