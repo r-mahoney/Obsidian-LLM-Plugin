@@ -4,6 +4,7 @@ import {
 	DropdownComponent,
 	SearchComponent,
 	Setting,
+	TextComponent,
 	TFile,
 	ToggleComponent,
 } from "obsidian";
@@ -72,10 +73,7 @@ export class AssistantsContainer {
 							this.deleteAssistant(parentContainer);
 							return;
 						case "vect_create":
-							this.createSearch(
-								parentContainer,
-								this.vectorFilesToAdd
-							);
+							this.createVector(parentContainer)
 							return;
 						case "vect_update":
 							this.updateVector(parentContainer);
@@ -317,6 +315,18 @@ export class AssistantsContainer {
 			});
 		});
 		if (needsReturn) return file_ids;
+	}
+
+	createVector(parentContainer: HTMLElement) {
+		let vectorName =""
+		const name = new Setting(parentContainer)
+			.setName("Vector Storage Name")
+			.setDesc("The name for your new vector storage")
+			.addText((text:TextComponent) => {
+				text.onChange(change => {
+					
+				})
+			})
 	}
 
 	updateVector(parentContainer: HTMLElement) {}

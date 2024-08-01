@@ -5,6 +5,7 @@ import { Assistant } from "openai/resources/beta/assistants";
 import { modelNames, models } from "utils/models";
 import {
 	DEFAULT_DIRECTORY,
+	generateAssistantsList,
 	getAssistant,
 	getSettingType,
 	getViewInfo
@@ -21,6 +22,7 @@ export class SettingsContainer {
 
 	generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
 		this.resetSettings(parentContainer);
+		generateAssistantsList(this.plugin)
 		this.generateModels(parentContainer, Header);
 		this.generateModelSettings(parentContainer);
 	}
