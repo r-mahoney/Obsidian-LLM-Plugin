@@ -19,6 +19,7 @@ import {
 } from "Plugin/Widget/Widget";
 import SettingsView from "Settings/SettingsView";
 import { Assistant } from "openai/resources/beta/assistants";
+import { generateAssistantsList } from "utils/utils";
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -94,7 +95,7 @@ export default class LLMPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-
+		await generateAssistantsList(this)
 		this.registerRibbonIcons();
 		this.registerCommands();
 

@@ -14,7 +14,11 @@
 }
 
 .none {
-	display: none
+	display: none;
+}
+
+.assistants-create-button-div {
+	border-top: unset;
 }
 
 .assistants-button-div {
@@ -23,6 +27,11 @@
 
 .assistants-button {
 	width: fit-content;
+}
+
+.update-settings {
+	padding-top: 0.75em;
+	border-top: 1px solid var(--background-modifier-border);
 }
 
 /* TITLE */
@@ -101,7 +110,8 @@
 
 .modal-chat-container,
 .modal-settings-container,
-.widget-chat-container {
+.widget-chat-container,
+.modal-assistants-container {
 	margin-top: 20px;
 }
 
@@ -441,6 +451,9 @@ FAB MESSAGE ICON CSS
 .widget-settings-container {
 	.setting-item {
 		flex-direction: column;
+		.setting-item-info {
+			margin-right: auto;
+		}
 		.setting-item-control {
 			justify-content: center;
 		}
@@ -454,6 +467,9 @@ FAB MESSAGE ICON CSS
 	.setting-item {
 		display: flex;
 		flex-direction: column;
+		.setting-item-info {
+			margin-right: auto;
+		}
 		.setting-item-control {
 			justify-content: center;
 		}
@@ -537,4 +553,39 @@ FAB MESSAGE ICON CSS
 #settings-credits > p {
 	font-size: 10pt;
 	margin: 0;
+}
+
+.vector-files {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: fit-content;
+	background: var(--background-modifier-form-field);
+	border-radius: 5px;
+	max-width: 213px;
+	min-width: 213px;
+	gap: unset;
+}
+
+.vector-file {
+	border-radius: 5px;
+	padding: 6px;
+	width: 100%;
+	text-align: start;
+	border-bottom: 2px solid var(--background-modifier-border);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.vector-file:hover {
+	box-shadow: var(--input-shadow-hover);
+}
+
+.vector-dropdown {
+	gap: 50%;
+}
+
+.file-added {
+	background-color: var(--icon-color-active);
 }
