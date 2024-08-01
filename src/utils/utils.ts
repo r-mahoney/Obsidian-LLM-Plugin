@@ -314,6 +314,45 @@ export function getAssistant(plugin: LLMPlugin, assistant_id: string) {
 	) as Assistant & { modelType: string };
 }
 
+export async function listAssistants(OpenAI_API_Key: string) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+
+	const myAssistants = await openai.beta.assistants.list();
+
+	  return myAssistants.data
+}
+
+export async function deleteAssistant(OpenAI_API_Key: string, assistant_id: string) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+
+	await openai.beta.assistants.del(assistant_id);
+}
+
+export async function listVectors(OpenAI_API_Key: string) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+
+	const vectorStores = await openai.beta.vectorStores.list();
+	return vectorStores.data
+}
+
+export async function deleteVector(OpenAI_API_Key: string, vector_id: string) {
+	const openai = new OpenAI({
+		apiKey: OpenAI_API_Key,
+		dangerouslyAllowBrowser: true,
+	});
+
+	await openai.beta.vectorStores.del(vector_id)
+}
+
 export async function createVectorAndUpdate(
 	files: string[],
 	assistant: Assistant,

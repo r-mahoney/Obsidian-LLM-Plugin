@@ -33,6 +33,11 @@ export class SettingsContainer {
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
+				dropdown.addOption("", "---Select Assistant---");
+				const assistants = this.plugin.settings.assistants;
+				assistants.map((assistant: Assistant) => {
+					dropdown.addOption(`${assistant.id}`, `${assistant.name}`);
+				});
 				dropdown.addOption("", "---Select Model---");
 				let keys = Object.keys(models);
 				for (let model of keys) {
@@ -52,11 +57,6 @@ export class SettingsContainer {
 						dropdown.addOption(models[model].model, model);
 					}
 				}
-				dropdown.addOption("", "---Select Assistant---");
-				const assistants = this.plugin.settings.assistants;
-				assistants.map((assistant: Assistant) => {
-					dropdown.addOption(`${assistant.id}`, `${assistant.name}`);
-				});
 				dropdown.onChange((change) => {
 					const { historyIndex } = getViewInfo(
 						this.plugin,
