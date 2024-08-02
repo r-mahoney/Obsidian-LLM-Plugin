@@ -95,7 +95,6 @@ export default class LLMPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-		await generateAssistantsList(this)
 		this.registerRibbonIcons();
 		this.registerCommands();
 
