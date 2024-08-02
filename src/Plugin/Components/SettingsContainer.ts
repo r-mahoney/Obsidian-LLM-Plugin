@@ -8,7 +8,7 @@ import {
 	generateAssistantsList,
 	getAssistant,
 	getSettingType,
-	getViewInfo
+	getViewInfo,
 } from "utils/utils";
 import { Header } from "./Header";
 const fs = require("fs");
@@ -21,8 +21,9 @@ export class SettingsContainer {
 	}
 
 	generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
+		if (this.plugin.settings.openAIAPIKey)
+			generateAssistantsList(this.plugin);
 		this.resetSettings(parentContainer);
-		generateAssistantsList(this.plugin)
 		this.generateModels(parentContainer, Header);
 		this.generateModelSettings(parentContainer);
 	}
@@ -60,7 +61,7 @@ export class SettingsContainer {
 					}
 				}
 				dropdown.onChange((change) => {
-					console.log(change)
+					console.log(change);
 					const { historyIndex } = getViewInfo(
 						this.plugin,
 						this.viewType
