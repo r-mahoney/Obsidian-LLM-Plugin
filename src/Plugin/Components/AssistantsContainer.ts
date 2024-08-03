@@ -73,7 +73,7 @@ export class AssistantsContainer {
 							this.deleteAssistant(parentContainer);
 							return;
 						case "vect_create":
-							this.createVector(parentContainer)
+							this.createVector(parentContainer);
 							return;
 						case "vect_update":
 							this.updateVector(parentContainer);
@@ -89,7 +89,7 @@ export class AssistantsContainer {
 	createAssistant(parentContainer: HTMLElement) {
 		const file_ids = this.createSearch(
 			parentContainer,
-			this.assistantFilesToAdd,
+			"assistant",
 			true
 		) as Setting;
 		this.filesSetting = file_ids;
@@ -270,10 +270,10 @@ export class AssistantsContainer {
 
 	createSearch(
 		parentContainer: HTMLElement,
-		array: string[],
+		assistantOption: "assistant" | "vector",
 		needsReturn?: boolean
 	) {
-		array = [];
+		let filePathArray: string[] = [];
 		const files = app.vault.getFiles();
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
@@ -295,21 +295,24 @@ export class AssistantsContainer {
 				);
 				options.map((option: TFile) => {
 					const item = searchDiv.createEl("option");
-					if (array.includes(option.path))
+					if (filePathArray.includes(option.path))
 						item.addClass("file-added");
 					item.addClass("vector-file");
 					item.innerHTML = option.name;
 
 					item.onClickEvent((click: MouseEvent) => {
-						if (array.includes(option.path)) {
+						if (filePathArray.includes(option.path)) {
 							item.removeClass("file-added");
-							array = array.filter(
+							filePathArray = filePathArray.filter(
 								(file_path: string) => file_path !== option.path
 							);
 						} else {
 							item.addClass("file-added");
-							array = [...array, option.path];
+							filePathArray = [...filePathArray, option.path];
 						}
+						assistantOption === "assistant"
+							? (this.assistantFilesToAdd = filePathArray)
+							: (this.vectorFilesToAdd = filePathArray);
 					});
 				});
 			});
@@ -318,15 +321,13 @@ export class AssistantsContainer {
 	}
 
 	createVector(parentContainer: HTMLElement) {
-		let vectorName =""
+		let vectorName = "";
 		const name = new Setting(parentContainer)
 			.setName("Vector Storage Name")
 			.setDesc("The name for your new vector storage")
-			.addText((text:TextComponent) => {
-				text.onChange(change => {
-					
-				})
-			})
+			.addText((text: TextComponent) => {
+				text.onChange((change) => {});
+			});
 	}
 
 	updateVector(parentContainer: HTMLElement) {}
