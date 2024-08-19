@@ -497,7 +497,7 @@ export class ChatContainer {
 		}
 	}
 
-	private createMessage(role: string, content: string, index: number) {
+	private createMessage(role: string, content: string, index: number, finalMessage: Boolean) {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const icon = imLikeMessageContainer.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
@@ -547,11 +547,32 @@ export class ChatContainer {
 			await navigator.clipboard.writeText(content);
 			new Notice("Text copied to clipboard");
 		});
+
+		if (finalMessage) {
+			const refreshButton = new ButtonComponent(imLikeMessageContainer);
+
+			refreshButton.setIcon("refresh-cw");
+			refreshButton.buttonEl.addClass("refresh-output", "hide");
+
+			imLikeMessageContainer.addEventListener("mouseenter", () => {
+				refreshButton.buttonEl.removeClass("hide");
+			})
+
+			imLikeMessageContainer.addEventListener("mouseleave", () => {
+				refreshButton.buttonEl.addClass("hide"); 
+			})
+			refreshButton.onClick(async () => {
+				new Notice("Regenerating response...");
+				this.regenerateOutput();
+			});
+		}
 	}
 
 	generateIMLikeMessgaes(messages: Message[]) {
+		let finalMessage = false
 		messages.map(({ role, content }, index) => {
-			this.createMessage(role, content, index);
+			if (index === messages.length-1) finalMessage = true
+			this.createMessage(role, content, index, finalMessage);
 		});
 		this.historyMessages.scroll(0, 9999);
 	}
@@ -560,7 +581,7 @@ export class ChatContainer {
 		const length = this.historyMessages.childNodes.length;
 		const { role, content } = message;
 
-		this.createMessage(role, content, length);
+		this.createMessage(role, content, length, false);
 	}
 	removeLastMessageAndHistoryMessage() {
 		this.messages.pop();
