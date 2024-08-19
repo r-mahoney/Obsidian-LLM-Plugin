@@ -9,6 +9,7 @@ import {
 	getAssistant,
 	getSettingType,
 	getViewInfo,
+	getApiKeyValidity
 } from "utils/utils";
 import { Header } from "./Header";
 const fs = require("fs");
@@ -20,8 +21,9 @@ export class SettingsContainer {
 		this.viewType = viewType;
 	}
 
-	generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
-		if (this.plugin.settings.openAIAPIKey)
+	async generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
+		const hasValidApiKey = await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
+		if (hasValidApiKey)
 			generateAssistantsList(this.plugin);
 		this.resetSettings(parentContainer);
 		this.generateModels(parentContainer, Header);

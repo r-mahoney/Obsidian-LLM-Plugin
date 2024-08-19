@@ -28,6 +28,7 @@ import {
 	messageGPT4AllServer,
 	openAIMessage,
 	setHistoryIndex,
+	getApiKeyValidity
 } from "utils/utils";
 import { Header } from "./Header";
 
@@ -348,7 +349,9 @@ export class ChatContainer {
 		parentElement.scrollTo(0, 9999);
 	}
 
-	generateChatContainer(parentElement: Element, header: Header) {
+	async generateChatContainer(parentElement: Element, header: Header) {
+		await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
+
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();
 		this.historyMessages.className =

@@ -12,6 +12,9 @@ import {
 	ViewSettings,
 	ViewType,
 } from "Types/types";
+import {
+	SingletonNotice
+} from "Plugin/Components/SingletonNotice"
 import { Assistant } from "openai/resources/beta/assistants";
 
 const homeDir = require("os").homedir();
@@ -43,6 +46,27 @@ export async function messageGPT4AllServer(params: ChatParams, url: string) {
 	}).then((res) => res.json());
 	return response.choices[0].message;
 }
+
+export async function getApiKeyValidity(apiKey: string) {
+	try {
+		// Make a simple API request to list models (this is lightweight)
+		const openai = new OpenAI({
+			apiKey,
+			dangerouslyAllowBrowser: true,
+		});
+		await openai.models.list();
+		return true
+	  } catch (error) {
+		if (error.status === 401) {
+		  	console.error("Invalid API key.");
+			SingletonNotice.show("Invalid API Key");
+		} else {
+		  console.log("An error occurred:", error.message);
+		}
+		return false
+	  }
+}
+
 
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
