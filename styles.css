@@ -251,6 +251,10 @@
 	margin-top: auto;
 }
 
+.refresh-output {
+	margin-right: 4px;
+}
+
 .im-like-message {
 	padding: 5px 10px;
 	p {
