@@ -546,8 +546,18 @@ FAB MESSAGE ICON CSS
 	text-align: center;
 }
 
-#settings-credits > h2 {
-	margin: 0;
+#hero-credits {
+	margin: 12px 0 0 0 !important;
+}
+
+.hero-names{
+	font-size: 14px;
+	margin: 0px
+}
+
+.text-muted, .version {
+	color: var(--text-muted);
+	font-size: 12px;
 }
 
 #settings-credits > p {

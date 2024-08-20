@@ -136,8 +136,8 @@ export default class SettingsView extends PluginSettingTab {
 		credits.id = "settings-credits";
 		credits.innerHTML =
 			`<div>
-			<h2>LLM Plugin</h2>\n<p>By Johnny✨ and Ryan Mahoney </p>
-			${this.plugin.manifest.version}
+			<h2 id="hero-credits">LLM Plugin</h2>\n<p class="hero-names text-muted">By Johnny✨ and Ryan Mahoney </p>
+			<span class="text-muted version">v${this.plugin.manifest.version}</span>
 			</div>
 			`;
 	}
