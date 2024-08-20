@@ -4,7 +4,9 @@ import { ButtonComponent, Notice } from "obsidian";
 import { ChatContainer } from "./ChatContainer";
 import { Header } from "./Header";
 import { models } from "utils/models";
+import { hideContainer, showContainer } from "utils/dom";
 import { getSettingType } from "utils/utils";
+import logo from "assets/LLMgal.svg";
 
 export class HistoryContainer {
 	viewType: ViewType;
@@ -16,6 +18,50 @@ export class HistoryContainer {
 		this.viewType = viewType;
 	}
 
+	getChatContainerClassPrefix() {
+		if (this.viewType === 'floating-action-button') {
+			return 'fab';
+		} else if (this.viewType === 'widget') {
+			return this.viewType;
+		} else if (this.viewType === 'modal') {
+			return this.viewType
+		}
+	};
+	
+	displayNoHistoryView(parentElement: HTMLElement) {
+		parentElement.addClass('justify-content-center');
+
+		const llmGal = parentElement.createDiv();
+		llmGal.addClass("icon-wrapper");
+		llmGal.innerHTML = logo;
+
+		const cta = llmGal.createDiv();
+		cta.innerHTML = `
+			<div class="empty-history-cta font-size-medium justify-content-center">
+				Looking kind of empty. Start chatting and conversations will appear here.
+			</div>
+		`
+		cta.addClass('text-align-center')
+
+		const createChatButton = new ButtonComponent(cta)
+		createChatButton.setButtonText('New chat')
+		createChatButton.setClass('empty-history-button')
+		createChatButton.setClass('mod-cta')
+
+		createChatButton.onClick(() => {
+			hideContainer(parentElement);
+			const activeHistoryButton = document.querySelector('.chat-history.is-active')
+			activeHistoryButton?.classList.remove('is-active');
+
+			const prefix = this.getChatContainerClassPrefix()
+			const chatContainer = document.querySelector(`[class*="${prefix}-chat-container"]`) as HTMLElement
+
+			showContainer(chatContainer);
+			parentElement.classList.remove('justify-content-center');
+		})
+	
+	}
+
 	generateHistoryContainer(
 		parentElement: HTMLElement,
 		history: HistoryItem[],
@@ -25,6 +71,11 @@ export class HistoryContainer {
 		chat: ChatContainer,
 		Header: Header
 	) {
+		if (!history.length) {
+			this.displayNoHistoryView(parentElement)
+			return
+		}
+
 		const settingType = getSettingType(this.viewType);
 		this.model = this.plugin.settings[settingType].model;
 		this.modelName = this.plugin.settings[settingType].modelName;

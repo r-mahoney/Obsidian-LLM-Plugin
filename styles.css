@@ -486,6 +486,26 @@ FAB MESSAGE ICON CSS
 	}
 }
 
+.font-size-medium {
+	font-size: 12px;
+}
+
+.text-align-center {
+	text-align: center;
+}
+
+.justify-content-center {
+	justify-content: center;
+}
+
+.empty-history-cta {
+	max-width: 25ch;
+}
+
+.empty-history-button {
+	margin-top: 17px;
+}
+
 .fab-chat-message {
 	font-size: 8pt;
 }
