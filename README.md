@@ -103,3 +103,41 @@ GPT4All makes creating a context out of all your vaults notes and bringing the i
 3. Click Create Collection. Progress for the collection is displayed on the LocalDocs page.
     - You will see a green Ready indicator when the entire collection is ready.
 4. In the GPT4All Chat Client, open LocalDocs with button in top-right corner to give your LLM context from those files.
+
+## Release Flow
+- After you have made your set of changes and want to push the LLM to be available via BRAT, perform the following steps.
+- Make sure all relevant files in the repo are aligned with the tag you want to release.
+
+![Reference to manifest.json, package-lock.json, package.json, and versions.json as the locations to update with your release tag](image.png)
+
+- Tag your code:
+```
+git tag 0.19.16
+```
+
+- Push your tag:
+```
+git push origin 0.19.6
+```
+
+- Generate the build assets on your local machine
+
+![Main.js, manifest.json, and styles.css](image-1.png)
+
+- Invoke `npm run build`
+- Create a release from the [tags](https://github.com/r-mahoney/Obsidian-LLM-Plugin/tags) view in GitHub
+  - Upload `main.js`, `manifest.json`, and `styles.css` to your release
+
+### Test Your Release
+- Back on your local machine...
+
+- Make sure you have the community plugin BRAT installed
+- Inside of BRAT click `Add Beta Plugin`
+
+![Add Beta Plugin BRAT button](image-2.png)
+
+- Paste in the URL for this repo - https://github.com/r-mahoney/Obsidian-LLM-Plugin/
+- Click `Add Plugin`
+- Look at the settings page for the LLM Plugin to make sure it matches the tag you just released.
+
+![LLM Plugin Settings View](image-3.png)
