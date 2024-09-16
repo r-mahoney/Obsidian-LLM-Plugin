@@ -38,7 +38,6 @@ export default class SettingsView extends PluginSettingTab {
 				});
 			});
 
-			// TODO - should support receiving a claude API token as well.
 		new Setting(containerEl)
 			.setName("Claude API Key")
 			.setDesc("Claude models require an API key for authentication.")
