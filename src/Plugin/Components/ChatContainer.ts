@@ -103,12 +103,12 @@ export class ChatContainer {
 		}
 		// Handle claude
 		if (endpoint === "messages") {
-			// TODO - in order to be able to send multiple claude messages in a row, we need to subset `this.messages`
 			const params: ChatParams = {
 				prompt: this.prompt,
 				// The Claude API accepts the most recent user message
 				// as well as an optional most recent assistant message.
-				messages: this.messages,
+				// This initial approach only sends the most recent user message.
+				messages: this.messages.slice(-1),
 				model,
 				temperature:
 					this.plugin.settings[settingType].chatSettings.temperature,
