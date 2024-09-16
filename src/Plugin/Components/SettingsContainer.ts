@@ -65,7 +65,8 @@ export class SettingsContainer {
 		const settingType = getSettingType(this.viewType);
 		const viewSettings = this.plugin.settings[settingType];
 
-		const modelOptions = new Setting(parentContainer)
+		// Create the dropdown model selector
+		new Setting(parentContainer)
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
