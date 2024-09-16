@@ -70,6 +70,7 @@ export class SettingsContainer {
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
+				// NOTE -> we only want to display assistants when using OpenAI
 				dropdown.addOption("", "---Select Assistant---");
 				const assistants = this.plugin.settings.assistants;
 				assistants.map((assistant: Assistant) => {
@@ -171,7 +172,7 @@ export class SettingsContainer {
 		if (endpoint === "moderations") {
 			this.generateModerationsSettings(parentContainer);
 		}
-		if (endpoint === "chat") {
+		if (endpoint === "chat" || "messages") {
 			this.generateChatSettings(parentContainer, modelType);
 		}
 	}
