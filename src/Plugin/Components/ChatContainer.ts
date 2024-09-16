@@ -248,7 +248,7 @@ export class ChatContainer {
 			} else {
 				// TODO - should check to see if there is an openAI key || a claude key
 				// depending on the model
-				const API_KEY = this.plugin.settings.openAIAPIKey;
+				const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey;
 				if (!API_KEY) {
 					throw new Error("No API Key");
 				}
