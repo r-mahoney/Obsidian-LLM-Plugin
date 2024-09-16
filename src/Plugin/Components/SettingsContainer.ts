@@ -3,6 +3,7 @@ import LLMPlugin from "main";
 import { DropdownComponent, Setting } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { modelNames, models } from "utils/models";
+import { openAI, claude } from "utils/constants";
 import {
 	DEFAULT_DIRECTORY,
 	generateAssistantsList,
@@ -22,11 +23,39 @@ export class SettingsContainer {
 	}
 
 	async generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
-		// TODO - should conditionally check the correct API key
-		// depending on whether the model is claude or openai
-		const hasValidApiKey = await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
-		if (hasValidApiKey)
+		const providerKeyPairs = [
+			{
+				provider: openAI,
+				key: this.plugin.settings.openAIAPIKey
+			},
+			{
+				provider: claude,
+				key: this.plugin.settings.claudeAPIKey
+			}
+		]
+
+		// Skip proividers with no keys
+		const filteredPairs = providerKeyPairs.filter(({ key }) => key)
+
+		const promises = filteredPairs.map(async pair => {
+			const result = await getApiKeyValidity(pair)
+			return result
+		})
+
+		const results = await Promise.all(promises)
+		const hasValidOpenAIAPIKey: boolean = results.some((result) => {
+			if (result) {
+				return result.valid && result.provider === openAI
+			}
+		});
+
+		// We likely want a 'global' state variable to track whether or not
+		// any UI elements around assistants should be on.
+
+		// If the model is OpenAI and the key is valid -> generate the assistant list
+		if (hasValidOpenAIAPIKey) 
 			generateAssistantsList(this.plugin);
+
 		this.resetSettings(parentContainer);
 		this.generateModels(parentContainer, Header);
 		this.generateModelSettings(parentContainer);
@@ -422,5 +451,5 @@ export class SettingsContainer {
 			});
 	}
 
-	generateModerationsSettings(parentContainer: HTMLElement) {}
+	generateModerationsSettings(parentContainer: HTMLElement) { }
 }
