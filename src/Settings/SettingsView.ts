@@ -39,6 +39,22 @@ export default class SettingsView extends PluginSettingTab {
 			});
 
 			// TODO - should support receiving a claude API token as well.
+		new Setting(containerEl)
+			.setName("Claude API Key")
+			.setDesc("Claude models require an API key for authentication.")
+			.addText((text) => {
+				text.setValue(`${this.plugin.settings.claudeAPIKey}`);
+				text.onChange((change) => {
+					this.plugin.settings.claudeAPIKey = change;
+					this.plugin.saveSettings();
+				});
+			})
+			.addButton((button: ButtonComponent) => {
+				button.setButtonText("Generate token");
+				button.onClick(() => {
+					window.open("https://console.anthropic.com/settings/keys");
+				});
+			});
 
 		// Adds OpenAI API Key input
 		new Setting(containerEl)
