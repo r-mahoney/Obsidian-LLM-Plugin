@@ -79,6 +79,13 @@ export const models: Record<string, Model> = {
 		endpoint: "chat",
 		url: "/chat/completions",
 	},
+	// Claude Models
+	"Claude-3-5-Sonnet-20240620": {
+		model: "claude-3-5-sonnet-20240620",
+		type: "claude",
+		endpoint: "messages",
+		url: "/v1/messages",
+	},
 	// "Text to Speech": {
 	// 	model: "tts-1",
 	// 	type: "openAI",

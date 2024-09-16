@@ -37,6 +37,7 @@ export default class SettingsView extends PluginSettingTab {
 				});
 			});
 
+			// TODO - should support receiving a claude API token as well.
 		const openAIAPIKey = new Setting(containerEl)
 			.setName("OpenAI API Key")
 			.setDesc("OpenAI models require an API key for authentication.")

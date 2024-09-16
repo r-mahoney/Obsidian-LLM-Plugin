@@ -22,6 +22,8 @@ export class SettingsContainer {
 	}
 
 	async generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
+		// TODO - should conditionally check the correct API key
+		// depending on whether the model is claude or openai
 		const hasValidApiKey = await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
 		if (hasValidApiKey)
 			generateAssistantsList(this.plugin);

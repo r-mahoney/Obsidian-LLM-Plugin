@@ -170,6 +170,7 @@ export class ChatContainer {
 			});
 		}
 
+		// TODO - add a `if modelEndpoint === `/v1/messages`
 		if (modelEndpoint === "chat") {
 			const stream = await openAIMessage(
 				params as ChatParams,
@@ -245,6 +246,8 @@ export class ChatContainer {
 					}
 				);
 			} else {
+				// TODO - should check to see if there is an openAI key || a claude key
+				// depending on the model
 				const API_KEY = this.plugin.settings.openAIAPIKey;
 				if (!API_KEY) {
 					throw new Error("No API Key");
@@ -350,6 +353,7 @@ export class ChatContainer {
 	}
 
 	async generateChatContainer(parentElement: Element, header: Header) {
+		// TODO - should check the claude key versus the openAI key depending on the model
 		await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
 
 		this.messages = [];

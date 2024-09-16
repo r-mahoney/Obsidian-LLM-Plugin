@@ -67,6 +67,11 @@ export async function getApiKeyValidity(apiKey: string) {
 	  }
 }
 
+// TODO - support claude streaming
+// Example - https://www.npmjs.com/package/@anthropic-ai/sdk
+// const stream = anthropic.messages
+// .stream({
+
 
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
@@ -349,6 +354,7 @@ export async function listAssistants(OpenAI_API_Key: string) {
 	  return myAssistants.data
 }
 
+// TODO / NOTE - Claude does not have 'assistants' 
 export async function generateAssistantsList(plugin: LLMPlugin) {
 	const assisitantsFromOpenAI = await listAssistants(
 		plugin.settings.openAIAPIKey
