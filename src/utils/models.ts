@@ -1,4 +1,5 @@
 import { Model } from "Types/types";
+import { messages } from "utils/constants"
 
 export const models: Record<string, Model> = {
 	"Mistral OpenOrca": {
@@ -83,7 +84,7 @@ export const models: Record<string, Model> = {
 	"Claude-3-5-Sonnet-20240620": {
 		model: "claude-3-5-sonnet-20240620",
 		type: "claude",
-		endpoint: "messages",
+		endpoint: messages,
 		url: "/v1/messages",
 	},
 	// "Text to Speech": {

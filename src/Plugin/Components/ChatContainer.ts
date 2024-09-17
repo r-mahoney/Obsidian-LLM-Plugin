@@ -21,6 +21,7 @@ import {
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
+import { messages } from "utils/constants"
 import {
 	assistantsMessage,
 	getSettingType,
@@ -102,8 +103,9 @@ export class ChatContainer {
 			return params;
 		}
 		// Handle claude
-		if (endpoint === "messages") {
+		if (endpoint === messages) {
 			const params: ChatParams = {
+				// TODO - remove prompt. This is not used in the Claude API
 				prompt: this.prompt,
 				// The Claude API accepts the most recent user message
 				// as well as an optional most recent assistant message.
@@ -187,7 +189,7 @@ export class ChatContainer {
 			});
 		}
 
-		if (modelEndpoint === "messages") {
+		if (modelEndpoint === messages) {
 			const stream = await claudeMessage(
 				params as ChatParams, // do these need to change?
 				this.plugin.settings.claudeAPIKey,
@@ -307,7 +309,7 @@ export class ChatContainer {
 				}
 				this.previewText = "";
 				// TODO - should use constants for model endpoint checks
-				if (modelEndpoint === "chat" || modelEndpoint === "messages") {
+				if (modelEndpoint === "chat" || modelEndpoint === messages) {
 					this.handleGenerate();
 				}
 

@@ -12,6 +12,7 @@ import {
 	getViewInfo,
 	getApiKeyValidity
 } from "utils/utils";
+import { messages } from "utils/constants"
 import { Header } from "./Header";
 const fs = require("fs");
 
@@ -53,7 +54,7 @@ export class SettingsContainer {
 		// any UI elements around assistants should be on.
 
 		// If the model is OpenAI and the key is valid -> generate the assistant list
-		if (hasValidOpenAIAPIKey) 
+		if (hasValidOpenAIAPIKey)
 			generateAssistantsList(this.plugin);
 
 		this.resetSettings(parentContainer);
@@ -172,7 +173,7 @@ export class SettingsContainer {
 		if (endpoint === "moderations") {
 			this.generateModerationsSettings(parentContainer);
 		}
-		if (endpoint === "chat" || "messages") {
+		if (endpoint === "chat" || messages) {
 			this.generateChatSettings(parentContainer, modelType);
 		}
 	}
