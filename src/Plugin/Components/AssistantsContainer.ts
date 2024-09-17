@@ -22,7 +22,7 @@ import {
 	listAssistants,
 	listVectors,
 } from "utils/utils";
-import { assistant, GPT4All } from "utils/constants";
+import { assistant as ASSISTANT, GPT4All } from "utils/constants";
 const fs = require("fs");
 
 export class AssistantsContainer {
@@ -137,7 +137,7 @@ export class AssistantsContainer {
 
 			this.plugin.assistants.push({
 				...assistant,
-				modelType: assistant,
+				modelType: ASSISTANT,
 				tool_resources: {
 					file_search: { vector_store_ids: [vector_store_id] },
 				},
