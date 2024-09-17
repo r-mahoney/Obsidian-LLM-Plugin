@@ -21,7 +21,7 @@ import {
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
-import { assistant, messages } from "utils/constants";
+import { assistant, chat, messages } from "utils/constants";
 
 import {
 	assistantsMessage,
@@ -74,7 +74,7 @@ export class ChatContainer {
 			return params;
 		}
 
-		if (endpoint === "chat") {
+		if (endpoint === chat) {
 			if (modelType === "GPT4All") {
 				const params: ChatParams = {
 					prompt: this.prompt,
@@ -225,7 +225,7 @@ export class ChatContainer {
 			} as ChatHistoryItem;
 			this.historyPush(message_context);
 		}
-		if (modelEndpoint === "chat") {
+		if (modelEndpoint === chat) {
 			const stream = await openAIMessage(
 				params as ChatParams,
 				this.plugin.settings.openAIAPIKey,
@@ -308,7 +308,7 @@ export class ChatContainer {
 				}
 				this.previewText = "";
 				// TODO - should use constants for model endpoint checks
-				if (modelEndpoint === "chat" || modelEndpoint === messages) {
+				if (modelEndpoint === chat || modelEndpoint === messages) {
 					this.handleGenerate();
 				}
 
@@ -373,7 +373,7 @@ export class ChatContainer {
 			return;
 		}
 
-		if (modelEndpoint === "chat") {
+		if (modelEndpoint === chat) {
 			this.plugin.history.push({
 				...(params as ChatHistoryItem),
 				modelName,

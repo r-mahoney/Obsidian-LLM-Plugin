@@ -5,3 +5,4 @@ export const claudeSonnetJuneModel = "claude-3-5-sonnet-20240620"
 
 export const messages = "messages"
 export const assistant = "assistant"
+export const chat = "chat"

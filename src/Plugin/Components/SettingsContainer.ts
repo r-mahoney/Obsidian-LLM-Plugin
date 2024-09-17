@@ -12,7 +12,7 @@ import {
 	getViewInfo,
 	getApiKeyValidity
 } from "utils/utils";
-import { assistant, messages } from "utils/constants"
+import { assistant as ASSISTANT, chat, messages } from "utils/constants"
 import { Header } from "./Header";
 const fs = require("fs");
 
@@ -138,7 +138,7 @@ export class SettingsContainer {
 						viewSettings.modelName = assistant!.name as string;
 						viewSettings.modelType = assistant!.modelType;
 						viewSettings.endpointURL = "";
-						viewSettings.modelEndpoint = assistant;
+						viewSettings.modelEndpoint = ASSISTANT;
 						if (index > -1) {
 							this.plugin.settings.promptHistory[index].model =
 								assistant!.model;
@@ -173,7 +173,7 @@ export class SettingsContainer {
 		if (endpoint === "moderations") {
 			this.generateModerationsSettings(parentContainer);
 		}
-		if (endpoint === "chat" || messages) {
+		if (endpoint === chat || messages) {
 			this.generateChatSettings(parentContainer, modelType);
 		}
 	}
