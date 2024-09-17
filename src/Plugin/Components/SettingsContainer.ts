@@ -12,7 +12,7 @@ import {
 	getViewInfo,
 	getApiKeyValidity
 } from "utils/utils";
-import { messages } from "utils/constants"
+import { assistant, messages } from "utils/constants"
 import { Header } from "./Header";
 const fs = require("fs");
 
@@ -138,7 +138,7 @@ export class SettingsContainer {
 						viewSettings.modelName = assistant!.name as string;
 						viewSettings.modelType = assistant!.modelType;
 						viewSettings.endpointURL = "";
-						viewSettings.modelEndpoint = "assistant";
+						viewSettings.modelEndpoint = assistant;
 						if (index > -1) {
 							this.plugin.settings.promptHistory[index].model =
 								assistant!.model;

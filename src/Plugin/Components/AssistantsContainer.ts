@@ -22,6 +22,7 @@ import {
 	listAssistants,
 	listVectors,
 } from "utils/utils";
+import { assistant } from "utils/constants";
 const fs = require("fs");
 
 export class AssistantsContainer {
@@ -89,7 +90,7 @@ export class AssistantsContainer {
 	createAssistant(parentContainer: HTMLElement) {
 		const file_ids = this.createSearch(
 			parentContainer,
-			"assistant",
+			assistant,
 			true
 		) as Setting;
 		this.filesSetting = file_ids;
@@ -136,7 +137,7 @@ export class AssistantsContainer {
 
 			this.plugin.assistants.push({
 				...assistant,
-				modelType: "assistant",
+				modelType: assistant,
 				tool_resources: {
 					file_search: { vector_store_ids: [vector_store_id] },
 				},
@@ -270,7 +271,7 @@ export class AssistantsContainer {
 
 	createSearch(
 		parentContainer: HTMLElement,
-		assistantOption: "assistant" | "vector",
+		assistantOption: assistant | "vector",
 		needsReturn?: boolean
 	) {
 		let filePathArray: string[] = [];
@@ -310,7 +311,7 @@ export class AssistantsContainer {
 							item.addClass("file-added");
 							filePathArray = [...filePathArray, option.path];
 						}
-						assistantOption === "assistant"
+						assistantOption === assistant
 							? (this.assistantFilesToAdd = filePathArray)
 							: (this.vectorFilesToAdd = filePathArray);
 					});

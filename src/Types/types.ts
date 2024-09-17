@@ -1,4 +1,6 @@
 import { Assistant } from "openai/resources/beta/assistants";
+import { assistant } from "utils/constants";
+
 
 type InitialParams = {
 	prompt: string;
@@ -75,7 +77,7 @@ export type TokenParams = {
 
 export type Message = {
 	// TODO - abstract role 'user' into a const
-	role: "user" | "assistant";
+	role: "user" | typeof assistant;
 	content: string;
 };
 

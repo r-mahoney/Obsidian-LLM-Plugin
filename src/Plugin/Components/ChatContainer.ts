@@ -21,7 +21,8 @@ import {
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
-import { messages } from "utils/constants"
+import { assistant, messages } from "utils/constants";
+
 import {
 	assistantsMessage,
 	getSettingType,
@@ -55,7 +56,7 @@ export class ChatContainer {
 	getParams(endpoint: string, model: string, modelType: string) {
 		const settingType = getSettingType(this.viewType);
 
-		if (modelType === "assistant") {
+		if (modelType === assistant) {
 			const params: AssistantParams = {
 				prompt: this.prompt,
 				messages: this.messages,
@@ -150,7 +151,7 @@ export class ChatContainer {
 			modelName,
 		} = getViewInfo(this.plugin, this.viewType);
 		const params = this.getParams(modelEndpoint, model, modelType);
-		if (modelEndpoint === "assistant") {
+		if (modelEndpoint === assistant) {
 			const stream = await assistantsMessage(
 				this.plugin.settings.openAIAPIKey,
 				this.messages,
@@ -174,7 +175,7 @@ export class ChatContainer {
 				);
 				this.historyMessages.scroll(0, 9999);
 				this.messages.push({
-					role: "assistant",
+					role: assistant,
 					content: this.previewText,
 				});
 				const message_context = {
@@ -215,7 +216,7 @@ export class ChatContainer {
 				item.setAttribute("style", "display: none");
 			});
 			this.messages.push({
-				role: "assistant",
+				role: assistant,
 				content: this.previewText,
 			});
 			const message_context = {
@@ -252,7 +253,7 @@ export class ChatContainer {
 				item.setAttribute("style", "display: none");
 			});
 			this.messages.push({
-				role: "assistant",
+				role: assistant,
 				content: this.previewText,
 			});
 			const message_context = {
@@ -326,7 +327,7 @@ export class ChatContainer {
 						// Patch spelling
 						this.removeLodingDiv();
 						this.messages.push({
-							role: "assistant",
+							role: assistant,
 							content,
 						});
 						this.appendImage(response);
@@ -344,7 +345,7 @@ export class ChatContainer {
 						modelEndpoint
 					);
 				}
-				if (modelEndpoint === "assistant") {
+				if (modelEndpoint === assistant) {
 					this.handleGenerate();
 				}
 				header.enableButtons();
@@ -384,7 +385,7 @@ export class ChatContainer {
 				modelName,
 			});
 		}
-		if (modelEndpoint === "assistant") {
+		if (modelEndpoint === assistant) {
 			this.plugin.history.push({
 				...(params as AssistantHistoryItem),
 				modelName,

@@ -5,7 +5,7 @@ import LLMPlugin from "main";
 import { Editor } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
-import { openAI, claude, claudeSonnetJuneModel } from "utils/constants";
+import { assistant, openAI, claude, claudeSonnetJuneModel } from "utils/constants";
 import {
 	ChatParams,
 	ImageParams,
@@ -409,7 +409,7 @@ export async function generateAssistantsList(plugin: LLMPlugin) {
 	const processedAssisitants = assisitantsFromOpenAI.map(
 		(assistant: Assistant & { modelType: string }) => ({
 			...assistant,
-			modelType: "assistant",
+			modelType: assistant,
 		})
 	);
 	plugin.settings.assistants = processedAssisitants;
