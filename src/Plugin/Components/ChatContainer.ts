@@ -21,7 +21,7 @@ import {
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
-import { assistant, chat, messages } from "utils/constants";
+import { assistant, chat, GPT4All, messages } from "utils/constants";
 
 import {
 	assistantsMessage,
@@ -75,7 +75,7 @@ export class ChatContainer {
 		}
 
 		if (endpoint === chat) {
-			if (modelType === "GPT4All") {
+			if (modelType === GPT4All) {
 				const params: ChatParams = {
 					prompt: this.prompt,
 					messages: this.messages,
@@ -288,7 +288,7 @@ export class ChatContainer {
 			this.appendNewMessage({ role: "user", content: this.prompt });
 			if (this.plugin.settings.GPT4AllStreaming)
 				throw new Error("GPT4All streaming");
-			if (modelType === "GPT4All") {
+			if (modelType === GPT4All) {
 				this.plugin.settings.GPT4AllStreaming = true;
 				this.setDiv(false);
 				messageGPT4AllServer(params as ChatParams, endpointURL).then(

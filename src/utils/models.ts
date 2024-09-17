@@ -1,70 +1,70 @@
 import { Model } from "Types/types";
-import { chat, messages } from "utils/constants"
+import { claude, chat, GPT4All, messages } from "utils/constants"
 
 export const models: Record<string, Model> = {
 	"Mistral OpenOrca": {
 		model: "mistral-7b-openorca.Q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"Mistral Instruct": {
 		model: "mistral-7b-instruct-v0.1.Q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"GPT4All Falcon": {
 		model: "gpt4all-falcon-newbpe-q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"Orca 2 (Medium)": {
 		model: "orca-2-7b.Q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"Orca 2 (Full)": {
 		model: "orca-2-13b.Q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"Mini Orca (Small)": {
 		model: "orca-mini-3b-gguf2-q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"MPT Chat": {
 		model: "mpt-7b-chat-newbpe-q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"Wizard v1.2": {
 		model: "wizardlm-13b-v1.2.Q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	Hermes: {
 		model: "nous-hermes-llama2-13b.Q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	Snoozy: {
 		model: "gpt4all-13b-snoozy-q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
 	"EM German Mistral": {
 		model: "em_german_mistral_v01.Q4_0.gguf",
-		type: "GPT4All",
+		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
 	},
@@ -83,7 +83,7 @@ export const models: Record<string, Model> = {
 	// Claude Models
 	"Claude-3-5-Sonnet-20240620": {
 		model: "claude-3-5-sonnet-20240620",
-		type: "claude",
+		type: claude,
 		endpoint: messages,
 		url: "/v1/messages",
 	},

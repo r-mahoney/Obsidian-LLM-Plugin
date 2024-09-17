@@ -22,7 +22,7 @@ import {
 	listAssistants,
 	listVectors,
 } from "utils/utils";
-import { assistant } from "utils/constants";
+import { assistant, GPT4All } from "utils/constants";
 const fs = require("fs");
 
 export class AssistantsContainer {
@@ -426,7 +426,7 @@ export class AssistantsContainer {
 				dropdown.addOption("", "---Select Model---");
 				let keys = Object.keys(models);
 				for (let model of keys) {
-					if (models[model].type === "GPT4All") {
+					if (models[model].type === GPT4All) {
 						fs.exists(
 							`${DEFAULT_DIRECTORY}/${models[model].model}`,
 							(exists: boolean) => {

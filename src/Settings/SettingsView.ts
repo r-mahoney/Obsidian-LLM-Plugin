@@ -8,6 +8,7 @@ import {
 } from "obsidian";
 import { DEFAULT_DIRECTORY } from "utils/utils";
 import { models, modelNames } from "utils/models";
+import { GPT4All } from "utils/constants";
 import logo from "assets/LLMguy.svg";
 import { FAB } from "Plugin/FAB/FAB";
 const fs = require("fs");
@@ -84,7 +85,7 @@ export default class SettingsView extends PluginSettingTab {
 				);
 				let keys = Object.keys(models);
 				for (let model of keys) {
-					if (models[model].type === "GPT4All") {
+					if (models[1].type === GPT4All) {
 						fs.exists(
 							`${DEFAULT_DIRECTORY}/${models[model].model}`,
 							(exists: boolean) => {
