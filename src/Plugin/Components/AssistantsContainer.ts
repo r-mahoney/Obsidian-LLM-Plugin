@@ -90,7 +90,7 @@ export class AssistantsContainer {
 	createAssistant(parentContainer: HTMLElement) {
 		const file_ids = this.createSearch(
 			parentContainer,
-			assistant,
+			ASSISTANT,
 			true
 		) as Setting;
 		this.filesSetting = file_ids;
@@ -271,7 +271,7 @@ export class AssistantsContainer {
 
 	createSearch(
 		parentContainer: HTMLElement,
-		assistantOption: assistant | "vector",
+		assistantOption: typeof ASSISTANT | "vector",
 		needsReturn?: boolean
 	) {
 		let filePathArray: string[] = [];
@@ -311,7 +311,7 @@ export class AssistantsContainer {
 							item.addClass("file-added");
 							filePathArray = [...filePathArray, option.path];
 						}
-						assistantOption === assistant
+						assistantOption === ASSISTANT
 							? (this.assistantFilesToAdd = filePathArray)
 							: (this.vectorFilesToAdd = filePathArray);
 					});
