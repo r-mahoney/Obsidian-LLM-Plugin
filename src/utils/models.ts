@@ -1,7 +1,23 @@
 import { Model } from "Types/types";
 import { claude, chat, GPT4All, messages } from "utils/constants"
 
+export const openAIModels: Record<string, Model> = {
+	"ChatGPT-3.5 Turbo": {
+		model: "gpt-3.5-turbo",
+		type: "openAI",
+		endpoint: chat,
+		url: "/chat/completions",
+	},
+	"GPT-4o": {
+		model: "gpt-4o",
+		type: "openAI",
+		endpoint: chat,
+		url: "/chat/completions",
+	},
+}
+
 export const models: Record<string, Model> = {
+	...openAIModels,
 	"Mistral OpenOrca": {
 		model: "mistral-7b-openorca.Q4_0.gguf",
 		type: GPT4All,
@@ -67,18 +83,6 @@ export const models: Record<string, Model> = {
 		type: GPT4All,
 		endpoint: chat,
 		url: "/v1/chat/completions",
-	},
-	"ChatGPT-3.5 Turbo": {
-		model: "gpt-3.5-turbo",
-		type: "openAI",
-		endpoint: chat,
-		url: "/chat/completions",
-	},
-	"GPT-4o": {
-		model: "gpt-4o",
-		type: "openAI",
-		endpoint: chat,
-		url: "/chat/completions",
 	},
 	// Claude Models
 	"Claude-3-5-Sonnet-20240620": {
