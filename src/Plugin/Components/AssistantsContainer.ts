@@ -461,22 +461,7 @@ export class AssistantsContainer {
 				dropdown.addOption("", "---Select Model---");
 				let keys = Object.keys(openAIModels);
 				for (let model of keys) {
-					// QUESTION -> can gtp4all have an assistant
-					if (models[model].type === GPT4All) {
-						fs.exists(
-							`${DEFAULT_DIRECTORY}/${models[model].model}`,
-							(exists: boolean) => {
-								if (exists) {
-									dropdown.addOption(
-										models[model].model,
-										model
-									);
-								}
-							}
-						);
-					} else {
-						dropdown.addOption(models[model].model, model);
-					}
+					dropdown.addOption(models[model].model, model);
 				}
 
 				dropdown.onChange((change) => {
