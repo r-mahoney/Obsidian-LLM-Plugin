@@ -28,6 +28,7 @@ export interface LLMPluginSettings {
 	fabSettings: ViewSettings;
 	promptHistory: HistoryItem[];
 	assistants: Assistant[];
+	claudeAPIKey: string;
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
 	showFAB: boolean;
@@ -83,6 +84,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	promptHistory: [],
 	assistants: [],
 	openAIAPIKey: "",
+	claudeAPIKey: "",
 	GPT4AllStreaming: false,
 	showFAB: true,
 };

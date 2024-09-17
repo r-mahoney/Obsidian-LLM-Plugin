@@ -3,6 +3,7 @@ import LLMPlugin from "main";
 import { DropdownComponent, Setting } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { modelNames, models } from "utils/models";
+import { openAI, claude } from "utils/constants";
 import {
 	DEFAULT_DIRECTORY,
 	generateAssistantsList,
@@ -11,6 +12,7 @@ import {
 	getViewInfo,
 	getApiKeyValidity
 } from "utils/utils";
+import { messages } from "utils/constants"
 import { Header } from "./Header";
 const fs = require("fs");
 
@@ -22,9 +24,39 @@ export class SettingsContainer {
 	}
 
 	async generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
-		const hasValidApiKey = await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
-		if (hasValidApiKey)
+		const providerKeyPairs = [
+			{
+				provider: openAI,
+				key: this.plugin.settings.openAIAPIKey
+			},
+			{
+				provider: claude,
+				key: this.plugin.settings.claudeAPIKey
+			}
+		]
+
+		// Skip proividers with no keys
+		const filteredPairs = providerKeyPairs.filter(({ key }) => key)
+
+		const promises = filteredPairs.map(async pair => {
+			const result = await getApiKeyValidity(pair)
+			return result
+		})
+
+		const results = await Promise.all(promises)
+		const hasValidOpenAIAPIKey: boolean = results.some((result) => {
+			if (result) {
+				return result.valid && result.provider === openAI
+			}
+		});
+
+		// We likely want a 'global' state variable to track whether or not
+		// any UI elements around assistants should be on.
+
+		// If the model is OpenAI and the key is valid -> generate the assistant list
+		if (hasValidOpenAIAPIKey)
 			generateAssistantsList(this.plugin);
+
 		this.resetSettings(parentContainer);
 		this.generateModels(parentContainer, Header);
 		this.generateModelSettings(parentContainer);
@@ -34,10 +66,12 @@ export class SettingsContainer {
 		const settingType = getSettingType(this.viewType);
 		const viewSettings = this.plugin.settings[settingType];
 
-		const modelOptions = new Setting(parentContainer)
+		// Create the dropdown model selector
+		new Setting(parentContainer)
 			.setName("Models")
 			.setDesc("The model you want to use to generate a chat response.")
 			.addDropdown((dropdown: DropdownComponent) => {
+				// NOTE -> we only want to display assistants when using OpenAI
 				dropdown.addOption("", "---Select Assistant---");
 				const assistants = this.plugin.settings.assistants;
 				assistants.map((assistant: Assistant) => {
@@ -139,7 +173,7 @@ export class SettingsContainer {
 		if (endpoint === "moderations") {
 			this.generateModerationsSettings(parentContainer);
 		}
-		if (endpoint === "chat") {
+		if (endpoint === "chat" || messages) {
 			this.generateChatSettings(parentContainer, modelType);
 		}
 	}
@@ -420,5 +454,5 @@ export class SettingsContainer {
 			});
 	}
 
-	generateModerationsSettings(parentContainer: HTMLElement) {}
+	generateModerationsSettings(parentContainer: HTMLElement) { }
 }

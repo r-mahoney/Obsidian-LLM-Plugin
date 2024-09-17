@@ -4,10 +4,13 @@ import path from "path";
 import LLMPlugin from "main";
 import { Editor } from "obsidian";
 import OpenAI, { toFile } from "openai";
+import Anthropic from '@anthropic-ai/sdk';
+import { openAI, claude, claudeSonnetJuneModel } from "utils/constants";
 import {
 	ChatParams,
 	ImageParams,
 	Message,
+	ProviderKeyPair,
 	SpeechParams,
 	ViewSettings,
 	ViewType,
@@ -34,6 +37,11 @@ export function modelLookup(modelName: string) {
 	return existsSync(model);
 }
 
+export function upperCaseFirst(input: string): string {
+	if (input.length === 0) return input;
+	return input.charAt(0).toUpperCase() + input.slice(1);
+}
+
 export async function messageGPT4AllServer(params: ChatParams, url: string) {
 	const response = await fetch(`http://localhost:4891${url}`, {
 		method: "POST",
@@ -47,26 +55,70 @@ export async function messageGPT4AllServer(params: ChatParams, url: string) {
 	return response.choices[0].message;
 }
 
-export async function getApiKeyValidity(apiKey: string) {
+export async function getApiKeyValidity(providerKeyPair: ProviderKeyPair) {
 	try {
-		// Make a simple API request to list models (this is lightweight)
-		const openai = new OpenAI({
-			apiKey,
-			dangerouslyAllowBrowser: true,
-		});
-		await openai.models.list();
-		return true
-	  } catch (error) {
+		const { key, provider } = providerKeyPair;
+		if (provider === openAI) {
+			const openaiClient = new OpenAI({
+				apiKey: key,
+				dangerouslyAllowBrowser: true,
+			});
+			await openaiClient.models.list();
+			return { provider, valid: true };
+		} else if (provider === claude) {
+			const client = new Anthropic({
+				apiKey: key,
+				dangerouslyAllowBrowser: true,
+			});
+			await client.messages.create({
+				model: claudeSonnetJuneModel,
+				max_tokens: 1,
+				messages: [
+					{ "role": "user", "content": "Reply 'a'" }
+				]
+			});
+			return { provider, valid: true };
+		}
+	} catch (error) {
 		if (error.status === 401) {
-		  	console.error("Invalid API key.");
-			SingletonNotice.show("Invalid API Key");
+			console.error(`Invalid API key for ${providerKeyPair.provider}.`);
+			SingletonNotice.show(`Invalid API key for ${upperCaseFirst(providerKeyPair.provider)}.`);
 		} else {
-		  console.log("An error occurred:", error.message);
+			console.log("An error occurred:", error.message);
 		}
 		return false
-	  }
+	}
 }
 
+// TODO - support claude streaming
+// Example - https://www.npmjs.com/package/@anthropic-ai/sdk
+// const stream = anthropic.messages
+// .stream({
+
+
+export async function claudeMessage(
+	params: ChatParams | ImageParams | SpeechParams,
+	Claude_API_KEY: string,
+) {
+	const client = new Anthropic({
+		apiKey: Claude_API_KEY,
+		dangerouslyAllowBrowser: true,
+	});
+
+	const { model, messages, tokens, temperature } =
+		params as ChatParams;
+
+	// Anthropic SDK Docs - https://github.com/anthropics/anthropic-sdk-typescript/blob/HEAD/helpers.md#messagestream-api
+	const stream = client.messages
+		.stream({
+			model,
+			messages,
+			max_tokens: tokens,
+			temperature,
+			stream: true,
+		})
+	return stream
+}
 
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
@@ -82,7 +134,7 @@ export async function openAIMessage(
 
 	if (endpointType === "chat") {
 		const { prompt, model, messages, tokens, temperature } =
-			params as ChatParams;
+		params as ChatParams;
 		const stream = await openai.chat.completions.create(
 			{
 				model,
@@ -346,9 +398,10 @@ export async function listAssistants(OpenAI_API_Key: string) {
 
 	const myAssistants = await openai.beta.assistants.list();
 
-	  return myAssistants.data
+	return myAssistants.data
 }
 
+// TODO / NOTE - Claude does not have 'assistants' 
 export async function generateAssistantsList(plugin: LLMPlugin) {
 	const assisitantsFromOpenAI = await listAssistants(
 		plugin.settings.openAIAPIKey

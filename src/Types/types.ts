@@ -47,6 +47,11 @@ export type ChatHistoryItem = InitialParams &
 		modelName: string;
 	};
 
+export type ProviderKeyPair = {
+	provider: string;
+	key: string;
+};
+
 export type ImageHistoryItem = InitialParams &
 	ImageParams & {
 		modelName: string;

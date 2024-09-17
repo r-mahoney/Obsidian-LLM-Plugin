@@ -21,11 +21,13 @@ import {
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
+import { messages } from "utils/constants"
 import {
 	assistantsMessage,
 	getSettingType,
 	getViewInfo,
 	messageGPT4AllServer,
+	claudeMessage,
 	openAIMessage,
 	setHistoryIndex,
 	getApiKeyValidity
@@ -100,6 +102,23 @@ export class ChatContainer {
 			};
 			return params;
 		}
+		// Handle claude
+		if (endpoint === messages) {
+			const params: ChatParams = {
+				// TODO - remove prompt. This is not used in the Claude API
+				prompt: this.prompt,
+				// The Claude API accepts the most recent user message
+				// as well as an optional most recent assistant message.
+				// This initial approach only sends the most recent user message.
+				messages: this.messages.slice(-1),
+				model,
+				temperature:
+					this.plugin.settings[settingType].chatSettings.temperature,
+				tokens: this.plugin.settings[settingType].chatSettings
+					.maxTokens,
+			};
+			return params;
+		}
 
 		if (endpoint === "speech") {
 			const params: SpeechParams = {
@@ -121,8 +140,6 @@ export class ChatContainer {
 	}
 
 	async handleGenerate() {
-		// TODO - support more than chatgpt
-
 		this.previewText = "";
 		const {
 			model,
@@ -170,6 +187,43 @@ export class ChatContainer {
 			});
 		}
 
+		if (modelEndpoint === messages) {
+			const stream = await claudeMessage(
+				params as ChatParams, // do these need to change?
+				this.plugin.settings.claudeAPIKey,
+			);
+			this.setDiv(true);
+
+			stream.on('text', (text) => {
+				this.previewText += text || "";
+				this.streamingDiv.innerHTML = this.previewText;
+				this.historyMessages.scroll(0, 9999);
+			})
+
+			this.streamingDiv.innerHTML = "";
+			MarkdownRenderer.render(
+				this.plugin.app,
+				this.previewText,
+				this.streamingDiv,
+				"",
+				this.plugin
+			);
+			const copyButton = this.streamingDiv.querySelectorAll(
+				".copy-code-button"
+			) as NodeListOf<HTMLElement>;
+			copyButton.forEach((item) => {
+				item.setAttribute("style", "display: none");
+			});
+			this.messages.push({
+				role: "assistant",
+				content: this.previewText,
+			});
+			const message_context = {
+				...(params as ChatParams),
+				messages: this.messages,
+			} as ChatHistoryItem;
+			this.historyPush(message_context);
+		}
 		if (modelEndpoint === "chat") {
 			const stream = await openAIMessage(
 				params as ChatParams,
@@ -245,12 +299,15 @@ export class ChatContainer {
 					}
 				);
 			} else {
-				const API_KEY = this.plugin.settings.openAIAPIKey;
+				// TODO - should check to see if there is an openAI key || a claude key
+				// depending on the model
+				const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey;
 				if (!API_KEY) {
 					throw new Error("No API Key");
 				}
 				this.previewText = "";
-				if (modelEndpoint === "chat") {
+				// TODO - should use constants for model endpoint checks
+				if (modelEndpoint === "chat" || modelEndpoint === messages) {
 					this.handleGenerate();
 				}
 
@@ -350,6 +407,7 @@ export class ChatContainer {
 	}
 
 	async generateChatContainer(parentElement: Element, header: Header) {
+		// TODO - should check the claude key versus the openAI key depending on the model
 		await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
 
 		this.messages = [];
@@ -562,7 +620,7 @@ export class ChatContainer {
 			})
 
 			imLikeMessageContainer.addEventListener("mouseleave", () => {
-				refreshButton.buttonEl.addClass("hide"); 
+				refreshButton.buttonEl.addClass("hide");
 			})
 			refreshButton.onClick(async () => {
 				new Notice("Regenerating response...");
@@ -574,7 +632,7 @@ export class ChatContainer {
 	generateIMLikeMessgaes(messages: Message[]) {
 		let finalMessage = false
 		messages.map(({ role, content }, index) => {
-			if (index === messages.length-1) finalMessage = true
+			if (index === messages.length - 1) finalMessage = true
 			this.createMessage(role, content, index, finalMessage);
 		});
 		this.historyMessages.scroll(0, 9999);

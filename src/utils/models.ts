@@ -1,4 +1,5 @@
 import { Model } from "Types/types";
+import { messages } from "utils/constants"
 
 export const models: Record<string, Model> = {
 	"Mistral OpenOrca": {
@@ -79,6 +80,13 @@ export const models: Record<string, Model> = {
 		endpoint: "chat",
 		url: "/chat/completions",
 	},
+	// Claude Models
+	"Claude-3-5-Sonnet-20240620": {
+		model: "claude-3-5-sonnet-20240620",
+		type: "claude",
+		endpoint: messages,
+		url: "/v1/messages",
+	},
 	// "Text to Speech": {
 	// 	model: "tts-1",
 	// 	type: "openAI",
@@ -119,6 +127,7 @@ export const modelNames: Record<string, string> = {
 	"em_german_mistral_v01.Q4_0.gguf": "EM German Mistral",
 	"gpt-3.5-turbo": "ChatGPT-3.5 Turbo",
 	"gpt-4o": "GPT-4o",
+	"claude-3-5-sonnet-20240620": "Claude-3-5-Sonnet-20240620",
 	// "text-embedding-3-small": "Text Embedding 3 (Small)",
 	"dall-e-3": "DALL·E 3",
 	"dall-e-2": "DALL·E 2",

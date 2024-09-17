@@ -27,7 +27,8 @@ export default class SettingsView extends PluginSettingTab {
 
 		containerEl.empty();
 
-		const resetHistory = new Setting(containerEl)
+		// Adds reset history button
+		new Setting(containerEl)
 			.setName("Reset Chat History")
 			.setDesc("This will delete previous Prompts and Chat Contexts")
 			.addButton((button: ButtonComponent) => {
@@ -37,7 +38,25 @@ export default class SettingsView extends PluginSettingTab {
 				});
 			});
 
-		const openAIAPIKey = new Setting(containerEl)
+		new Setting(containerEl)
+			.setName("Claude API Key")
+			.setDesc("Claude models require an API key for authentication.")
+			.addText((text) => {
+				text.setValue(`${this.plugin.settings.claudeAPIKey}`);
+				text.onChange((change) => {
+					this.plugin.settings.claudeAPIKey = change;
+					this.plugin.saveSettings();
+				});
+			})
+			.addButton((button: ButtonComponent) => {
+				button.setButtonText("Generate token");
+				button.onClick(() => {
+					window.open("https://console.anthropic.com/settings/keys");
+				});
+			});
+
+		// Adds OpenAI API Key input
+		new Setting(containerEl)
 			.setName("OpenAI API Key")
 			.setDesc("OpenAI models require an API key for authentication.")
 			.addText((text) => {
@@ -54,7 +73,8 @@ export default class SettingsView extends PluginSettingTab {
 				});
 			});
 
-		const setDefaultModel = new Setting(containerEl)
+		// Add Default Model Selector
+		new Setting(containerEl)
 			.setName("Set Default Model")
 			.setDesc("Sets the default LLM you want to use for the plugin")
 			.addDropdown((dropdown: DropdownComponent) => {
@@ -103,7 +123,8 @@ export default class SettingsView extends PluginSettingTab {
 				dropdown.setValue(this.plugin.settings.modalSettings.model);
 			});
 
-		const toggleFAB = new Setting(containerEl)
+		// Add Toggle FAB button
+		new Setting(containerEl)
 			.setName("Toggle FAB")
 			.setDesc("Toggles the LLM floating action button")
 			.addToggle((value) => {
@@ -119,7 +140,8 @@ export default class SettingsView extends PluginSettingTab {
 					});
 			});
 
-		const donate = new Setting(containerEl)
+		// Add donation button
+		new Setting(containerEl)
 			.setName("Donate")
 			.setDesc("Consider donating to support development.")
 			.addButton((button: ButtonComponent) => {
