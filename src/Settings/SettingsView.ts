@@ -85,7 +85,7 @@ export default class SettingsView extends PluginSettingTab {
 				);
 				let keys = Object.keys(models);
 				for (let model of keys) {
-					if (models[1].type === GPT4All) {
+					if (models[model].type === GPT4All) {
 						fs.exists(
 							`${DEFAULT_DIRECTORY}/${models[model].model}`,
 							(exists: boolean) => {
