@@ -293,7 +293,7 @@ export class ChatContainer {
 				this.setDiv(false);
 				messageGPT4AllServer(params as ChatParams, endpointURL).then(
 					(response: Message) => {
-						this.removeLodingDiv();
+						this.removeLoadingDiv();
 						this.messages.push(response);
 						this.appendNewMessage(response);
 						this.historyPush(params as ChatHistoryItem);
@@ -321,8 +321,7 @@ export class ChatContainer {
 						response.map((url) => {
 							content += `![created with prompt ${this.prompt}](${url})`;
 						});
-						// Patch spelling
-						this.removeLodingDiv();
+						this.removeLoadingDiv();
 						this.messages.push({
 							role: assistant,
 							content,
@@ -533,7 +532,7 @@ export class ChatContainer {
 		});
 	}
 
-	removeLodingDiv() {
+	removeLoadingDiv() {
 		this.loadingDivContainer.remove();
 	}
 
