@@ -297,6 +297,8 @@ export class ChatContainer {
 						this.messages.push(response);
 						this.appendNewMessage(response);
 						this.historyPush(params as ChatHistoryItem);
+						header.enableButtons();
+						sendButton.setDisabled(false);
 					}
 				);
 			} else {
