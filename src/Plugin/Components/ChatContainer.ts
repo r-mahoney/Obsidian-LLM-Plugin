@@ -140,8 +140,6 @@ export class ChatContainer {
 	}
 
 	async handleGenerate() {
-		// TODO - support more than chatgpt
-
 		this.previewText = "";
 		const {
 			model,
