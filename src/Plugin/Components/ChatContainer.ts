@@ -286,8 +286,9 @@ export class ChatContainer {
 			// 	throw new Error("Incorrect Settings");
 			// }
 			this.appendNewMessage({ role: "user", content: this.prompt });
-			if (this.plugin.settings.GPT4AllStreaming)
-				throw new Error("GPT4All streaming");
+			// This seems to be triggered much more frequently than when there streaming is in flight.
+			// if (this.plugin.settings.GPT4AllStreaming)
+			// 	throw new Error("GPT4All streaming");
 			if (modelType === GPT4All) {
 				this.plugin.settings.GPT4AllStreaming = true;
 				this.setDiv(false);
@@ -297,6 +298,8 @@ export class ChatContainer {
 						this.messages.push(response);
 						this.appendNewMessage(response);
 						this.historyPush(params as ChatHistoryItem);
+						header.enableButtons();
+						sendButton.setDisabled(false);
 					}
 				);
 			} else {
@@ -404,8 +407,14 @@ export class ChatContainer {
 	}
 
 	async generateChatContainer(parentElement: Element, header: Header) {
-		// TODO - should check the claude key versus the openAI key depending on the model
-		await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
+		// Note -> we do not necessarily need a valid API key.
+		// await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
+		// we just need a 'working model' (or assistant?) to generate the chat.
+
+		// If we are working with assistants, then we need a valid openAi API key.
+		// If we are working with claude, then we need a valid claude key.
+		// If we are working with a local model, then we only need to be able to perform a health check against
+		// that model.
 
 		this.messages = [];
 		this.historyMessages = parentElement.createDiv();

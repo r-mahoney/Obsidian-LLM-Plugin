@@ -8,7 +8,7 @@ import {
 } from "obsidian";
 import { DEFAULT_DIRECTORY } from "utils/utils";
 import { models, modelNames } from "utils/models";
-import { GPT4All } from "utils/constants";
+import { claudeSonnetJuneModel, GPT4All } from "utils/constants";
 import logo from "assets/LLMguy.svg";
 import { FAB } from "Plugin/FAB/FAB";
 const fs = require("fs");
@@ -46,7 +46,12 @@ export default class SettingsView extends PluginSettingTab {
 				text.setValue(`${this.plugin.settings.claudeAPIKey}`);
 				text.onChange((change) => {
 					this.plugin.settings.claudeAPIKey = change;
-					this.plugin.saveSettings();
+					// NOTE / Question -> We can add a prompt asking:
+					// `Do you want to set this as your default model?`
+					// This addresses the user flow where a user inputs this API key
+					// after they already have an openai key setup.
+					this.changeDefaultModel(claudeSonnetJuneModel);
+					
 				});
 			})
 			.addButton((button: ButtonComponent) => {
@@ -102,24 +107,7 @@ export default class SettingsView extends PluginSettingTab {
 					}
 				}
 				dropdown.onChange((change) => {
-					const modelName = modelNames[change];
-					DEFAULT_SETTINGS.modalSettings.model = change;
-					DEFAULT_SETTINGS.modalSettings.modelName = modelName;
-					DEFAULT_SETTINGS.modalSettings.modelType =
-						models[modelName].type;
-					DEFAULT_SETTINGS.modalSettings.endpointURL =
-						models[modelName].url;
-					DEFAULT_SETTINGS.modalSettings.modelEndpoint =
-						models[modelName].endpoint;
-					DEFAULT_SETTINGS.widgetSettings.model = change;
-					DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
-					DEFAULT_SETTINGS.widgetSettings.modelType =
-						models[modelName].type;
-					DEFAULT_SETTINGS.widgetSettings.endpointURL =
-						models[modelName].url;
-					DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
-						models[modelName].endpoint;
-					this.plugin.saveSettings();
+					this.changeDefaultModel(change)
 				});
 				dropdown.setValue(this.plugin.settings.modalSettings.model);
 			});
@@ -163,5 +151,31 @@ export default class SettingsView extends PluginSettingTab {
 			<span class="text-muted version">v${this.plugin.manifest.version}</span>
 			</div>
 			`;
+	}
+
+	changeDefaultModel(model: string) {
+					// Question -> why do we not update the FAB model here?
+					const modelName = modelNames[model];
+					// Modal settings
+					DEFAULT_SETTINGS.modalSettings.model = model;
+					DEFAULT_SETTINGS.modalSettings.modelName = modelName;
+					DEFAULT_SETTINGS.modalSettings.modelType =
+						models[modelName].type;
+					DEFAULT_SETTINGS.modalSettings.endpointURL =
+						models[modelName].url;
+					DEFAULT_SETTINGS.modalSettings.modelEndpoint =
+						models[modelName].endpoint;
+
+					// Widget settings
+					DEFAULT_SETTINGS.widgetSettings.model = model;
+					DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
+					DEFAULT_SETTINGS.widgetSettings.modelType =
+						models[modelName].type;
+					DEFAULT_SETTINGS.widgetSettings.endpointURL =
+						models[modelName].url;1
+					DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
+						models[modelName].endpoint;
+
+					this.plugin.saveSettings();
 	}
 }

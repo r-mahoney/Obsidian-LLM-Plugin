@@ -7,11 +7,12 @@ import {
 	TextComponent,
 	TFile,
 	ToggleComponent,
+	Notice
 } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { VectorStore } from "openai/resources/beta/vector-stores/vector-stores";
 import { ViewType } from "Types/types";
-import { models } from "utils/models";
+import { openAIModels, models } from "utils/models";
 import {
 	createAssistant,
 	createVectorAndUpdate,
@@ -22,7 +23,8 @@ import {
 	listAssistants,
 	listVectors,
 } from "utils/utils";
-import { assistant, GPT4All } from "utils/constants";
+import { assistant as ASSISTANT, GPT4All } from "utils/constants";
+import { SingletonNotice } from "./SingletonNotice";
 const fs = require("fs");
 
 export class AssistantsContainer {
@@ -45,6 +47,16 @@ export class AssistantsContainer {
 
 	constructor(private plugin: LLMPlugin, viewType: ViewType) {
 		this.viewType = viewType;
+	}
+
+	private validateFields(fields: { [key: string]: any }): string[] {
+		const invalidFields: string[] = [];
+		for (const [fieldName, value] of Object.entries(fields)) {
+			if (!value) {
+				invalidFields.push(fieldName);
+			}
+		}
+		return invalidFields;
 	}
 
 	async generateAssistantsContainer(parentContainer: HTMLElement) {
@@ -87,10 +99,12 @@ export class AssistantsContainer {
 			});
 	}
 
+	// NOTE -> for both the create assistant flow we should dump the this.createAssistant name & other fields
+	// after a successful submission event.
 	createAssistant(parentContainer: HTMLElement) {
 		const file_ids = this.createSearch(
 			parentContainer,
-			assistant,
+			ASSISTANT,
 			true
 		) as Setting;
 		this.filesSetting = file_ids;
@@ -107,6 +121,21 @@ export class AssistantsContainer {
 		submitButton.buttonEl.textContent = "Create Assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
+			const hasFiles = this.assistantFilesToAdd?.length >= 1
+
+			const requiredFields = {
+				"Name": this.createAssistantName,
+				"Model": this.createAssistantModel,
+				"Files": hasFiles,
+			};
+
+			const invalidFields = this.validateFields(requiredFields);
+			if (invalidFields.length > 0) {
+				SingletonNotice.show(`Please fill out the following fields: ${invalidFields.join(", ")}`)
+				return;
+			}
+
+			SingletonNotice.show("Creating Assistant...")
 			e.preventDefault();
 			//@ts-ignore
 			const basePath = app.vault.adapter.basePath;
@@ -135,9 +164,14 @@ export class AssistantsContainer {
 				this.plugin.settings.openAIAPIKey
 			);
 
+			// Note -> this notice shows up much faster than the UI pushes to the next view
+			if (assistant) {
+				new Notice("Assistant Created Successfully");
+			}
+
 			this.plugin.assistants.push({
 				...assistant,
-				modelType: assistant,
+				modelType: ASSISTANT,
 				tool_resources: {
 					file_search: { vector_store_ids: [vector_store_id] },
 				},
@@ -147,6 +181,7 @@ export class AssistantsContainer {
 		});
 	}
 
+	// TODO - add validation
 	async updateAssistant(parentContainer: HTMLElement) {
 		const assistantsList = await listAssistants(
 			this.plugin.settings.openAIAPIKey
@@ -271,7 +306,7 @@ export class AssistantsContainer {
 
 	createSearch(
 		parentContainer: HTMLElement,
-		assistantOption: assistant | "vector",
+		assistantOption: typeof ASSISTANT | "vector",
 		needsReturn?: boolean
 	) {
 		let filePathArray: string[] = [];
@@ -311,7 +346,7 @@ export class AssistantsContainer {
 							item.addClass("file-added");
 							filePathArray = [...filePathArray, option.path];
 						}
-						assistantOption === assistant
+						assistantOption === ASSISTANT
 							? (this.assistantFilesToAdd = filePathArray)
 							: (this.vectorFilesToAdd = filePathArray);
 					});
@@ -327,11 +362,11 @@ export class AssistantsContainer {
 			.setName("Vector Storage Name")
 			.setDesc("The name for your new vector storage")
 			.addText((text: TextComponent) => {
-				text.onChange((change) => {});
+				text.onChange((change) => { });
 			});
 	}
 
-	updateVector(parentContainer: HTMLElement) {}
+	updateVector(parentContainer: HTMLElement) { }
 
 	async deleteVector(parentContainer: HTMLElement) {
 		const vectorStores = await listVectors(
@@ -424,23 +459,9 @@ export class AssistantsContainer {
 			.addDropdown((dropdown: DropdownComponent) => {
 				if (assistant) dropdown.setValue(assistant.model as string);
 				dropdown.addOption("", "---Select Model---");
-				let keys = Object.keys(models);
+				let keys = Object.keys(openAIModels);
 				for (let model of keys) {
-					if (models[model].type === GPT4All) {
-						fs.exists(
-							`${DEFAULT_DIRECTORY}/${models[model].model}`,
-							(exists: boolean) => {
-								if (exists) {
-									dropdown.addOption(
-										models[model].model,
-										model
-									);
-								}
-							}
-						);
-					} else {
-						dropdown.addOption(models[model].model, model);
-					}
+					dropdown.addOption(models[model].model, model);
 				}
 
 				dropdown.onChange((change) => {
@@ -450,9 +471,10 @@ export class AssistantsContainer {
 				});
 			});
 
+		// TODO - make this required
 		const assistantToolType = new Setting(parentContainer)
 			.setName("Assistant Tool Type")
-			.setDesc("File Search or Code Review")
+			.setDesc("File Search or Code Review") // NOTE -> we do not support Code Review at this point.
 			.addDropdown((dropdown: DropdownComponent) => {
 				if (assistant)
 					dropdown.setValue(assistant.tools[0].type as string);
@@ -465,13 +487,13 @@ export class AssistantsContainer {
 						this.createAssistantToolType = change;
 						change === "file_search"
 							? this.filesSetting.settingEl.setAttr(
-									"style",
-									"display:flex"
-							  )
+								"style",
+								"display:flex"
+							)
 							: this.filesSetting.settingEl.setAttr(
-									"style",
-									"display:none"
-							  );
+								"style",
+								"display:none"
+							);
 					} else this.updateAssistantToolType = change;
 				});
 			});
