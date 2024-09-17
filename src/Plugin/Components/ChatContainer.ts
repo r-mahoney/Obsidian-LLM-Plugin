@@ -21,7 +21,8 @@ import {
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
-import { messages } from "utils/constants"
+import { assistant, chat, GPT4All, messages } from "utils/constants";
+
 import {
 	assistantsMessage,
 	getSettingType,
@@ -55,7 +56,7 @@ export class ChatContainer {
 	getParams(endpoint: string, model: string, modelType: string) {
 		const settingType = getSettingType(this.viewType);
 
-		if (modelType === "assistant") {
+		if (modelType === assistant) {
 			const params: AssistantParams = {
 				prompt: this.prompt,
 				messages: this.messages,
@@ -73,8 +74,8 @@ export class ChatContainer {
 			return params;
 		}
 
-		if (endpoint === "chat") {
-			if (modelType === "GPT4All") {
+		if (endpoint === chat) {
+			if (modelType === GPT4All) {
 				const params: ChatParams = {
 					prompt: this.prompt,
 					messages: this.messages,
@@ -150,7 +151,7 @@ export class ChatContainer {
 			modelName,
 		} = getViewInfo(this.plugin, this.viewType);
 		const params = this.getParams(modelEndpoint, model, modelType);
-		if (modelEndpoint === "assistant") {
+		if (modelEndpoint === assistant) {
 			const stream = await assistantsMessage(
 				this.plugin.settings.openAIAPIKey,
 				this.messages,
@@ -174,7 +175,7 @@ export class ChatContainer {
 				);
 				this.historyMessages.scroll(0, 9999);
 				this.messages.push({
-					role: "assistant",
+					role: assistant,
 					content: this.previewText,
 				});
 				const message_context = {
@@ -215,7 +216,7 @@ export class ChatContainer {
 				item.setAttribute("style", "display: none");
 			});
 			this.messages.push({
-				role: "assistant",
+				role: assistant,
 				content: this.previewText,
 			});
 			const message_context = {
@@ -224,7 +225,7 @@ export class ChatContainer {
 			} as ChatHistoryItem;
 			this.historyPush(message_context);
 		}
-		if (modelEndpoint === "chat") {
+		if (modelEndpoint === chat) {
 			const stream = await openAIMessage(
 				params as ChatParams,
 				this.plugin.settings.openAIAPIKey,
@@ -252,7 +253,7 @@ export class ChatContainer {
 				item.setAttribute("style", "display: none");
 			});
 			this.messages.push({
-				role: "assistant",
+				role: assistant,
 				content: this.previewText,
 			});
 			const message_context = {
@@ -287,27 +288,24 @@ export class ChatContainer {
 			this.appendNewMessage({ role: "user", content: this.prompt });
 			if (this.plugin.settings.GPT4AllStreaming)
 				throw new Error("GPT4All streaming");
-			if (modelType === "GPT4All") {
+			if (modelType === GPT4All) {
 				this.plugin.settings.GPT4AllStreaming = true;
 				this.setDiv(false);
 				messageGPT4AllServer(params as ChatParams, endpointURL).then(
 					(response: Message) => {
-						this.removeLodingDiv();
+						this.removeLoadingDiv();
 						this.messages.push(response);
 						this.appendNewMessage(response);
 						this.historyPush(params as ChatHistoryItem);
 					}
 				);
 			} else {
-				// TODO - should check to see if there is an openAI key || a claude key
-				// depending on the model
 				const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey;
 				if (!API_KEY) {
 					throw new Error("No API Key");
 				}
 				this.previewText = "";
-				// TODO - should use constants for model endpoint checks
-				if (modelEndpoint === "chat" || modelEndpoint === messages) {
+				if (modelEndpoint === chat || modelEndpoint === messages) {
 					this.handleGenerate();
 				}
 
@@ -323,10 +321,9 @@ export class ChatContainer {
 						response.map((url) => {
 							content += `![created with prompt ${this.prompt}](${url})`;
 						});
-						// Patch spelling
-						this.removeLodingDiv();
+						this.removeLoadingDiv();
 						this.messages.push({
-							role: "assistant",
+							role: assistant,
 							content,
 						});
 						this.appendImage(response);
@@ -344,7 +341,7 @@ export class ChatContainer {
 						modelEndpoint
 					);
 				}
-				if (modelEndpoint === "assistant") {
+				if (modelEndpoint === assistant) {
 					this.handleGenerate();
 				}
 				header.enableButtons();
@@ -372,7 +369,7 @@ export class ChatContainer {
 			return;
 		}
 
-		if (modelEndpoint === "chat") {
+		if (modelEndpoint === chat) {
 			this.plugin.history.push({
 				...(params as ChatHistoryItem),
 				modelName,
@@ -384,7 +381,7 @@ export class ChatContainer {
 				modelName,
 			});
 		}
-		if (modelEndpoint === "assistant") {
+		if (modelEndpoint === assistant) {
 			this.plugin.history.push({
 				...(params as AssistantHistoryItem),
 				modelName,
@@ -535,7 +532,7 @@ export class ChatContainer {
 		});
 	}
 
-	removeLodingDiv() {
+	removeLoadingDiv() {
 		this.loadingDivContainer.remove();
 	}
 

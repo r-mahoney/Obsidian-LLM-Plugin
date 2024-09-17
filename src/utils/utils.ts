@@ -5,7 +5,7 @@ import LLMPlugin from "main";
 import { Editor } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
-import { openAI, claude, claudeSonnetJuneModel } from "utils/constants";
+import { openAI, claude, chat, claudeSonnetJuneModel } from "utils/constants";
 import {
 	ChatParams,
 	ImageParams,
@@ -132,7 +132,7 @@ export async function openAIMessage(
 		dangerouslyAllowBrowser: true,
 	});
 
-	if (endpointType === "chat") {
+	if (endpointType === chat) {
 		const { prompt, model, messages, tokens, temperature } =
 		params as ChatParams;
 		const stream = await openai.chat.completions.create(
@@ -409,7 +409,7 @@ export async function generateAssistantsList(plugin: LLMPlugin) {
 	const processedAssisitants = assisitantsFromOpenAI.map(
 		(assistant: Assistant & { modelType: string }) => ({
 			...assistant,
-			modelType: "assistant",
+			modelType: assistant,
 		})
 	);
 	plugin.settings.assistants = processedAssisitants;

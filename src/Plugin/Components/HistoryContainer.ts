@@ -5,6 +5,7 @@ import { ChatContainer } from "./ChatContainer";
 import { Header } from "./Header";
 import { models } from "utils/models";
 import { hideContainer, showContainer } from "utils/dom";
+import { assistant } from "utils/constants";
 import { getSettingType } from "utils/utils";
 import logo from "assets/LLMgal.svg";
 
@@ -112,8 +113,8 @@ export class HistoryContainer {
 					this.plugin.settings.promptHistory[index].model;
 				this.plugin.settings[settingType].modelName =
 					this.plugin.settings.promptHistory[index].modelName;
-				this.plugin.settings[settingType].modelType = "assistant";
-				this.plugin.settings[settingType].modelEndpoint = "assistant";
+				this.plugin.settings[settingType].modelType = assistant;
+				this.plugin.settings[settingType].modelEndpoint = assistant;
 				this.plugin.settings[settingType].endpointURL = "";
 			}
 			this.plugin.saveSettings();

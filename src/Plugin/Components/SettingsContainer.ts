@@ -3,7 +3,6 @@ import LLMPlugin from "main";
 import { DropdownComponent, Setting } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { modelNames, models } from "utils/models";
-import { openAI, claude } from "utils/constants";
 import {
 	DEFAULT_DIRECTORY,
 	generateAssistantsList,
@@ -12,7 +11,7 @@ import {
 	getViewInfo,
 	getApiKeyValidity
 } from "utils/utils";
-import { messages } from "utils/constants"
+import { assistant as ASSISTANT, chat, claude, GPT4All, messages, openAI } from "utils/constants"
 import { Header } from "./Header";
 const fs = require("fs");
 
@@ -80,7 +79,7 @@ export class SettingsContainer {
 				dropdown.addOption("", "---Select Model---");
 				let keys = Object.keys(models);
 				for (let model of keys) {
-					if (models[model].type === "GPT4All") {
+					if (models[model].type === GPT4All) {
 						fs.exists(
 							`${DEFAULT_DIRECTORY}/${models[model].model}`,
 							(exists: boolean) => {
@@ -138,7 +137,7 @@ export class SettingsContainer {
 						viewSettings.modelName = assistant!.name as string;
 						viewSettings.modelType = assistant!.modelType;
 						viewSettings.endpointURL = "";
-						viewSettings.modelEndpoint = "assistant";
+						viewSettings.modelEndpoint = ASSISTANT;
 						if (index > -1) {
 							this.plugin.settings.promptHistory[index].model =
 								assistant!.model;
@@ -173,7 +172,7 @@ export class SettingsContainer {
 		if (endpoint === "moderations") {
 			this.generateModerationsSettings(parentContainer);
 		}
-		if (endpoint === "chat" || messages) {
+		if (endpoint === chat || messages) {
 			this.generateChatSettings(parentContainer, modelType);
 		}
 	}
@@ -283,7 +282,7 @@ export class SettingsContainer {
 		const tempSetting = new Setting(parentContainer)
 			.setName("Temperature")
 			.setDesc(
-				modelType !== "GPT4All"
+				modelType !== GPT4All
 					? "Defaults to 1. What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. We generally recommend altering this or top_p but not both."
 					: "Higher temperatures (eg., 1.2) increase randomness, resulting in more imaginative and diverse text. Lower temperatures (eg., 0.5) make the output more focused, predictable, and conservative. A safe range would be around 0.6 - 0.85"
 			)
@@ -308,7 +307,7 @@ export class SettingsContainer {
 				});
 			});
 
-		if (modelType === "openAI") {
+		if (modelType === openAI) {
 			const frequencyPenalty = new Setting(parentContainer)
 				.setName("Frequency Penalty")
 				.setDesc(

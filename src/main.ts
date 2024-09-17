@@ -20,6 +20,7 @@ import {
 import SettingsView from "Settings/SettingsView";
 import { Assistant } from "openai/resources/beta/assistants";
 import { generateAssistantsList } from "utils/utils";
+import { chat } from "utils/constants";
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -40,7 +41,7 @@ const defaultSettings = {
 	model: "gpt-3.5-turbo",
 	modelName: "ChatGPT-3.5 Turbo",
 	modelType: "openAI",
-	modelEndpoint: "chat",
+	modelEndpoint: chat,
 	endpointURL: "/chat/completions",
 	historyIndex: -1,
 	imageSettings: {
