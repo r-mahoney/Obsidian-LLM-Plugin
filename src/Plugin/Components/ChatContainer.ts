@@ -21,7 +21,7 @@ import {
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";
-import { assistant, chat, GPT4All, messages } from "utils/constants";
+import { assistant, chat, gemini, geminiModel, GPT4All, messages } from "utils/constants";
 
 import {
 	assistantsMessage,
@@ -29,6 +29,7 @@ import {
 	getViewInfo,
 	messageGPT4AllServer,
 	claudeMessage,
+	geminiMessage,
 	openAIMessage,
 	setHistoryIndex,
 	getApiKeyValidity
@@ -56,6 +57,21 @@ export class ChatContainer {
 	getParams(endpoint: string, model: string, modelType: string) {
 		const settingType = getSettingType(this.viewType);
 
+		if (modelType === gemini) {
+			const params: ChatParams = {
+				// QUESTION -> Do we really want to send prompt when we are sending messages?
+				prompt: this.prompt,
+				// QUESTION -> how many messages do we really want to send?
+				messages: this.messages,
+				model,
+				temperature:
+					this.plugin.settings[settingType].chatSettings.temperature,
+				tokens: this.plugin.settings[settingType].chatSettings
+					.maxTokens,
+				...this.plugin.settings[settingType].chatSettings.gemini,
+			};
+			return params;
+		}
 		if (modelType === assistant) {
 			const params: AssistantParams = {
 				prompt: this.prompt,
@@ -151,6 +167,7 @@ export class ChatContainer {
 			modelName,
 		} = getViewInfo(this.plugin, this.viewType);
 		const params = this.getParams(modelEndpoint, model, modelType);
+		// Start assistant handling
 		if (modelEndpoint === assistant) {
 			const stream = await assistantsMessage(
 				this.plugin.settings.openAIAPIKey,
@@ -187,10 +204,49 @@ export class ChatContainer {
 				this.historyPush(message_context);
 			});
 		}
+		// End assistant handling
 
+		if (model === geminiModel) {
+			const stream = await geminiMessage(
+				params as ChatParams,
+				this.plugin.settings.geminiAPIKey
+			)
+			this.setDiv(true)
+			for await (const chunk of stream.stream) {
+				this.previewText += chunk.text() || "";
+				this.streamingDiv.innerHTML = this.previewText;
+				this.historyMessages.scroll(0, 9999);
+			}
+			
+			// TODO - dry up as it repeats in the claude handler and the openai handler
+			this.streamingDiv.innerHTML = "";
+			MarkdownRenderer.render(
+				this.plugin.app,
+				this.previewText,
+				this.streamingDiv,
+				"",
+				this.plugin
+			);
+			const copyButton = this.streamingDiv.querySelectorAll(
+				".copy-code-button"
+			) as NodeListOf<HTMLElement>;
+			copyButton.forEach((item) => {
+				item.setAttribute("style", "display: none");
+			});
+			this.messages.push({
+				role: assistant,
+				content: this.previewText,
+			});
+			const message_context = {
+				...(params as ChatParams),
+				messages: this.messages,
+			} as ChatHistoryItem;
+			this.historyPush(message_context);
+		}
+		
 		if (modelEndpoint === messages) {
 			const stream = await claudeMessage(
-				params as ChatParams, // do these need to change?
+				params as ChatParams,
 				this.plugin.settings.claudeAPIKey,
 			);
 			this.setDiv(true);
@@ -201,6 +257,7 @@ export class ChatContainer {
 				this.historyMessages.scroll(0, 9999);
 			})
 
+			// TODO - dry up as it repeats in the claude handler and the openai handler
 			this.streamingDiv.innerHTML = "";
 			MarkdownRenderer.render(
 				this.plugin.app,
@@ -238,6 +295,7 @@ export class ChatContainer {
 				this.streamingDiv.innerHTML = this.previewText;
 				this.historyMessages.scroll(0, 9999);
 			}
+			// TODO - dry up as it repeats in the claude handler and the openai handler
 			this.streamingDiv.innerHTML = "";
 			MarkdownRenderer.render(
 				this.plugin.app,
@@ -303,12 +361,12 @@ export class ChatContainer {
 					}
 				);
 			} else {
-				const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey;
+				const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey || this.plugin.settings.geminiAPIKey;
 				if (!API_KEY) {
 					throw new Error("No API Key");
 				}
 				this.previewText = "";
-				if (modelEndpoint === chat || modelEndpoint === messages) {
+				if (modelEndpoint === chat || modelEndpoint === messages || modelEndpoint === "gemini") {
 					this.handleGenerate();
 				}
 
