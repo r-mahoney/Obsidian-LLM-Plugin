@@ -8,7 +8,7 @@ import {
 } from "obsidian";
 import { DEFAULT_DIRECTORY } from "utils/utils";
 import { models, modelNames } from "utils/models";
-import { claudeSonnetJuneModel, GPT4All } from "utils/constants";
+import { claudeSonnetJuneModel, geminiModel, GPT4All } from "utils/constants";
 import logo from "assets/LLMguy.svg";
 import { FAB } from "Plugin/FAB/FAB";
 const fs = require("fs");
@@ -22,7 +22,6 @@ export default class SettingsView extends PluginSettingTab {
 		this.plugin = plugin;
 		this.fab = fab;
 	}
-
 	display(): void {
 		const { containerEl } = this;
 
@@ -39,6 +38,7 @@ export default class SettingsView extends PluginSettingTab {
 				});
 			});
 
+		// Add Claude API key input
 		new Setting(containerEl)
 			.setName("Claude API Key")
 			.setDesc("Claude models require an API key for authentication.")
@@ -51,13 +51,30 @@ export default class SettingsView extends PluginSettingTab {
 					// This addresses the user flow where a user inputs this API key
 					// after they already have an openai key setup.
 					this.changeDefaultModel(claudeSonnetJuneModel);
-					
 				});
 			})
 			.addButton((button: ButtonComponent) => {
 				button.setButtonText("Generate token");
 				button.onClick(() => {
 					window.open("https://console.anthropic.com/settings/keys");
+				});
+			});
+
+		// Adds Gemini API Key input
+		new Setting(containerEl)
+			.setName("Gemini API Key")
+			.setDesc("Gemini models require an API key for authentication.")
+			.addText((text) => {
+				text.setValue(`${this.plugin.settings.geminiAPIKey}`);
+				text.onChange((change) => {
+					this.plugin.settings.geminiAPIKey = change;
+					this.changeDefaultModel(geminiModel);
+				});
+			})
+			.addButton((button: ButtonComponent) => {
+				button.setButtonText("Generate token");
+				button.onClick(() => {
+					window.open("https://aistudio.google.com/app/apikey");
 				});
 			});
 
@@ -154,28 +171,28 @@ export default class SettingsView extends PluginSettingTab {
 	}
 
 	changeDefaultModel(model: string) {
-					// Question -> why do we not update the FAB model here?
-					const modelName = modelNames[model];
-					// Modal settings
-					DEFAULT_SETTINGS.modalSettings.model = model;
-					DEFAULT_SETTINGS.modalSettings.modelName = modelName;
-					DEFAULT_SETTINGS.modalSettings.modelType =
-						models[modelName].type;
-					DEFAULT_SETTINGS.modalSettings.endpointURL =
-						models[modelName].url;
-					DEFAULT_SETTINGS.modalSettings.modelEndpoint =
-						models[modelName].endpoint;
+		// Question -> why do we not update the FAB model here?
+		const modelName = modelNames[model];
+		// Modal settings
+		DEFAULT_SETTINGS.modalSettings.model = model;
+		DEFAULT_SETTINGS.modalSettings.modelName = modelName;
+		DEFAULT_SETTINGS.modalSettings.modelType =
+			models[modelName].type;
+		DEFAULT_SETTINGS.modalSettings.endpointURL =
+			models[modelName].url;
+		DEFAULT_SETTINGS.modalSettings.modelEndpoint =
+			models[modelName].endpoint;
 
-					// Widget settings
-					DEFAULT_SETTINGS.widgetSettings.model = model;
-					DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
-					DEFAULT_SETTINGS.widgetSettings.modelType =
-						models[modelName].type;
-					DEFAULT_SETTINGS.widgetSettings.endpointURL =
-						models[modelName].url;1
-					DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
-						models[modelName].endpoint;
+		// Widget settings
+		DEFAULT_SETTINGS.widgetSettings.model = model;
+		DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
+		DEFAULT_SETTINGS.widgetSettings.modelType =
+			models[modelName].type;
+		DEFAULT_SETTINGS.widgetSettings.endpointURL =
+			models[modelName].url;
+		DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
+			models[modelName].endpoint;
 
-					this.plugin.saveSettings();
+		this.plugin.saveSettings();
 	}
 }

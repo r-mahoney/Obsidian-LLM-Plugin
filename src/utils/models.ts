@@ -1,5 +1,5 @@
 import { Model } from "Types/types";
-import { claude, chat, GPT4All, messages } from "utils/constants"
+import { claude, chat, gemini, geminiModel, GPT4All, messages } from "utils/constants"
 
 export const openAIModels: Record<string, Model> = {
 	"ChatGPT-3.5 Turbo": {
@@ -18,7 +18,7 @@ export const openAIModels: Record<string, Model> = {
 
 export const models: Record<string, Model> = {
 	...openAIModels,
-	"ChatGPT-3.5 Turbo GPT4All based": {
+	"ChatGPT-3.5 Turbo GPT4All": {
 		model: "gpt4all-gpt-3.5-turbo.rmodel",
 		type: GPT4All,
 		endpoint: chat,
@@ -101,7 +101,18 @@ export const models: Record<string, Model> = {
 		model: "claude-3-5-sonnet-20240620",
 		type: claude,
 		endpoint: messages,
+		// We will not consume these so can we remove them?
 		url: "/v1/messages",
+	},
+	// Gemini Models
+	// TODO - we are going to start out with adding support for the flash model
+	// we will follow up with adding suport for the pro model (which is in preview mode).
+	"Gemini-1.5-flash": {
+		model: geminiModel,
+		type: gemini,
+		// We will not consume these so can we remove them?
+		endpoint: "gemini",
+		url: "gemini",
 	},
 	// "Text to Speech": {
 	// 	model: "tts-1",
@@ -140,12 +151,13 @@ export const modelNames: Record<string, string> = {
 	"wizardlm-13b-v1.2.Q4_0.gguf": "Wizard v1.2",
 	"nous-hermes-llama2-13b.Q4_0.gguf": "Hermes 13B",
 	"Nous-Hermes-2-Mistral-7B-DPO.Q4_0.gguf": "Hermes 7B",
-	"gpt4all-gpt-3.5-turbo.rmodel": "ChatGPT-3.5 Turbo GPT4All based",
+	"gpt4all-gpt-3.5-turbo.rmodel": "ChatGPT-3.5 Turbo GPT4All",
 	"gpt4all-13b-snoozy-q4_0.gguf": "Snoozy",
 	"em_german_mistral_v01.Q4_0.gguf": "EM German Mistral",
 	"gpt-3.5-turbo": "ChatGPT-3.5 Turbo",
 	"gpt-4o": "GPT-4o",
 	"claude-3-5-sonnet-20240620": "Claude-3-5-Sonnet-20240620",
+	"gemini-1.5-flash": "Gemini-1.5-flash",
 	// "text-embedding-3-small": "Text Embedding 3 (Small)",
 	"dall-e-3": "DALL·E 3",
 	"dall-e-2": "DALL·E 2",
