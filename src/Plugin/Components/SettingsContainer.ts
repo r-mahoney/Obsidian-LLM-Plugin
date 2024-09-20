@@ -11,7 +11,7 @@ import {
 	getViewInfo,
 	getApiKeyValidity
 } from "utils/utils";
-import { assistant as ASSISTANT, chat, claude, GPT4All, messages, openAI } from "utils/constants"
+import { assistant as ASSISTANT, chat, claude, GPT4All, messages, openAI, gemini } from "utils/constants"
 import { Header } from "./Header";
 const fs = require("fs");
 
@@ -31,12 +31,17 @@ export class SettingsContainer {
 			{
 				provider: claude,
 				key: this.plugin.settings.claudeAPIKey
+			},
+			{
+				provider: gemini,
+				key: this.plugin.settings.geminiAPIKey
 			}
 		]
 
 		// Skip proividers with no keys
 		const filteredPairs = providerKeyPairs.filter(({ key }) => key)
 
+		// TODO - when a user saves a new api key, we should check if it's valid
 		const promises = filteredPairs.map(async pair => {
 			const result = await getApiKeyValidity(pair)
 			return result
