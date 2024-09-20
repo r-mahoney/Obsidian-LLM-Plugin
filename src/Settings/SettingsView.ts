@@ -189,7 +189,7 @@ export default class SettingsView extends PluginSettingTab {
 		DEFAULT_SETTINGS.widgetSettings.modelType =
 			models[modelName].type;
 		DEFAULT_SETTINGS.widgetSettings.endpointURL =
-			models[modelName].url; 1
+			models[modelName].url;
 		DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
 			models[modelName].endpoint;
 
