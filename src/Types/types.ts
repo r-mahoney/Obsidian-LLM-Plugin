@@ -134,6 +134,7 @@ type ChatSettings = {
 	temperature: number;
 	GPT4All?: GPT4AllSettings;
 	openAI?: OpenAISettings;
+	gemini?: GeminiSettings;
 };
 
 type OpenAISettings = {
@@ -144,5 +145,11 @@ type OpenAISettings = {
 	responseFormat: string;
 	topP: number;
 };
+
+// TODO - add support for Claude settings
+
+type GeminiSettings = {
+	topP: number;
+}
 
 type GPT4AllSettings = {};
