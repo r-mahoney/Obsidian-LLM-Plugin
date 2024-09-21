@@ -121,12 +121,10 @@ export class AssistantsContainer {
 		submitButton.buttonEl.textContent = "Create Assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
-			const hasFiles = this.assistantFilesToAdd?.length >= 1
 
 			const requiredFields = {
 				"Name": this.createAssistantName,
 				"Model": this.createAssistantModel,
-				"Files": hasFiles,
 			};
 
 			const invalidFields = this.validateFields(requiredFields);
@@ -141,41 +139,48 @@ export class AssistantsContainer {
 			const basePath = app.vault.adapter.basePath;
 			const slashToUse = isWindows() ? "\\" : "/";
 
-			const assistantFiles = this.assistantFilesToAdd.map(
+			const assistantFiles = this.assistantFilesToAdd?.map(
 				(file: string) => {
 					return `${basePath}${slashToUse}${file}`;
 				}
 			);
 
+			const hasFiles = this.assistantFilesToAdd?.length >= 1
 			const assistantObj = {
 				name: this.createAssistantName,
 				instructions: this.createAssistantIntructions,
 				model: this.createAssistantModel,
-				tools: [{ type: this.createAssistantToolType }],
+				tools: hasFiles ? [{ type: this.createAssistantToolType }] : null,
 			};
 			const assistant = await createAssistant(
 				assistantObj,
 				this.plugin.settings.openAIAPIKey
 			);
 
-			const vector_store_id = await createVectorAndUpdate(
-				assistantFiles,
-				assistant,
-				this.plugin.settings.openAIAPIKey
-			);
+			if (hasFiles) {
+				const vector_store_id = await createVectorAndUpdate(
+					assistantFiles,
+					assistant,
+					this.plugin.settings.openAIAPIKey
+				);
+				this.plugin.assistants.push({
+					...assistant,
+					modelType: ASSISTANT,
+					tool_resources: {
+						file_search: { vector_store_ids: [vector_store_id] },
+					},
+				});
+			} else {
+				this.plugin.assistants.push({
+					...assistant,
+					modelType: ASSISTANT
+				});
+			}
 
 			// Note -> this notice shows up much faster than the UI pushes to the next view
 			if (assistant) {
 				new Notice("Assistant Created Successfully");
 			}
-
-			this.plugin.assistants.push({
-				...assistant,
-				modelType: ASSISTANT,
-				tool_resources: {
-					file_search: { vector_store_ids: [vector_store_id] },
-				},
-			});
 
 			this.resetContainer(parentContainer);
 		});
@@ -471,7 +476,6 @@ export class AssistantsContainer {
 				});
 			});
 
-		// TODO - make this required
 		const assistantToolType = new Setting(parentContainer)
 			.setName("Assistant Tool Type")
 			.setDesc("File Search or Code Review") // NOTE -> we do not support Code Review at this point.
