@@ -26,6 +26,14 @@ class DefaultModelModal extends Modal {
 		this.plugin = plugin
 	}
 
+	handleChangeDefaultModel() {
+		changeDefaultModel(this.defaultModel, this.plugin);
+		// TODO - how do we get the `dropdown` element via selector
+		// such that we can call 'setValue' on the element
+		// and replace its previous value with `this.defaultModel`
+		const defaultModelSelector = document.querySelector('.default-model-selector > .setting-item-control > .dropdown')
+	}
+
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.empty(); // Clear existing content if needed
@@ -37,7 +45,7 @@ class DefaultModelModal extends Modal {
 		// Create the interactive button
 		const yesButton = contentEl.createEl('button', { text: 'Yes' });
 		yesButton.onclick = () => {
-			changeDefaultModel(this.defaultModel, this.plugin);
+			this.handleChangeDefaultModel()
 			new Notice('Model set as default!');
 			this.close(); // Close the modal after the action
 		};
@@ -166,9 +174,11 @@ export default class SettingsView extends PluginSettingTab {
 
 		// Add Default Model Selector
 		new Setting(containerEl)
+			.setClass('default-model-selector')
 			.setName("Set Default Model")
 			.setDesc("Sets the default LLM you want to use for the plugin")
 			.addDropdown((dropdown: DropdownComponent) => {
+				let valueChanged = false;
 				dropdown.addOption(
 					DEFAULT_SETTINGS.modalSettings.modelName,
 					"Select Default Model"
@@ -192,7 +202,14 @@ export default class SettingsView extends PluginSettingTab {
 					}
 				}
 				dropdown.onChange((change) => {
+					valueChanged = true;
 					changeDefaultModel(change, this.plugin)
+				});
+				dropdown.selectEl.addEventListener('blur', () => {
+					if (valueChanged) {
+						this.plugin.saveSettings();
+						valueChanged = false; // Reset the flag after saving
+					}
 				});
 				dropdown.setValue(this.plugin.settings.modalSettings.model);
 			});
