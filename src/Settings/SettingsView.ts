@@ -3,15 +3,59 @@ import {
 	App,
 	ButtonComponent,
 	DropdownComponent,
+	Modal,
+	Notice,
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
-import { DEFAULT_DIRECTORY } from "utils/utils";
+import { DEFAULT_DIRECTORY, changeDefaultModel } from "utils/utils";
 import { models, modelNames } from "utils/models";
-import { claudeSonnetJuneModel, geminiModel, GPT4All } from "utils/constants";
+import { claudeSonnetJuneModel, openAIModel, geminiModel, GPT4All } from "utils/constants";
 import logo from "assets/LLMguy.svg";
 import { FAB } from "Plugin/FAB/FAB";
 const fs = require("fs");
+
+// TODO - abstract to its own component file.
+class DefaultModelModal extends Modal {
+	plugin: LLMPlugin;
+	private defaultModel: string;
+
+	constructor(app: App, defaultModel: string, plugin: LLMPlugin) {
+		super(app);
+		this.defaultModel = defaultModel;
+		this.plugin = plugin
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.empty(); // Clear existing content if needed
+
+		// Create the modal content
+		contentEl.createEl('h2', { text: 'Set Model as Default' });
+		contentEl.createEl('p', { text: 'Would you like to set this model as your default model?' });
+
+		// Create the interactive button
+		const yesButton = contentEl.createEl('button', { text: 'Yes' });
+		yesButton.onclick = () => {
+			changeDefaultModel(this.defaultModel, this.plugin);
+			new Notice('Model set as default!');
+			this.close(); // Close the modal after the action
+		};
+
+		// User elects to not save the model as default
+		const noButton = contentEl.createEl('button', { text: 'No' });
+		noButton.style.marginLeft = '16px';
+		noButton.onclick = () => {
+			new Notice('API key saved');
+			this.close(); // Close the modal after the action
+		};
+	}
+
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty(); // Clear content when the modal is closed
+	}
+}
 
 export default class SettingsView extends PluginSettingTab {
 	plugin: LLMPlugin;
@@ -43,14 +87,19 @@ export default class SettingsView extends PluginSettingTab {
 			.setName("Claude API Key")
 			.setDesc("Claude models require an API key for authentication.")
 			.addText((text) => {
+				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.claudeAPIKey}`);
 				text.onChange((change) => {
+					valueChanged = true;
 					this.plugin.settings.claudeAPIKey = change;
-					// NOTE / Question -> We can add a prompt asking:
-					// `Do you want to set this as your default model?`
-					// This addresses the user flow where a user inputs this API key
-					// after they already have an openai key setup.
-					this.changeDefaultModel(claudeSonnetJuneModel);
+				});
+				// Handle blur event (when the user finishes editing)
+				text.inputEl.addEventListener('blur', () => {
+					if (valueChanged) {
+						new DefaultModelModal(this.app, claudeSonnetJuneModel, this.plugin).open(); // Show the modal
+						this.plugin.saveSettings();
+						valueChanged = false; // Reset the flag after saving
+					}
 				});
 			})
 			.addButton((button: ButtonComponent) => {
@@ -65,10 +114,19 @@ export default class SettingsView extends PluginSettingTab {
 			.setName("Gemini API Key")
 			.setDesc("Gemini models require an API key for authentication.")
 			.addText((text) => {
+				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.geminiAPIKey}`);
 				text.onChange((change) => {
+					valueChanged = true;
 					this.plugin.settings.geminiAPIKey = change;
-					this.changeDefaultModel(geminiModel);
+				});
+				// Handle blur event (when the user finishes editing)
+				text.inputEl.addEventListener('blur', () => {
+					if (valueChanged) {
+						new DefaultModelModal(this.app, geminiModel, this.plugin).open(); // Show the modal
+						this.plugin.saveSettings();
+						valueChanged = false; // Reset the flag after saving
+					}
 				});
 			})
 			.addButton((button: ButtonComponent) => {
@@ -83,10 +141,20 @@ export default class SettingsView extends PluginSettingTab {
 			.setName("OpenAI API Key")
 			.setDesc("OpenAI models require an API key for authentication.")
 			.addText((text) => {
+				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.openAIAPIKey}`);
 				text.onChange((change) => {
+					valueChanged = true;
 					this.plugin.settings.openAIAPIKey = change;
 					this.plugin.saveSettings();
+				});
+				// Handle blur event (when the user finishes editing)
+				text.inputEl.addEventListener('blur', () => {
+					if (valueChanged) {
+						new DefaultModelModal(this.app, openAIModel, this.plugin).open(); // Show the modal
+						this.plugin.saveSettings();
+						valueChanged = false; // Reset the flag after saving
+					}
 				});
 			})
 			.addButton((button: ButtonComponent) => {
@@ -124,7 +192,7 @@ export default class SettingsView extends PluginSettingTab {
 					}
 				}
 				dropdown.onChange((change) => {
-					this.changeDefaultModel(change)
+					changeDefaultModel(change, this.plugin)
 				});
 				dropdown.setValue(this.plugin.settings.modalSettings.model);
 			});
@@ -170,29 +238,4 @@ export default class SettingsView extends PluginSettingTab {
 			`;
 	}
 
-	changeDefaultModel(model: string) {
-		// Question -> why do we not update the FAB model here?
-		const modelName = modelNames[model];
-		// Modal settings
-		DEFAULT_SETTINGS.modalSettings.model = model;
-		DEFAULT_SETTINGS.modalSettings.modelName = modelName;
-		DEFAULT_SETTINGS.modalSettings.modelType =
-			models[modelName].type;
-		DEFAULT_SETTINGS.modalSettings.endpointURL =
-			models[modelName].url;
-		DEFAULT_SETTINGS.modalSettings.modelEndpoint =
-			models[modelName].endpoint;
-
-		// Widget settings
-		DEFAULT_SETTINGS.widgetSettings.model = model;
-		DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
-		DEFAULT_SETTINGS.widgetSettings.modelType =
-			models[modelName].type;
-		DEFAULT_SETTINGS.widgetSettings.endpointURL =
-			models[modelName].url;
-		DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
-			models[modelName].endpoint;
-
-		this.plugin.saveSettings();
-	}
 }

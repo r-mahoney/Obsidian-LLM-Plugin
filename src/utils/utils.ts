@@ -1,11 +1,12 @@
 import { existsSync } from "fs";
 import fs from "fs";
 import path from "path";
-import LLMPlugin from "main";
+import LLMPlugin, { DEFAULT_SETTINGS } from "main";
 import { Editor } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
 import { openAI, claude, chat, claudeSonnetJuneModel, gemini, geminiModel } from "utils/constants";
+import { models, modelNames } from "utils/models";
 import {
 	ChatParams,
 	ImageParams,
@@ -347,6 +348,35 @@ export function getViewInfo(
 		modelEndpoint: "",
 		endpointURL: "",
 	}
+}
+
+export function changeDefaultModel(
+	model: string,
+	plugin: LLMPlugin,
+) {
+		// Question -> why do we not update the FAB model here?
+		const modelName = modelNames[model];
+		// Modal settings
+		DEFAULT_SETTINGS.modalSettings.model = model;
+		DEFAULT_SETTINGS.modalSettings.modelName = modelName;
+		DEFAULT_SETTINGS.modalSettings.modelType =
+			models[modelName].type;
+		DEFAULT_SETTINGS.modalSettings.endpointURL =
+			models[modelName].url;
+		DEFAULT_SETTINGS.modalSettings.modelEndpoint =
+			models[modelName].endpoint;
+
+		// Widget settings
+		DEFAULT_SETTINGS.widgetSettings.model = model;
+		DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
+		DEFAULT_SETTINGS.widgetSettings.modelType =
+			models[modelName].type;
+		DEFAULT_SETTINGS.widgetSettings.endpointURL =
+			models[modelName].url;
+		DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
+			models[modelName].endpoint;
+
+		plugin.saveSettings();
 }
 
 export function setHistoryIndex(
