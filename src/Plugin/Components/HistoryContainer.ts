@@ -147,7 +147,8 @@ export class HistoryContainer {
 		history.map((historyItem: HistoryItem, index: number) => {
 			const item = parentElement.createDiv();
 			const text = item.createEl("p");
-			text.innerHTML = historyItem.prompt;
+			const displayHTML = historyItem?.prompt || historyItem?.messages[0]?.content;
+			text.innerHTML = displayHTML;
 			const buttonsDiv = item.createDiv();
 			buttonsDiv.addClass("history-buttons-div", "flex");
 			const editPrompt = new ButtonComponent(buttonsDiv);
