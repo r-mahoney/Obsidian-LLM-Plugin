@@ -28,10 +28,8 @@ class DefaultModelModal extends Modal {
 
 	handleChangeDefaultModel() {
 		changeDefaultModel(this.defaultModel, this.plugin);
-		// TODO - how do we get the `dropdown` element via selector
-		// such that we can call 'setValue' on the element
-		// and replace its previous value with `this.defaultModel`
-		const defaultModelSelector = document.querySelector('.default-model-selector > .setting-item-control > .dropdown')
+		const defaultModelSelector = document.querySelector('.default-model-selector > .setting-item-control > .dropdown') as HTMLSelectElement;
+		defaultModelSelector.value = this.defaultModel
 	}
 
 	onOpen() {
