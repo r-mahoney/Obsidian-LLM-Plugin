@@ -11,7 +11,7 @@ import {
 	getViewInfo,
 	getApiKeyValidity
 } from "utils/utils";
-import { assistant as ASSISTANT, chat, claude, GPT4All, messages, openAI, gemini } from "utils/constants"
+import { assistant as ASSISTANT, chat, claude, GPT4All, messages, openAI, gemini, claudeSonnetJuneModel, geminiModel, openAIModel } from "utils/constants"
 import { Header } from "./Header";
 const fs = require("fs");
 
@@ -23,43 +23,50 @@ export class SettingsContainer {
 	}
 
 	async generateSettingsContainer(parentContainer: HTMLElement, Header: Header) {
-		const providerKeyPairs = [
-			{
-				provider: openAI,
-				key: this.plugin.settings.openAIAPIKey
-			},
-			{
-				provider: claude,
-				key: this.plugin.settings.claudeAPIKey
-			},
-			{
-				provider: gemini,
-				key: this.plugin.settings.geminiAPIKey
-			}
-		]
+		// Extension - We would want to cycle through the appropriate settings (fab | modal | tab) key
+		// depending on which of the plugin views is open.
+		const activeModelRequiresKey = this.plugin.settings.fabSettings.model === openAIModel ||
+			this.plugin.settings.fabSettings.model === claudeSonnetJuneModel ||
+			this.plugin.settings.fabSettings.model === geminiModel
+		if (activeModelRequiresKey) {
+			const providerKeyPairs = [
+				{
+					provider: openAI,
+					key: this.plugin.settings.openAIAPIKey
+				},
+				{
+					provider: claude,
+					key: this.plugin.settings.claudeAPIKey
+				},
+				{
+					provider: gemini,
+					key: this.plugin.settings.geminiAPIKey
+				}
+			]
 
-		// Skip proividers with no keys
-		const filteredPairs = providerKeyPairs.filter(({ key }) => key)
+			// Skip providers with no keys
+			const filteredPairs = providerKeyPairs.filter(({ key }) => key)
 
-		// TODO - when a user saves a new api key, we should check if it's valid
-		const promises = filteredPairs.map(async pair => {
-			const result = await getApiKeyValidity(pair)
-			return result
-		})
+			// TODO - when a user saves a new api key, we should check if it's valid
+			const promises = filteredPairs.map(async pair => {
+				const result = await getApiKeyValidity(pair)
+				return result
+			})
 
-		const results = await Promise.all(promises)
-		const hasValidOpenAIAPIKey: boolean = results.some((result) => {
-			if (result) {
-				return result.valid && result.provider === openAI
-			}
-		});
+			const results = await Promise.all(promises)
+			const hasValidOpenAIAPIKey: boolean = results.some((result) => {
+				if (result) {
+					return result.valid && result.provider === openAI
+				}
+			});
 
-		// We likely want a 'global' state variable to track whether or not
-		// any UI elements around assistants should be on.
+			// We likely want a 'global' state variable to track whether or not
+			// any UI elements around assistants should be on.
 
-		// If the model is OpenAI and the key is valid -> generate the assistant list
-		if (hasValidOpenAIAPIKey)
-			generateAssistantsList(this.plugin);
+			// If the model is OpenAI and the key is valid -> generate the assistant list
+			if (hasValidOpenAIAPIKey)
+				generateAssistantsList(this.plugin);
+		}
 
 		this.resetSettings(parentContainer);
 		this.generateModels(parentContainer, Header);
