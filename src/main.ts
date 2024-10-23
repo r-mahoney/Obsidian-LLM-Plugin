@@ -149,7 +149,7 @@ export default class LLMPlugin extends Plugin {
 
 		const openWidgetTab = this.addCommand({
 			id: "open-LLM-widget-tab",
-			name: "open Chat in Tab",
+			name: "Open Chat in Tab",
 			callback: () => {
 				this.activateTab();
 			},
