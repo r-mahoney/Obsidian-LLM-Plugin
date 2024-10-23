@@ -354,26 +354,28 @@ export function changeDefaultModel(
 	model: string,
 	plugin: LLMPlugin,
 ) {
+		plugin.settings.defaultModel = model;
 		// Question -> why do we not update the FAB model here?
 		const modelName = modelNames[model];
 		// Modal settings
-		DEFAULT_SETTINGS.modalSettings.model = model;
-		DEFAULT_SETTINGS.modalSettings.modelName = modelName;
-		DEFAULT_SETTINGS.modalSettings.modelType =
+
+		plugin.settings.modalSettings.model = model;
+		plugin.settings.modalSettings.modelName = modelName;
+		plugin.settings.modalSettings.modelType =
 			models[modelName].type;
-		DEFAULT_SETTINGS.modalSettings.endpointURL =
+		plugin.settings.modalSettings.endpointURL =
 			models[modelName].url;
-		DEFAULT_SETTINGS.modalSettings.modelEndpoint =
+		plugin.settings.modalSettings.modelEndpoint =
 			models[modelName].endpoint;
 
 		// Widget settings
-		DEFAULT_SETTINGS.widgetSettings.model = model;
-		DEFAULT_SETTINGS.widgetSettings.modelName = modelName;
-		DEFAULT_SETTINGS.widgetSettings.modelType =
+		plugin.settings.widgetSettings.model = model;
+		plugin.settings.widgetSettings.modelName = modelName;
+		plugin.settings.widgetSettings.modelType =
 			models[modelName].type;
-		DEFAULT_SETTINGS.widgetSettings.endpointURL =
+		plugin.settings.widgetSettings.endpointURL =
 			models[modelName].url;
-		DEFAULT_SETTINGS.widgetSettings.modelEndpoint =
+		plugin.settings.widgetSettings.modelEndpoint =
 			models[modelName].endpoint;
 
 		plugin.saveSettings();

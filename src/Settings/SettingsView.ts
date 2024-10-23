@@ -1,4 +1,4 @@
-import LLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LLMPlugin from "main";
 import {
 	App,
 	ButtonComponent,
@@ -178,7 +178,7 @@ export default class SettingsView extends PluginSettingTab {
 			.addDropdown((dropdown: DropdownComponent) => {
 				let valueChanged = false;
 				dropdown.addOption(
-					DEFAULT_SETTINGS.modalSettings.modelName,
+					modelNames[this.plugin.settings.defaultModel],
 					"Select Default Model"
 				);
 				let keys = Object.keys(models);
