@@ -34,6 +34,7 @@ export interface LLMPluginSettings {
 	openAIAPIKey: string;
 	GPT4AllStreaming: boolean;
 	showFAB: boolean;
+	defaultModel: string;
 }
 
 const defaultSettings = {
@@ -90,6 +91,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	geminiAPIKey: "",
 	GPT4AllStreaming: false,
 	showFAB: true,
+	defaultModel: "",
 };
 
 export default class LLMPlugin extends Plugin {
@@ -149,7 +151,7 @@ export default class LLMPlugin extends Plugin {
 
 		const openWidgetTab = this.addCommand({
 			id: "open-LLM-widget-tab",
-			name: "open Chat in Tab",
+			name: "Open Chat in Tab",
 			callback: () => {
 				this.activateTab();
 			},

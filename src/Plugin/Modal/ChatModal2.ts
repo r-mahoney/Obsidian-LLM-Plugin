@@ -1,4 +1,4 @@
-import LLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LLMPlugin from "main";
 import { Modal } from "obsidian";
 import { classNames } from "utils/classNames";
 import { ChatContainer } from "../Components/ChatContainer";
@@ -19,21 +19,9 @@ export class ChatModal2 extends Modal {
 	}
 
 	onOpen() {
-		const modalSettings = this.plugin.settings.modalSettings;
 		this.modalEl
 			.getElementsByClassName("modal-close-button")[0]
 			.setAttr("style", "display: none");
-		modalSettings.assistant = DEFAULT_SETTINGS.modalSettings.assistant;
-		modalSettings.assistantId = DEFAULT_SETTINGS.modalSettings.assistantId;
-		modalSettings.historyIndex =
-			DEFAULT_SETTINGS.modalSettings.historyIndex;
-		modalSettings.model = DEFAULT_SETTINGS.modalSettings.model;
-		modalSettings.modelName = DEFAULT_SETTINGS.modalSettings.modelName;
-		modalSettings.modelType = DEFAULT_SETTINGS.modalSettings.modelType;
-		modalSettings.modelEndpoint =
-			DEFAULT_SETTINGS.modalSettings.modelEndpoint;
-		modalSettings.endpointURL = DEFAULT_SETTINGS.modalSettings.endpointURL;
-		this.plugin.saveSettings();
 		const { contentEl } = this;
 		const closeModal = () => {
 			this.close();
