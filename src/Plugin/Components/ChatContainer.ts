@@ -34,6 +34,7 @@ import {
 	setHistoryIndex
 } from "utils/utils";
 import { Header } from "./Header";
+import assistantLogo from "assets/AssistantLogo.svg";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -562,8 +563,8 @@ export class ChatContainer {
 		streaming
 			? (this.streamingDiv.innerHTML = "")
 			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
-		loadingIcon.innerHTML = "A";
-		loadingIcon.addClass("message-icon");
+
+		loadingIcon.innerHTML = assistantLogo
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
 			"flex-end",
