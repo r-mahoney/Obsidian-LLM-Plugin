@@ -31,8 +31,7 @@ import {
 	claudeMessage,
 	geminiMessage,
 	openAIMessage,
-	setHistoryIndex,
-	getApiKeyValidity
+	setHistoryIndex
 } from "utils/utils";
 import { Header } from "./Header";
 
@@ -465,10 +464,6 @@ export class ChatContainer {
 	}
 
 	async generateChatContainer(parentElement: Element, header: Header) {
-		// Note -> we do not necessarily need a valid API key.
-		// await getApiKeyValidity(this.plugin.settings.openAIAPIKey)
-		// we just need a 'working model' (or assistant?) to generate the chat.
-
 		// If we are working with assistants, then we need a valid openAi API key.
 		// If we are working with claude, then we need a valid claude key.
 		// If we are working with a local model, then we only need to be able to perform a health check against
