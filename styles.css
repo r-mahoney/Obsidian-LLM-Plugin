@@ -222,28 +222,66 @@
 }
 
 /* IM LIKE MESSAGE*/
+.modal-messages-div > .im-like-message-container,
+.fab-messages-div > .im-like-message-container,
+.widget-messages-div > .im-like-message-container {
+	/* We do not want to set min width on assistant messages */
+	/* only on user messages. */
+	min-width: 100%;
+}
+
 .im-like-message-container {
 	width: fit-content;
 	padding-top: 5px;
 	padding-bottom: 5px;
-	min-width: 100%;
 	margin-bottom: 10px;
 	border-radius: 5px;
-	.message-icon {
-		margin-right: auto;
-	}
 }
 
 .im-like-message-container:nth-child(2n) {
 	padding-left: 5px;
-	flex-direction: row-reverse;
-	background: var(--background-modifier-form-field);
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
 	.message-icon {
 		margin-right: 5px;
 	}
 	.im-like-message {
 		text-align: left;
 	}
+}
+
+.assistant-logo + .im-like-message-container {
+	display: flex;
+	flex-flow: column;
+}
+
+.assistant-buttons {
+	width: 85px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+	padding: 0 10px;
+	margin-bottom: 8px;
+}
+
+.modal-messages-div .assistant-logo + .im-like-message-container,
+.widget-messages-div .assistant-logo + .im-like-message-container {
+	background-color: var(--background-secondary);
+}
+
+.mod-sidedock .assistant-logo + .im-like-message-container,
+.fab-messages-div .assistant-logo + .im-like-message-container {
+	background-color: var(--background-primary);
+}
+
+.assistant-logo {
+	margin-top: var(--size-4-1);
+	margin-right: var(--size-4-3);
+}
+
+.mod-sidedock .assistant-logo,
+.fab-messages-div .assistant-logo  {
+	margin-right: var(--size-4-2);
 }
 
 .add-text,

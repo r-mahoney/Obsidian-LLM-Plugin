@@ -34,6 +34,7 @@ import {
 	setHistoryIndex
 } from "utils/utils";
 import { Header } from "./Header";
+import assistantLogo from "assets/AssistantLogo.svg";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -549,16 +550,24 @@ export class ChatContainer {
 	}
 
 	setDiv(streaming: boolean) {
-		this.loadingDivContainer = this.historyMessages.createDiv();
-		const loadingIcon = this.loadingDivContainer.createDiv();
+		const parent = this.historyMessages.createDiv();
+		parent.addClass("flex");
+
+		const assistant = parent.createDiv();
+		assistant.addClass("assistant-logo");
+		assistant.innerHTML = assistantLogo;
+
+		this.loadingDivContainer = parent.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
 
+		const buttonsDiv = this.loadingDivContainer.createDiv()
+		buttonsDiv.addClass("assistant-buttons")
 		const copyToClipboardButton = new ButtonComponent(
-			this.loadingDivContainer
+			buttonsDiv
 		);
 		copyToClipboardButton.setIcon("files");
 
-		const refreshButton = new ButtonComponent(this.loadingDivContainer);
+		const refreshButton = new ButtonComponent(buttonsDiv);
 		refreshButton.setIcon("refresh-cw");
 
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
@@ -567,8 +576,7 @@ export class ChatContainer {
 		streaming
 			? (this.streamingDiv.innerHTML = "")
 			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
-		loadingIcon.innerHTML = "A";
-		loadingIcon.addClass("message-icon");
+	
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
 			"flex-end",
@@ -624,14 +632,13 @@ export class ChatContainer {
 
 	private createMessage(role: string, content: string, index: number, finalMessage: Boolean) {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
-		const icon = imLikeMessageContainer.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
 		const copyToClipboardButton = new ButtonComponent(
 			imLikeMessageContainer
 		);
 
 		copyToClipboardButton.setIcon("files");
-		icon.innerHTML = role[0];
+
 		// imLikeMessage.innerHTML = content;
 		MarkdownRenderer.render(
 			this.plugin.app,
@@ -648,7 +655,7 @@ export class ChatContainer {
 		});
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
-		icon.addClass("message-icon");
+
 		imLikeMessage.addClass(
 			"im-like-message",
 			classNames[this.viewType]["chat-message"]
