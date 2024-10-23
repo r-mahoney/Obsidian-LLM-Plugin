@@ -545,8 +545,14 @@ export class ChatContainer {
 	}
 
 	setDiv(streaming: boolean) {
-		this.loadingDivContainer = this.historyMessages.createDiv();
-		const loadingIcon = this.loadingDivContainer.createDiv();
+		const parent = this.historyMessages.createDiv();
+		parent.addClass("flex");
+
+		const assistant = parent.createDiv();
+		assistant.addClass("assistant-logo");
+		assistant.innerHTML = assistantLogo;
+
+		this.loadingDivContainer = parent.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
 
 		const copyToClipboardButton = new ButtonComponent(
@@ -563,8 +569,7 @@ export class ChatContainer {
 		streaming
 			? (this.streamingDiv.innerHTML = "")
 			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
-
-		loadingIcon.innerHTML = assistantLogo;
+	
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
 			"flex-end",
