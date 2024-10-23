@@ -555,12 +555,14 @@ export class ChatContainer {
 		this.loadingDivContainer = parent.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
 
+		const buttonsDiv = this.loadingDivContainer.createDiv()
+		buttonsDiv.addClass("assistant-buttons")
 		const copyToClipboardButton = new ButtonComponent(
-			this.loadingDivContainer
+			buttonsDiv
 		);
 		copyToClipboardButton.setIcon("files");
 
-		const refreshButton = new ButtonComponent(this.loadingDivContainer);
+		const refreshButton = new ButtonComponent(buttonsDiv);
 		refreshButton.setIcon("refresh-cw");
 
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
