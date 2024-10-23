@@ -429,7 +429,7 @@ export class ChatContainer {
 			return;
 		}
 
-		if (modelEndpoint === chat) {
+		if (modelEndpoint === chat || modelEndpoint === gemini || modelEndpoint === messages) {
 			this.plugin.history.push({
 				...(params as ChatHistoryItem),
 				modelName,
