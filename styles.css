@@ -261,9 +261,12 @@
 	background-color: var(--background-primary);
 }
 
-/* TODO - vary logo margin based on view */
 .assistant-logo {
-	margin-top: var(--size-4-2);
+	margin-top: var(--size-4-1);
+	margin-right: var(--size-4-3);
+}
+
+.fab-messages-div .assistant-logo  {
 	margin-right: var(--size-4-2);
 }
 
