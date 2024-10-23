@@ -564,7 +564,7 @@ export class ChatContainer {
 			? (this.streamingDiv.innerHTML = "")
 			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
 
-		loadingIcon.innerHTML = assistantLogo
+		loadingIcon.innerHTML = assistantLogo;
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
 			"flex-end",
@@ -620,14 +620,13 @@ export class ChatContainer {
 
 	private createMessage(role: string, content: string, index: number, finalMessage: Boolean) {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
-		const icon = imLikeMessageContainer.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
 		const copyToClipboardButton = new ButtonComponent(
 			imLikeMessageContainer
 		);
 
 		copyToClipboardButton.setIcon("files");
-		icon.innerHTML = role[0];
+
 		// imLikeMessage.innerHTML = content;
 		MarkdownRenderer.render(
 			this.plugin.app,
@@ -644,7 +643,7 @@ export class ChatContainer {
 		});
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
-		icon.addClass("message-icon");
+
 		imLikeMessage.addClass(
 			"im-like-message",
 			classNames[this.viewType]["chat-message"]
