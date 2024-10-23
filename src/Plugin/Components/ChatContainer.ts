@@ -211,12 +211,17 @@ export class ChatContainer {
 				this.plugin.settings.geminiAPIKey
 			)
 			this.setDiv(true)
-			for await (const chunk of stream.stream) {
-				this.previewText += chunk.text() || "";
-				this.streamingDiv.innerHTML = this.previewText;
-				this.historyMessages.scroll(0, 9999);
+
+			try {
+				for await (const chunk of stream.stream) {
+					this.previewText += chunk.text() || "";
+					this.streamingDiv.innerHTML = this.previewText;
+					this.historyMessages.scroll(0, 9999);
+				}
+			} catch (err) {
+				console.error(err)
 			}
-			
+
 			// TODO - dry up as it repeats in the claude handler and the openai handler
 			this.streamingDiv.innerHTML = "";
 			MarkdownRenderer.render(
