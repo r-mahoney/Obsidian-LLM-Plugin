@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import fs from "fs";
 import path from "path";
-import LLMPlugin, { DEFAULT_SETTINGS } from "main";
+import LLMPlugin, { LLMPluginSettings } from "main";
 import { Editor } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
@@ -473,9 +473,9 @@ export async function listAssistants(OpenAI_API_Key: string) {
 }
 
 // TODO / NOTE - Claude does not have 'assistants' 
-export async function generateAssistantsList(plugin: LLMPlugin) {
+export async function generateAssistantsList(settings: LLMPluginSettings) {
 	const assisitantsFromOpenAI = await listAssistants(
-		plugin.settings.openAIAPIKey
+		settings.openAIAPIKey
 	);
 	const processedAssisitants = assisitantsFromOpenAI.map(
 		(assistant: Assistant & { modelType: string }) => ({
@@ -483,7 +483,7 @@ export async function generateAssistantsList(plugin: LLMPlugin) {
 			modelType: assistant,
 		})
 	);
-	plugin.settings.assistants = processedAssisitants;
+	settings.assistants = processedAssisitants;
 }
 
 export async function deleteAssistant(OpenAI_API_Key: string, assistant_id: string) {
