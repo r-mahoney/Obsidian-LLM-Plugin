@@ -22,7 +22,7 @@ import {
 } from "Types/types";
 import { classNames } from "utils/classNames";
 import { assistant, chat, gemini, geminiModel, GPT4All, messages } from "utils/constants";
-
+import assistantLogo from "Plugin/Components/AssistantLogo"
 import {
 	assistantsMessage,
 	getSettingType,
@@ -34,7 +34,6 @@ import {
 	setHistoryIndex
 } from "utils/utils";
 import { Header } from "./Header";
-import assistantLogo from "assets/AssistantLogo.svg";
 
 export class ChatContainer {
 	historyMessages: HTMLElement;
@@ -552,11 +551,9 @@ export class ChatContainer {
 	setDiv(streaming: boolean) {
 		const parent = this.historyMessages.createDiv();
 		parent.addClass("flex");
-
-		const assistant = parent.createDiv();
-		assistant.addClass("assistant-logo");
-		assistant.innerHTML = assistantLogo;
-
+		const assistant = parent.createEl("div", { cls: "assistant-logo" });
+		assistant.appendChild(assistantLogo());
+	
 		this.loadingDivContainer = parent.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
 
