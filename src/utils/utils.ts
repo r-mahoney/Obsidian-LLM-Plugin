@@ -236,8 +236,6 @@ export async function openAIMessage(
 				| "shimmer",
 			input,
 		});
-		console.log(response);
-		console.log(speechfile);
 		// const buffer = Buffer.from(await response.arrayBuffer());
 		// await fs.promises.writeFile(speechfile, buffer);
 	}
