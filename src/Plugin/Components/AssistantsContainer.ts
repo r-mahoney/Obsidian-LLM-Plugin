@@ -240,8 +240,6 @@ export class AssistantsContainer {
 				topP: this.updateAssistantTopP,
 				temperature: this.updateAssistantTemperature,
 			};
-
-			console.log(assistantObj);
 		});
 	}
 

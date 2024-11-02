@@ -20,7 +20,15 @@ import {
 import SettingsView from "Settings/SettingsView";
 import { Assistant } from "openai/resources/beta/assistants";
 import { generateAssistantsList, getApiKeyValidity } from "utils/utils";
-import { chat, claudeSonnetJuneModel, geminiModel, openAIModel, openAI, claude, gemini } from "utils/constants";
+import {
+	chat,
+	claudeSonnetJuneModel,
+	geminiModel,
+	openAIModel,
+	openAI,
+	claude,
+	gemini,
+} from "utils/constants";
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -102,7 +110,7 @@ export default class LLMPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-		await this.checkForAPIKeyBasedModel()
+		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();
 		this.registerCommands();
 
@@ -220,11 +228,16 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
+		const dataJSON = await this.loadData();
+		if (dataJSON) {
+			this.settings = Object.assign({}, dataJSON);
+		} else {
+			this.settings = Object.assign(
+				{},
+				DEFAULT_SETTINGS,
+				await this.loadData()
+			);
+		}
 	}
 
 	async saveSettings() {
@@ -233,16 +246,16 @@ export default class LLMPlugin extends Plugin {
 
 	// TODO - refactor into utils
 	async validateActiveModelsAPIKeys() {
-		let activeClaudeModel, activeGeminiModel, activeOpenAIModel
+		let activeClaudeModel, activeGeminiModel, activeOpenAIModel;
 
 		const settingsObjects = [
 			this.settings.modalSettings,
 			this.settings.widgetSettings,
 			this.settings.fabSettings,
-		]
+		];
 
-		settingsObjects.forEach(settings => {
-			const model = settings.model
+		settingsObjects.forEach((settings) => {
+			const model = settings.model;
 			switch (model) {
 				case claudeSonnetJuneModel:
 					activeClaudeModel = model === claudeSonnetJuneModel;
@@ -254,44 +267,44 @@ export default class LLMPlugin extends Plugin {
 					activeOpenAIModel = model === openAIModel;
 					break;
 			}
-		})
+		});
 
 		const providerKeyPairs = [
 			{
 				provider: openAI,
 				key: this.settings.openAIAPIKey,
-				isActive: activeOpenAIModel
+				isActive: activeOpenAIModel,
 			},
 			{
 				provider: claude,
 				key: this.settings.claudeAPIKey,
-				isActive: activeClaudeModel
+				isActive: activeClaudeModel,
 			},
 			{
 				provider: gemini,
 				key: this.settings.geminiAPIKey,
-				isActive: activeGeminiModel
-			}
-		]
+				isActive: activeGeminiModel,
+			},
+		];
 
 		const filteredPairs = providerKeyPairs.filter(({ key, isActive }) => {
 			// Skip providers with no keys -> this leaves us exposed to a user selecting a default model without adding a key.
-			if (!key) return
+			if (!key) return;
 			// Only inspect pairs that are active in the application
-			if (!isActive) return
-			return key
-		})
+			if (!isActive) return;
+			return key;
+		});
 
 		// TODO - when a user saves a new api key, we should check if it's valid
-		const promises = filteredPairs.map(async pair => {
-			const result = await getApiKeyValidity(pair)
-			return result
-		})
+		const promises = filteredPairs.map(async (pair) => {
+			const result = await getApiKeyValidity(pair);
+			return result;
+		});
 
-		const results = await Promise.all(promises)
+		const results = await Promise.all(promises);
 		const hasValidOpenAIAPIKey: boolean = results.some((result) => {
 			if (result) {
-				return result.valid && result.provider === openAI
+				return result.valid && result.provider === openAI;
 			}
 		});
 
@@ -299,26 +312,31 @@ export default class LLMPlugin extends Plugin {
 		// any UI elements around assistants should be on.
 
 		// If the model is OpenAI and the key is valid -> generate the assistant list
-		if (hasValidOpenAIAPIKey)
-			await generateAssistantsList(this.settings);
+		if (hasValidOpenAIAPIKey) await generateAssistantsList(this.settings);
 	}
 
 	async checkForAPIKeyBasedModel() {
-		const fabModelRequiresKey = this.settings.fabSettings.model === openAIModel ||
+		const fabModelRequiresKey =
+			this.settings.fabSettings.model === openAIModel ||
 			this.settings.fabSettings.model === claudeSonnetJuneModel ||
-			this.settings.fabSettings.model === geminiModel
+			this.settings.fabSettings.model === geminiModel;
 
-		const widgetModelRequresKey = this.settings.widgetSettings.model === openAIModel ||
+		const widgetModelRequresKey =
+			this.settings.widgetSettings.model === openAIModel ||
 			this.settings.widgetSettings.model === claudeSonnetJuneModel ||
-			this.settings.widgetSettings.model === geminiModel
+			this.settings.widgetSettings.model === geminiModel;
 
-		const modalModelRequresKey = this.settings.modalSettings.model === openAIModel ||
+		const modalModelRequresKey =
+			this.settings.modalSettings.model === openAIModel ||
 			this.settings.modalSettings.model === claudeSonnetJuneModel ||
-			this.settings.modalSettings.model === geminiModel
+			this.settings.modalSettings.model === geminiModel;
 
-		const activeModelRequiresKey = fabModelRequiresKey || widgetModelRequresKey || modalModelRequresKey;
+		const activeModelRequiresKey =
+			fabModelRequiresKey ||
+			widgetModelRequresKey ||
+			modalModelRequresKey;
 
-		if (activeModelRequiresKey) await this.validateActiveModelsAPIKeys()
+		if (activeModelRequiresKey) await this.validateActiveModelsAPIKeys();
 	}
 	// end refactor into utils section
 }
