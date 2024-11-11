@@ -336,11 +336,12 @@ export class AssistantsContainer {
 					file.basename.toLowerCase().includes(change.toLowerCase())
 				);
 				options.map((option: TFile) => {
-					const item = searchDiv.createEl("option");
+					const item = searchDiv.createEl("option", {
+						text: option.name,
+						cls: "vector-file"
+					});
 					if (filePathArray.includes(option.path))
 						item.addClass("file-added");
-					item.addClass("vector-file");
-					item.innerHTML = option.name;
 
 					item.onClickEvent((click: MouseEvent) => {
 						if (filePathArray.includes(option.path)) {
