@@ -327,9 +327,9 @@ export class AssistantsContainer {
 		searchDiv.addClass("setting-item-control", "vector-files");
 		file_ids.addSearch((search: SearchComponent) => {
 			search.onChange((change) => {
-				searchDiv.innerHTML = "";
+				searchDiv.empty();
 				if (change === "") {
-					searchDiv.innerHTML = "";
+					searchDiv.empty();
 					return;
 				}
 				const options = files.filter((file: TFile) =>
