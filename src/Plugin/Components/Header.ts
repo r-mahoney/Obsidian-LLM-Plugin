@@ -23,7 +23,7 @@ export class Header {
 		if (title) {
 			this.titleEl!.textContent = title;
 		}
-		this.modelEl.innerHTML = modelName;
+		this.modelEl.textContent = modelName;
 	}
 
 	resetHistoryButton() {
@@ -79,10 +79,10 @@ export class Header {
 		const rightButtonsDiv = titleDiv.createDiv();
 
 		titleDiv.addClass("title-div", "flex");
-		this.titleEl.innerHTML = "LLM Plugin";
+		this.titleEl.textContent = "LLM Plugin";
 		this.modelEl = titleContainer.createDiv();
 		this.modelEl.addClass("model-name");
-		this.modelEl.innerHTML = modelName;
+		this.modelEl.textContent = modelName;
 
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
 		this.chatHistoryButton.setTooltip("Chats");
