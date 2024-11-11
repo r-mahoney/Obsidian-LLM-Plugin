@@ -536,7 +536,7 @@ export class AssistantsContainer {
 							});
 					}
 					if (!change) {
-						trDiv.innerHTML = "";
+						trDiv.empty();
 					}
 				});
 			});
