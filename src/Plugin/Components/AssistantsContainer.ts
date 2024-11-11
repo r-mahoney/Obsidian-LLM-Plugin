@@ -568,7 +568,7 @@ export class AssistantsContainer {
 	}
 
 	resetContainer(parentContainer: HTMLElement, total: boolean = true) {
-		parentContainer.innerHTML = "";
+		parentContainer.empty();
 		if (total) this.generateAssistantsContainer(parentContainer);
 	}
 }
