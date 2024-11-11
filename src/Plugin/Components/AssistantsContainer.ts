@@ -381,8 +381,9 @@ export class AssistantsContainer {
 		);
 		vectorStores.map((vectorStore: VectorStore, index: number) => {
 			const item = parentContainer.createDiv();
-			const text = item.createEl("p");
-			text.innerHTML = vectorStore.name;
+			const text = item.createEl("p", {
+				text: vectorStore.name
+			});
 			const buttonsDiv = item.createDiv();
 			buttonsDiv.addClass("history-buttons-div", "flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
