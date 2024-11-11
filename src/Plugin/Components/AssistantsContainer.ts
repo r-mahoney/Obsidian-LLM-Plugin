@@ -253,8 +253,9 @@ export class AssistantsContainer {
 		}
 		assistants.map((assistant: Assistant, index: number) => {
 			const item = parentContainer.createDiv();
-			const text = item.createEl("p");
-			text.innerHTML = assistant.name as string;
+			const text = item.createEl("p", {
+				text: assistant.name as string,
+			});
 			const buttonsDiv = item.createDiv();
 			buttonsDiv.addClass("history-buttons-div", "flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
