@@ -246,8 +246,10 @@ export class AssistantsContainer {
 	deleteAssistant(parentContainer: HTMLElement) {
 		const assistants: Assistant[] = this.plugin.settings.assistants;
 		if (assistants.length < 1) {
-			const empty = parentContainer.createEl("div");
-			empty.innerHTML = "empty";
+			parentContainer.createEl("div", {
+				text: "No assistants found",
+				cls: "assistants-empty-state"
+			});
 		}
 		assistants.map((assistant: Assistant, index: number) => {
 			const item = parentContainer.createDiv();
