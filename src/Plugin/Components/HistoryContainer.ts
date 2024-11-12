@@ -34,14 +34,21 @@ export class HistoryContainer {
 
 		const llmGal = parentElement.createDiv();
 		llmGal.addClass("icon-wrapper");
-		llmGal.textContent = logo;
 
-		const cta = llmGal.createDiv();
-		cta.textContent = `
-			<div class="empty-history-cta font-size-medium justify-content-center">
-				Looking kind of empty. Start chatting and conversations will appear here.
-			</div>
-		`
+		// Parse SVG string to DOM element
+		const parser = new DOMParser();
+		const svgDoc = parser.parseFromString(logo, "image/svg+xml");
+		const svgElement = svgDoc.documentElement;
+
+		// Append the SVG element
+		llmGal.appendChild(svgElement);
+
+		const cta = llmGal.createEl("div", {
+			attr: {
+				class: 'empty-history-cta font-size-medium justify-content-center'
+			},
+			text: 'Looking kind of empty. Start chatting and conversations will appear here.'
+		})
 		cta.addClass('text-align-center')
 
 		const createChatButton = new ButtonComponent(cta)
