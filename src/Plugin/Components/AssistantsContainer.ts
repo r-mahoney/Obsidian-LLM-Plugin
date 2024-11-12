@@ -246,13 +246,16 @@ export class AssistantsContainer {
 	deleteAssistant(parentContainer: HTMLElement) {
 		const assistants: Assistant[] = this.plugin.settings.assistants;
 		if (assistants.length < 1) {
-			const empty = parentContainer.createEl("div");
-			empty.innerHTML = "empty";
+			parentContainer.createEl("div", {
+				text: "No assistants found",
+				cls: "assistants-empty-state"
+			});
 		}
 		assistants.map((assistant: Assistant, index: number) => {
 			const item = parentContainer.createDiv();
-			const text = item.createEl("p");
-			text.innerHTML = assistant.name as string;
+			const text = item.createEl("p", {
+				text: assistant.name as string,
+			});
 			const buttonsDiv = item.createDiv();
 			buttonsDiv.addClass("history-buttons-div", "flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
@@ -324,20 +327,21 @@ export class AssistantsContainer {
 		searchDiv.addClass("setting-item-control", "vector-files");
 		file_ids.addSearch((search: SearchComponent) => {
 			search.onChange((change) => {
-				searchDiv.innerHTML = "";
+				searchDiv.empty();
 				if (change === "") {
-					searchDiv.innerHTML = "";
+					searchDiv.empty();
 					return;
 				}
 				const options = files.filter((file: TFile) =>
 					file.basename.toLowerCase().includes(change.toLowerCase())
 				);
 				options.map((option: TFile) => {
-					const item = searchDiv.createEl("option");
+					const item = searchDiv.createEl("option", {
+						text: option.name,
+						cls: "vector-file"
+					});
 					if (filePathArray.includes(option.path))
 						item.addClass("file-added");
-					item.addClass("vector-file");
-					item.innerHTML = option.name;
 
 					item.onClickEvent((click: MouseEvent) => {
 						if (filePathArray.includes(option.path)) {
@@ -377,8 +381,9 @@ export class AssistantsContainer {
 		);
 		vectorStores.map((vectorStore: VectorStore, index: number) => {
 			const item = parentContainer.createDiv();
-			const text = item.createEl("p");
-			text.innerHTML = vectorStore.name;
+			const text = item.createEl("p", {
+				text: vectorStore.name
+			});
 			const buttonsDiv = item.createDiv();
 			buttonsDiv.addClass("history-buttons-div", "flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
@@ -531,7 +536,7 @@ export class AssistantsContainer {
 							});
 					}
 					if (!change) {
-						trDiv.innerHTML = "";
+						trDiv.empty();
 					}
 				});
 			});
@@ -564,7 +569,7 @@ export class AssistantsContainer {
 	}
 
 	resetContainer(parentContainer: HTMLElement, total: boolean = true) {
-		parentContainer.innerHTML = "";
+		parentContainer.empty();
 		if (total) this.generateAssistantsContainer(parentContainer);
 	}
 }

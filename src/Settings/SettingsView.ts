@@ -194,15 +194,42 @@ export default class SettingsView extends PluginSettingTab {
 
 		const llmGuy = containerEl.createDiv();
 		llmGuy.addClass("icon-wrapper");
-		llmGuy.innerHTML = logo;
-		const credits = llmGuy.createDiv();
-		credits.id = "settings-credits";
-		credits.innerHTML =
-			`<div>
-			<h2 id="hero-credits">LLM Plugin</h2>\n<p class="hero-names text-muted">By Johnny✨ and Ryan Mahoney </p>
-			<span class="text-muted version">v${this.plugin.manifest.version}</span>
-			</div>
-			`;
+
+		// Parse SVG string to DOM element
+		const parser = new DOMParser();
+		const svgDoc = parser.parseFromString(logo, "image/svg+xml");
+		const svgElement = svgDoc.documentElement;
+
+		// Append the SVG element
+		llmGuy.appendChild(svgElement);
+
+		const credits = llmGuy.createEl("div", {
+			attr: {
+				id: "settings-credits"
+			},
+
+		});
+		const creditsHeader = credits.createEl("h2", {
+			text: "LLM Plugin",
+			attr: {
+				id: "hero-credits"
+			}
+		});
+		credits.appendChild(creditsHeader);
+		const creditsNames = credits.createEl("p", {
+			text: "By Johnny✨ and Ryan Mahoney",
+			attr: {
+				class: "hero-names text-muted"
+			}
+		});
+		credits.appendChild(creditsNames);
+		const creditsVersion = credits.createEl("span", {
+			text: `v${this.plugin.manifest.version}`,
+			attr: {
+				class: "text-muted version"
+			}
+		});
+		credits.appendChild(creditsVersion);
 	}
 
 }

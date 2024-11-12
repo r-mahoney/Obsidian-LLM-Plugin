@@ -177,11 +177,11 @@ export class ChatContainer {
 			stream.on("textDelta", (textDelta, snapshot) => {
 				if (textDelta.value?.includes("【")) return;
 				this.previewText += textDelta.value;
-				this.streamingDiv.innerHTML = this.previewText;
+				this.streamingDiv.textContent = this.previewText;
 				this.historyMessages.scroll(0, 9999);
 			});
 			stream.on("end", () => {
-				this.streamingDiv.innerHTML = "";
+				this.streamingDiv.empty();
 				MarkdownRenderer.render(
 					this.plugin.app,
 					this.previewText,
@@ -215,7 +215,7 @@ export class ChatContainer {
 			try {
 				for await (const chunk of stream.stream) {
 					this.previewText += chunk.text() || "";
-					this.streamingDiv.innerHTML = this.previewText;
+					this.streamingDiv.textContent = this.previewText;
 					this.historyMessages.scroll(0, 9999);
 				}
 			} catch (err) {
@@ -223,7 +223,7 @@ export class ChatContainer {
 			}
 
 			// TODO - dry up as it repeats in the claude handler and the openai handler
-			this.streamingDiv.innerHTML = "";
+			this.streamingDiv.empty();
 			MarkdownRenderer.render(
 				this.plugin.app,
 				this.previewText,
@@ -257,12 +257,12 @@ export class ChatContainer {
 
 			stream.on('text', (text) => {
 				this.previewText += text || "";
-				this.streamingDiv.innerHTML = this.previewText;
+				this.streamingDiv.textContent = this.previewText;
 				this.historyMessages.scroll(0, 9999);
 			})
 
 			// TODO - dry up as it repeats in the claude handler and the openai handler
-			this.streamingDiv.innerHTML = "";
+			this.streamingDiv.empty();
 			MarkdownRenderer.render(
 				this.plugin.app,
 				this.previewText,
@@ -296,11 +296,11 @@ export class ChatContainer {
 			this.setDiv(true);
 			for await (const chunk of stream as Stream<ChatCompletionChunk>) {
 				this.previewText += chunk.choices[0]?.delta?.content || "";
-				this.streamingDiv.innerHTML = this.previewText;
+				this.streamingDiv.textContent = this.previewText;
 				this.historyMessages.scroll(0, 9999);
 			}
 			// TODO - dry up as it repeats in the claude handler and the openai handler
-			this.streamingDiv.innerHTML = "";
+			this.streamingDiv.empty();
 			MarkdownRenderer.render(
 				this.plugin.app,
 				this.previewText,
@@ -571,8 +571,8 @@ export class ChatContainer {
 		refreshButton.buttonEl.addClass("refresh-output", "hide");
 
 		streaming
-			? (this.streamingDiv.innerHTML = "")
-			: (this.streamingDiv.innerHTML = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
+			? (this.streamingDiv.empty())
+			: (this.streamingDiv.textContent = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
 	
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
@@ -613,9 +613,9 @@ export class ChatContainer {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const icon = imLikeMessageContainer.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
-		icon.innerHTML = "A";
+		icon.textContent = "A";
 		imageURLs.map((url) => {
-			imLikeMessage.innerHTML += `<img src=${url} alt="image generated with ${this.prompt}">\n`;
+			imLikeMessage.textContent += `<img src=${url} alt="image generated with ${this.prompt}">\n`;
 		});
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
 		icon.addClass("message-icon");
@@ -636,7 +636,6 @@ export class ChatContainer {
 
 		copyToClipboardButton.setIcon("files");
 
-		// imLikeMessage.innerHTML = content;
 		MarkdownRenderer.render(
 			this.plugin.app,
 			content,
@@ -725,6 +724,6 @@ export class ChatContainer {
 	}
 
 	resetChat() {
-		this.historyMessages.innerHTML = "";
+		this.historyMessages.empty();
 	}
 }

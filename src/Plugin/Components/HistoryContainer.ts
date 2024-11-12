@@ -34,10 +34,10 @@ export class HistoryContainer {
 
 		const llmGal = parentElement.createDiv();
 		llmGal.addClass("icon-wrapper");
-		llmGal.innerHTML = logo;
+		llmGal.textContent = logo;
 
 		const cta = llmGal.createDiv();
-		cta.innerHTML = `
+		cta.textContent = `
 			<div class="empty-history-cta font-size-medium justify-content-center">
 				Looking kind of empty. Start chatting and conversations will appear here.
 			</div>
@@ -148,7 +148,7 @@ export class HistoryContainer {
 			const item = parentElement.createDiv();
 			const text = item.createEl("p");
 			const displayHTML = historyItem?.prompt || historyItem?.messages[0]?.content;
-			text.innerHTML = displayHTML;
+			text.textContent = displayHTML;
 			const buttonsDiv = item.createDiv();
 			buttonsDiv.addClass("history-buttons-div", "flex");
 			const editPrompt = new ButtonComponent(buttonsDiv);
@@ -261,6 +261,6 @@ export class HistoryContainer {
 	}
 
 	resetHistory(parentContainer: HTMLElement) {
-		parentContainer.innerHTML = "";
+		parentContainer.empty();
 	}
 }

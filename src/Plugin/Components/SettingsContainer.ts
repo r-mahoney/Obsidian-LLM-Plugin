@@ -120,7 +120,7 @@ export class SettingsContainer {
 	}
 
 	resetSettings(parentContainer: Element) {
-		parentContainer.innerHTML = "";
+		parentContainer.empty();
 	}
 
 	generateModelSettings(parentContainer: HTMLElement) {
