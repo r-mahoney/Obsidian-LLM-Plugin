@@ -161,6 +161,7 @@ export default class LLMPlugin extends Plugin {
 
 	async onload() {
 		// The Node fs and os packages are not supported on mobile.
+		console.log('What is the platform?', Platform.isDesktop)
 		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem();
 		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
 		await this.loadSettings();
