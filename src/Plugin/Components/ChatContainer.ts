@@ -570,10 +570,16 @@ export class ChatContainer {
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
 		refreshButton.buttonEl.addClass("refresh-output", "hide");
 
-		streaming
-			? (this.streamingDiv.empty())
-			: (this.streamingDiv.textContent = `<span class="bouncing-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`);
-	
+		if (streaming) {
+			this.streamingDiv.empty()
+		} else {
+			const dots = this.streamingDiv.createEl("span", { cls: "bouncing-dots" })
+			for (let i = 0; i < 3; i++) {
+				const dot = dots.createEl("span", { cls: "dot" })
+				dot.textContent = "."
+			}
+		}
+
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
 			"flex-end",
