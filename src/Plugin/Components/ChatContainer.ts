@@ -412,6 +412,9 @@ export class ChatContainer {
 			}
 			header.enableButtons();
 			sendButton.setDisabled(false);
+			const buttonsContainer = this.loadingDivContainer.querySelector(".assistant-buttons")
+			console.log("buttonsContainer", buttonsContainer)
+			buttonsContainer?.removeClass("hide");
 		} catch (error) {
 			header.enableButtons();
 			sendButton.setDisabled(false);
@@ -557,18 +560,20 @@ export class ChatContainer {
 		this.loadingDivContainer = parent.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
 
-		const buttonsDiv = this.loadingDivContainer.createDiv()
-		buttonsDiv.addClass("assistant-buttons")
+		const buttonsContainer = this.loadingDivContainer.createEl(
+			"div",
+			{ cls: "assistant-buttons hide" }
+		)
 		const copyToClipboardButton = new ButtonComponent(
-			buttonsDiv
+			buttonsContainer
 		);
 		copyToClipboardButton.setIcon("files");
 
-		const refreshButton = new ButtonComponent(buttonsDiv);
+		const refreshButton = new ButtonComponent(buttonsContainer);
 		refreshButton.setIcon("refresh-cw");
 
-		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
-		refreshButton.buttonEl.addClass("refresh-output", "hide");
+		copyToClipboardButton.buttonEl.addClass("add-text");
+		refreshButton.buttonEl.addClass("refresh-output");
 
 		// GPT4All & Image enter the non-streaming block
 		// Claude, Gemini enter the streaming block
@@ -588,18 +593,6 @@ export class ChatContainer {
 			"im-like-message-container",
 			"flex"
 		);
-
-		// if (streaming) {
-		this.loadingDivContainer.addEventListener("mouseenter", () => {
-			copyToClipboardButton.buttonEl.removeClass("hide");
-			refreshButton.buttonEl.removeClass("hide");
-		});
-
-		this.loadingDivContainer.addEventListener("mouseleave", () => {
-			copyToClipboardButton.buttonEl.addClass("hide");
-			refreshButton.buttonEl.addClass("hide");
-		});
-		// }
 
 		copyToClipboardButton.onClick(async () => {
 			await navigator.clipboard.writeText(this.previewText);
