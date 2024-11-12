@@ -1,4 +1,3 @@
-import { existsSync } from "fs";
 import fs from "fs";
 import path from "path";
 import LLMPlugin, { LLMPluginSettings } from "main";
@@ -32,11 +31,6 @@ export const DEFAULT_DIRECTORY = path.resolve(
 
 export function isWindows() {
 	return navigator.platform.indexOf("Win") > -1
-}
-
-export function modelLookup(modelName: string) {
-	const model = path.join(DEFAULT_DIRECTORY, modelName);
-	return existsSync(model);
 }
 
 export function upperCaseFirst(input: string): string {
