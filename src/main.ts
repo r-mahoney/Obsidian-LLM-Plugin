@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf, Platform	 } from "obsidian";
+import { Plugin, WorkspaceLeaf, Platform, App } from "obsidian";
 import {
 	HistoryItem,
 	ImageQuality,
@@ -159,11 +159,14 @@ export default class LLMPlugin extends Plugin {
 	history: History;
 	fab: FAB;
 
-	async onload() {
-		// The Node fs and os packages are not supported on mobile.
-		console.log('What is the platform?', Platform.isDesktop)
+	constructor(app: App, manifest: any) {
+        super(app, manifest);
+		console.log("ALoha!", Platform.isDesktop)
 		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem();
 		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
+	}
+
+	async onload() {
 		await this.loadSettings();
 		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();
