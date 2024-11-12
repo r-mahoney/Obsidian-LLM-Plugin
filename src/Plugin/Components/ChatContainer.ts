@@ -155,7 +155,7 @@ export class ChatContainer {
 		this.handleGenerate();
 	}
 
-	async handleGenerate() {
+	async handleGenerate(): Promise<boolean> {
 		this.previewText = "";
 		const {
 			model,
@@ -165,6 +165,14 @@ export class ChatContainer {
 			assistantId,
 			modelName,
 		} = getViewInfo(this.plugin, this.viewType);
+		let shouldHaveAPIKey = modelType !== GPT4All
+		// TODO - fix this logic to actually do an API key check against the current view model.
+		if (shouldHaveAPIKey) {
+			const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey || this.plugin.settings.geminiAPIKey;
+			if (!API_KEY) {
+				throw new Error("No API Key");
+			}
+		}
 		const params = this.getParams(modelEndpoint, model, modelType);
 		// Start assistant handling
 		if (modelEndpoint === assistant) {
@@ -180,27 +188,30 @@ export class ChatContainer {
 				this.streamingDiv.textContent = this.previewText;
 				this.historyMessages.scroll(0, 9999);
 			});
-			stream.on("end", () => {
-				this.streamingDiv.empty();
-				MarkdownRenderer.render(
-					this.plugin.app,
-					this.previewText,
-					this.streamingDiv,
-					"",
-					this.plugin
-				);
-				this.historyMessages.scroll(0, 9999);
-				this.messages.push({
-					role: assistant,
-					content: this.previewText,
+			return new Promise((resolve) => {
+				stream.on("end", () => {
+					this.streamingDiv.empty();
+					MarkdownRenderer.render(
+						this.plugin.app,
+						this.previewText,
+						this.streamingDiv,
+						"",
+						this.plugin
+					);
+					this.historyMessages.scroll(0, 9999);
+					this.messages.push({
+						role: assistant,
+						content: this.previewText,
+					});
+					const message_context = {
+						...params,
+						messages: this.messages,
+						assistant_id: assistantId,
+						modelName,
+					} as AssistantHistoryItem;
+					this.historyPush(message_context);
+					resolve(true);
 				});
-				const message_context = {
-					...params,
-					messages: this.messages,
-					assistant_id: assistantId,
-					modelName,
-				} as AssistantHistoryItem;
-				this.historyPush(message_context);
 			});
 		}
 		// End assistant handling
@@ -220,6 +231,7 @@ export class ChatContainer {
 				}
 			} catch (err) {
 				console.error(err)
+				return false;
 			}
 
 			// TODO - dry up as it repeats in the claude handler and the openai handler
@@ -246,8 +258,9 @@ export class ChatContainer {
 				messages: this.messages,
 			} as ChatHistoryItem;
 			this.historyPush(message_context);
+			return true;
 		}
-		
+
 		if (modelEndpoint === messages) {
 			const stream = await claudeMessage(
 				params as ChatParams,
@@ -285,8 +298,22 @@ export class ChatContainer {
 				messages: this.messages,
 			} as ChatHistoryItem;
 			this.historyPush(message_context);
+			return true;
 		}
-		if (modelEndpoint === chat) {
+		// NOTE -> modelEndpoint === chat while modelType === GPT4All, so the ordering
+		// of these two if statements is important.
+		if (modelType === GPT4All) {
+			this.plugin.settings.GPT4AllStreaming = true;
+			this.setDiv(false);
+			messageGPT4AllServer(params as ChatParams, endpointURL).then(
+				(response: Message) => {
+					this.streamingDiv.textContent = response.content
+					this.messages.push(response);
+					this.previewText = response.content
+					this.historyPush(params as ChatHistoryItem);
+				}
+			);
+		} else if (modelEndpoint === chat) {
 			const stream = await openAIMessage(
 				params as ChatParams,
 				this.plugin.settings.openAIAPIKey,
@@ -323,7 +350,9 @@ export class ChatContainer {
 				messages: this.messages,
 			} as ChatHistoryItem;
 			this.historyPush(message_context);
+			return true;
 		}
+		return true;
 	}
 
 	async handleGenerateClick(header: Header, sendButton: ButtonComponent) {
@@ -344,74 +373,45 @@ export class ChatContainer {
 		this.messages.push({ role: "user", content: this.prompt });
 		const params = this.getParams(modelEndpoint, model, modelType);
 		try {
-			// if (settingsErrorHandling(params).length > 0) {
-			// 	throw new Error("Incorrect Settings");
-			// }
 			this.appendNewMessage({ role: "user", content: this.prompt });
-			// This seems to be triggered much more frequently than when there streaming is in flight.
-			// if (this.plugin.settings.GPT4AllStreaming)
-			// 	throw new Error("GPT4All streaming");
-			if (modelType === GPT4All) {
-				this.plugin.settings.GPT4AllStreaming = true;
-				this.setDiv(false);
-				messageGPT4AllServer(params as ChatParams, endpointURL).then(
-					(response: Message) => {
-						this.removeLoadingDiv();
-						this.messages.push(response);
-						this.appendNewMessage(response);
-						this.historyPush(params as ChatHistoryItem);
-						header.enableButtons();
-						sendButton.setDisabled(false);
-					}
-				);
-			} else {
-				const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey || this.plugin.settings.geminiAPIKey;
-				if (!API_KEY) {
-					throw new Error("No API Key");
-				}
-				this.previewText = "";
-				if (modelEndpoint === chat || modelEndpoint === messages || modelEndpoint === "gemini") {
-					this.handleGenerate();
-				}
-
-				if (modelEndpoint === "images") {
-					this.setDiv(false);
-					await openAIMessage(
-						params as ImageParams,
-						this.plugin.settings.openAIAPIKey,
-						endpointURL,
-						modelEndpoint
-					).then((response: string[]) => {
-						let content = "";
-						response.map((url) => {
-							content += `![created with prompt ${this.prompt}](${url})`;
-						});
-						this.removeLoadingDiv();
-						this.messages.push({
-							role: assistant,
-							content,
-						});
-						this.appendImage(response);
-						this.historyPush({
-							...params,
-							messages: this.messages,
-						} as ImageHistoryItem);
-					});
-				}
-				if (modelEndpoint === "speech") {
-					const response = await openAIMessage(
-						params as SpeechParams,
-						this.plugin.settings.openAIAPIKey,
-						endpointURL,
-						modelEndpoint
-					);
-				}
-				if (modelEndpoint === assistant) {
-					this.handleGenerate();
-				}
-				header.enableButtons();
-				sendButton.setDisabled(false);
+			this.previewText = "";
+			if (modelEndpoint !== "images" && modelEndpoint !== "speech") {
+				await this.handleGenerate();
 			}
+			if (modelEndpoint === "images") {
+				this.setDiv(false);
+				await openAIMessage(
+					params as ImageParams,
+					this.plugin.settings.openAIAPIKey,
+					endpointURL,
+					modelEndpoint
+				).then((response: string[]) => {
+					let content = "";
+					response.map((url) => {
+						content += `![created with prompt ${this.prompt}](${url})`;
+					});
+					this.removeLoadingDiv();
+					this.messages.push({
+						role: assistant,
+						content,
+					});
+					this.appendImage(response);
+					this.historyPush({
+						...params,
+						messages: this.messages,
+					} as ImageHistoryItem);
+				});
+			}
+			if (modelEndpoint === "speech") {
+				const response = await openAIMessage(
+					params as SpeechParams,
+					this.plugin.settings.openAIAPIKey,
+					endpointURL,
+					modelEndpoint
+				);
+			}
+			header.enableButtons();
+			sendButton.setDisabled(false);
 		} catch (error) {
 			header.enableButtons();
 			sendButton.setDisabled(false);
@@ -553,7 +553,7 @@ export class ChatContainer {
 		parent.addClass("flex");
 		const assistant = parent.createEl("div", { cls: "assistant-logo" });
 		assistant.appendChild(assistantLogo());
-	
+
 		this.loadingDivContainer = parent.createDiv();
 		this.streamingDiv = this.loadingDivContainer.createDiv();
 
@@ -570,6 +570,8 @@ export class ChatContainer {
 		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
 		refreshButton.buttonEl.addClass("refresh-output", "hide");
 
+		// GPT4All & Image enter the non-streaming block
+		// Claude, Gemini enter the streaming block
 		if (streaming) {
 			this.streamingDiv.empty()
 		} else {
@@ -587,17 +589,17 @@ export class ChatContainer {
 			"flex"
 		);
 
-		if (streaming) {
-			this.loadingDivContainer.addEventListener("mouseenter", () => {
-				copyToClipboardButton.buttonEl.removeClass("hide");
-				refreshButton.buttonEl.removeClass("hide");
-			});
+		// if (streaming) {
+		this.loadingDivContainer.addEventListener("mouseenter", () => {
+			copyToClipboardButton.buttonEl.removeClass("hide");
+			refreshButton.buttonEl.removeClass("hide");
+		});
 
-			this.loadingDivContainer.addEventListener("mouseleave", () => {
-				copyToClipboardButton.buttonEl.addClass("hide");
-				refreshButton.buttonEl.addClass("hide");
-			});
-		}
+		this.loadingDivContainer.addEventListener("mouseleave", () => {
+			copyToClipboardButton.buttonEl.addClass("hide");
+			refreshButton.buttonEl.addClass("hide");
+		});
+		// }
 
 		copyToClipboardButton.onClick(async () => {
 			await navigator.clipboard.writeText(this.previewText);
