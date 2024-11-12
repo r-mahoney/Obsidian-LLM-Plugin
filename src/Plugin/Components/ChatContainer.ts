@@ -386,11 +386,11 @@ export class ChatContainer {
 					endpointURL,
 					modelEndpoint
 				).then((response: string[]) => {
+					this.streamingDiv.empty();
 					let content = "";
 					response.map((url) => {
 						content += `![created with prompt ${this.prompt}](${url})`;
 					});
-					this.removeLoadingDiv();
 					this.messages.push({
 						role: assistant,
 						content,
@@ -604,27 +604,12 @@ export class ChatContainer {
 		});
 	}
 
-	removeLoadingDiv() {
-		this.loadingDivContainer.remove();
-	}
-
 	appendImage(imageURLs: string[]) {
-		const length = this.historyMessages.childNodes.length;
-		const imLikeMessageContainer = this.historyMessages.createDiv();
-		const icon = imLikeMessageContainer.createDiv();
-		const imLikeMessage = imLikeMessageContainer.createDiv();
-		icon.textContent = "A";
 		imageURLs.map((url) => {
-			imLikeMessage.textContent += `<img src=${url} alt="image generated with ${this.prompt}">\n`;
+			const img = this.streamingDiv.createEl('img');
+			img.src = url;
+			img.alt = `image generated with ${this.prompt}`;
 		});
-		imLikeMessageContainer.addClass("im-like-message-container", "flex");
-		icon.addClass("message-icon");
-		imLikeMessage.addClass("im-like-message");
-		if (length % 2 === 0) {
-			imLikeMessageContainer.addClass("flex-start", "flex");
-		} else {
-			imLikeMessageContainer.addClass("flex-end", "flex");
-		}
 	}
 
 	private createMessage(role: string, content: string, index: number, finalMessage: Boolean) {
