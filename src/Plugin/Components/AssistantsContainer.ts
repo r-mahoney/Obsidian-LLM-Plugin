@@ -166,7 +166,8 @@ export class AssistantsContainer {
 					...assistant,
 					modelType: ASSISTANT,
 					tool_resources: {
-						file_search: { vector_store_ids: [vector_store_id] },
+						// TODO - fix this
+						file_search: { vector_store_ids: ["vector_store_id"] },
 					},
 				});
 			} else {
