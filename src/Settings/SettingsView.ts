@@ -31,10 +31,10 @@ export default class SettingsView extends PluginSettingTab {
 
 		// Adds reset history button
 		new Setting(containerEl)
-			.setName("Reset Chat History")
-			.setDesc("This will delete previous Prompts and Chat Contexts")
+			.setName("Reset chat history")
+			.setDesc("This will delete previous prompts and chat contexts")
 			.addButton((button: ButtonComponent) => {
-				button.setButtonText("Reset History");
+				button.setButtonText("Reset history");
 				button.onClick(() => {
 					this.plugin.history.reset();
 				});
@@ -42,7 +42,7 @@ export default class SettingsView extends PluginSettingTab {
 
 		// Add Claude API key input
 		new Setting(containerEl)
-			.setName("Claude API Key")
+			.setName("Claude API key")
 			.setDesc("Claude models require an API key for authentication.")
 			.addText((text) => {
 				let valueChanged = false;
@@ -69,7 +69,7 @@ export default class SettingsView extends PluginSettingTab {
 
 		// Adds Gemini API Key input
 		new Setting(containerEl)
-			.setName("Gemini API Key")
+			.setName("Gemini API key")
 			.setDesc("Gemini models require an API key for authentication.")
 			.addText((text) => {
 				let valueChanged = false;
@@ -96,7 +96,7 @@ export default class SettingsView extends PluginSettingTab {
 
 		// Adds OpenAI API Key input
 		new Setting(containerEl)
-			.setName("OpenAI API Key")
+			.setName("OpenAI API key")
 			.setDesc("OpenAI models require an API key for authentication.")
 			.addText((text) => {
 				let valueChanged = false;
@@ -125,13 +125,13 @@ export default class SettingsView extends PluginSettingTab {
 		// Add Default Model Selector
 		new Setting(containerEl)
 			.setClass('default-model-selector')
-			.setName("Set Default Model")
+			.setName("Set default model")
 			.setDesc("Sets the default LLM you want to use for the plugin")
 			.addDropdown((dropdown: DropdownComponent) => {
 				let valueChanged = false;
 				dropdown.addOption(
 					modelNames[this.plugin.settings.defaultModel],
-					"Select Default Model"
+					"Select default model"
 				);
 				let keys = Object.keys(models);
 				for (let model of keys) {
