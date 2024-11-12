@@ -413,7 +413,6 @@ export class ChatContainer {
 			header.enableButtons();
 			sendButton.setDisabled(false);
 			const buttonsContainer = this.loadingDivContainer.querySelector(".assistant-buttons")
-			console.log("buttonsContainer", buttonsContainer)
 			buttonsContainer?.removeClass("hide");
 		} catch (error) {
 			header.enableButtons();
