@@ -18,7 +18,6 @@ import {
 	createVectorAndUpdate,
 	deleteAssistant,
 	deleteVector,
-	isWindows,
 	listAssistants,
 	listVectors,
 } from "utils/utils";
@@ -99,6 +98,7 @@ export class AssistantsContainer {
 
 	// NOTE -> for both the create assistant flow we should dump the this.createAssistant name & other fields
 	// after a successful submission event.
+	// TODO - support assistant creation for Mobile
 	createAssistant(parentContainer: HTMLElement) {
 		const file_ids = this.createSearch(
 			parentContainer,
@@ -135,7 +135,8 @@ export class AssistantsContainer {
 			e.preventDefault();
 			//@ts-ignore
 			const basePath = app.vault.adapter.basePath;
-			const slashToUse = isWindows() ? "\\" : "/";
+			const slashToUse = "/";
+			// const slashToUse = isWindows() ? "\\" : "/";
 
 			const assistantFiles = this.assistantFilesToAdd?.map(
 				(file: string) => {

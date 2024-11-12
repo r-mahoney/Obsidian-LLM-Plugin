@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf } from "obsidian";
+import { Plugin, WorkspaceLeaf, Platform	 } from "obsidian";
 import {
 	HistoryItem,
 	ImageQuality,
@@ -102,13 +102,67 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	defaultModel: "",
 };
 
+class MobileOperatingSystem implements OperatingSystem {
+	homedir() {
+		return "";
+	}
+	platform() {
+		return "";
+	}
+}
+
+class DesktopOperatingSystem implements OperatingSystem {
+	private os: typeof import("os");
+	constructor() {
+		this.os = require("os");
+	}
+	homedir() {
+		return this.os.homedir();
+	}
+	platform() {
+		return this.os.platform();
+	}
+}
+
+class DesktopFileSystem implements FileSystem {
+	private fs: typeof import('fs');
+
+    constructor() {
+        this.fs = require('fs');
+    }
+
+	existsSync(path: string) {
+		return this.fs.existsSync(path);
+	}
+}
+
+class MobileFileSystem implements FileSystem {
+	existsSync(path: string) {
+		return false;
+	}
+}
+
+interface FileSystem {
+	existsSync: (path: string) => boolean;
+}
+
+interface OperatingSystem {
+	homedir: () => string;
+	platform: () => string;
+}
+
 export default class LLMPlugin extends Plugin {
+	fileSystem: FileSystem;
+	os: OperatingSystem;
 	settings: LLMPluginSettings;
 	assistants: Assistants;
 	history: History;
 	fab: FAB;
 
 	async onload() {
+		// The Node fs and os packages are not supported on mobile.
+		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem();
+		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
 		await this.loadSettings();
 		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();

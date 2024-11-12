@@ -1,8 +1,6 @@
-import fs from "fs";
-import path from "path";
 import LLMPlugin, { LLMPluginSettings } from "main";
 import { Editor } from "obsidian";
-import OpenAI, { toFile } from "openai";
+import OpenAI from "openai";
 import Anthropic from '@anthropic-ai/sdk';
 import { openAI, claude, chat, claudeSonnetJuneModel, gemini, geminiModel } from "utils/constants";
 import { models, modelNames } from "utils/models";
@@ -21,16 +19,16 @@ import {
 import { Assistant } from "openai/resources/beta/assistants";
 import { GoogleGenerativeAI, Content, GenerateContentRequest } from "@google/generative-ai";
 
-const homeDir = require("os").homedir();
-export const DEFAULT_DIRECTORY = path.resolve(
-	homeDir,
-	navigator.platform.indexOf("Win") > -1
-		? "AppData/Local/nomic.ai/GPT4All/"
-		: "Library/Application Support/nomic.ai/GPT4All"
-);
-
-export function isWindows() {
-	return navigator.platform.indexOf("Win") > -1
+export function getGpt4AllPath(plugin: LLMPlugin) {
+	const platform = plugin.os.platform();
+	const homedir = plugin.os.homedir();
+	console.log(platform, homedir);
+	if (platform === "win32") {
+		return `${homedir}\\AppData\\Local\\nomic.ai\\GPT4All`;
+	} else {
+		// Mac 
+		return `${homedir}/Library/Application Support/nomic.ai/GPT4All`;
+	}
 }
 
 export function upperCaseFirst(input: string): string {
@@ -214,22 +212,24 @@ export async function openAIMessage(
 	}
 
 	if (endpointType === "speech") {
-		const { input, model, voice, responseFormat } =
-			params as SpeechParams;
-		const filename = input.split(" ")[0];
-		const speechfile = path.resolve(`./${filename}.${responseFormat}`);
+		// NOTE -> disabled this for the momement while initializing mobile support.
 
-		const response = await openai.audio.speech.create({
-			model,
-			voice: voice as
-				| "alloy"
-				| "echo"
-				| "fable"
-				| "onyx"
-				| "nova"
-				| "shimmer",
-			input,
-		});
+		// const { input, model, voice, responseFormat } =
+		// 	params as SpeechParams;
+		// const filename = input.split(" ")[0];
+		// const speechfile = path.resolve(`./${filename}.${responseFormat}`);
+
+		// const response = await openai.audio.speech.create({
+		// 	model,
+		// 	voice: voice as
+		// 		| "alloy"
+		// 		| "echo"
+		// 		| "fable"
+		// 		| "onyx"
+		// 		| "nova"
+		// 		| "shimmer",
+		// 	input,
+		// });
 		// const buffer = Buffer.from(await response.arrayBuffer());
 		// await fs.promises.writeFile(speechfile, buffer);
 	}
@@ -518,26 +518,28 @@ export async function createVectorAndUpdate(
 
 	const file_ids = await Promise.all(
 		files.map(async (filePath) => {
-			const fileToUpload = await toFile(fs.createReadStream(filePath));
-			const file = await openai.files.create({
-				file: fileToUpload,
-				purpose: "assistants",
-			});
-			return file.id;
+			// TODO - add conditional logic to work on desktop but not mobile
+			// const fileToUpload = await toFile(fs.createReadStream(filePath));
+			// const file = await openai.files.create({
+			// 	file: fileToUpload,
+			// 	purpose: "assistants",
+			// });
+			// return file.id;
 		})
 	);
 
-	let vectorStore = await openai.beta.vectorStores.create({
-		name: "Assistant Files",
-	});
+	// TODO - reenable
+	// let vectorStore = await openai.beta.vectorStores.create({
+	// 	name: "Assistant Files",
+	// });
 
-	await openai.beta.vectorStores.fileBatches.create(vectorStore.id, {
-		file_ids,
-	});
+	// await openai.beta.vectorStores.fileBatches.create(vectorStore.id, {
+	// 	file_ids,
+	// });
 
-	await openai.beta.assistants.update(assistant.id, {
-		tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
-	});
+	// await openai.beta.assistants.update(assistant.id, {
+	// 	tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
+	// });
 
-	return vectorStore.id;
+	// return vectorStore.id;
 }
