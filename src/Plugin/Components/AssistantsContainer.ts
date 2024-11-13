@@ -357,10 +357,11 @@ export class AssistantsContainer {
 					this.mobileLog("option", option.basename);
 				}
 				options.map((option: TFile) => {
-					const item = searchDiv.createEl("option", {
+					const item = searchDiv.createEl("span", {
 						text: option.name,
 						cls: "vector-file"
 					});
+					this.mobileLog("item -- span", item);
 					if (filePathArray.includes(option.path))
 						item.addClass("file-added");
 
