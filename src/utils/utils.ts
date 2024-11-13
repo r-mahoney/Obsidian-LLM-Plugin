@@ -212,7 +212,8 @@ export async function openAIMessage(
 
 	if (endpointType === "speech") {
 		// NOTE -> disabled this for the momement while initializing mobile support.
-
+		// NOTE P2 -> Not going to reenable this at the moment - it is unclear to me how to go about testing and working with this.
+		// if we do not add speech before launching the plugin - culling this section of code will make our review process easier.
 		// const { input, model, voice, responseFormat } =
 		// 	params as SpeechParams;
 		// const filename = input.split(" ")[0];
@@ -345,31 +346,31 @@ export function changeDefaultModel(
 	model: string,
 	plugin: LLMPlugin,
 ) {
-		plugin.settings.defaultModel = model;
-		// Question -> why do we not update the FAB model here?
-		const modelName = modelNames[model];
-		// Modal settings
+	plugin.settings.defaultModel = model;
+	// Question -> why do we not update the FAB model here?
+	const modelName = modelNames[model];
+	// Modal settings
 
-		plugin.settings.modalSettings.model = model;
-		plugin.settings.modalSettings.modelName = modelName;
-		plugin.settings.modalSettings.modelType =
-			models[modelName].type;
-		plugin.settings.modalSettings.endpointURL =
-			models[modelName].url;
-		plugin.settings.modalSettings.modelEndpoint =
-			models[modelName].endpoint;
+	plugin.settings.modalSettings.model = model;
+	plugin.settings.modalSettings.modelName = modelName;
+	plugin.settings.modalSettings.modelType =
+		models[modelName].type;
+	plugin.settings.modalSettings.endpointURL =
+		models[modelName].url;
+	plugin.settings.modalSettings.modelEndpoint =
+		models[modelName].endpoint;
 
-		// Widget settings
-		plugin.settings.widgetSettings.model = model;
-		plugin.settings.widgetSettings.modelName = modelName;
-		plugin.settings.widgetSettings.modelType =
-			models[modelName].type;
-		plugin.settings.widgetSettings.endpointURL =
-			models[modelName].url;
-		plugin.settings.widgetSettings.modelEndpoint =
-			models[modelName].endpoint;
+	// Widget settings
+	plugin.settings.widgetSettings.model = model;
+	plugin.settings.widgetSettings.modelName = modelName;
+	plugin.settings.widgetSettings.modelType =
+		models[modelName].type;
+	plugin.settings.widgetSettings.endpointURL =
+		models[modelName].url;
+	plugin.settings.widgetSettings.modelEndpoint =
+		models[modelName].endpoint;
 
-		plugin.saveSettings();
+	plugin.saveSettings();
 }
 
 export function setHistoryIndex(
@@ -522,7 +523,7 @@ export async function createVectorAndUpdate(
 			const reader = stream.getReader();
 			const chunks = [];
 			while (true) {
-				const {done, value} = await reader.read();
+				const { done, value } = await reader.read();
 				if (done) break;
 				chunks.push(value);
 			}
