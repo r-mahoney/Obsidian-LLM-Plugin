@@ -1,4 +1,5 @@
-import LLMPlugin, { FileSystem, LLMPluginSettings } from "main";
+import LLMPlugin, { LLMPluginSettings } from "main";
+import { FileSystem } from "services/FileSystem";
 import { Editor } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
