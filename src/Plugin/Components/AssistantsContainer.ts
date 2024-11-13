@@ -107,6 +107,7 @@ export class AssistantsContainer {
 			true
 		) as Setting;
 		this.filesSetting = file_ids;
+		console.log('setting file ids', file_ids)
 		this.mobileLog('setting file ids', file_ids)
 		file_ids.settingEl.setAttr("style", "display:none");
 
@@ -118,7 +119,7 @@ export class AssistantsContainer {
 		);
 		const submitButton = new ButtonComponent(buttonDiv);
 		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
-		submitButton.buttonEl.textContent = "Create Assistant";
+		submitButton.buttonEl.textContent = "NFS - Create Assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
 
@@ -326,7 +327,13 @@ export class AssistantsContainer {
 	) {
 		let filePathArray: string[] = [];
 		const files = this.plugin.app.vault.getFiles();
-		this.mobileLog("Creating search for files", files);
+		const filesLength = files.length;
+		this.mobileLog("filesLength", filesLength);
+		files.map((file: TFile) => {
+			this.mobileLog("file", file.basename);
+		})
+		console.log("Creating search for files", files);
+		// this.mobileLog("Creating search for files", files);
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
@@ -584,10 +591,15 @@ export class AssistantsContainer {
 	}
 
 	private async mobileLog(message: string, data?: any) {
-		if (Platform.isMobile) {
+		try {
 			new Notice(`Debug: ${message} ${data ? JSON.stringify(data) : ''}`);
-		} else {
-			console.log(message, data);
+		} catch (error) {
+			console.error(error);
+			// console.log(message, data);
 		}
+		// if (Platform.isMobile) {
+		// } else {
+		// 	console.log(message, data);
+		// }
 	}
 }
