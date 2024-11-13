@@ -316,7 +316,7 @@ export class AssistantsContainer {
 		needsReturn?: boolean
 	) {
 		let filePathArray: string[] = [];
-		const files = app.vault.getFiles();
+		const files = this.plugin.app.vault.getFiles();
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
