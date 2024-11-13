@@ -138,7 +138,7 @@ export class AssistantsContainer {
 			e.preventDefault();
 			//@ts-ignore
 			const basePath = this.plugin.app.vault.adapter.basePath;
-			console.log("basePath", basePath);
+			// console.log("basePath", basePath);
 			const slashToUse = "/";
 			// const slashToUse = isWindows() ? "\\" : "/";
 
@@ -344,6 +344,7 @@ export class AssistantsContainer {
 		searchDiv.addClass("setting-item-control", "vector-files");
 		file_ids.addSearch((search: SearchComponent) => {
 			search.onChange((change) => {
+				this.mobileLog("search input", change);
 				searchDiv.empty();
 				if (change === "") {
 					searchDiv.empty();
@@ -352,6 +353,9 @@ export class AssistantsContainer {
 				const options = files.filter((file: TFile) =>
 					file.basename.toLowerCase().includes(change.toLowerCase())
 				);
+				for (const option of options) {
+					this.mobileLog("option", option.basename);
+				}
 				options.map((option: TFile) => {
 					const item = searchDiv.createEl("option", {
 						text: option.name,
