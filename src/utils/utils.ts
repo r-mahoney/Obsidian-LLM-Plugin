@@ -527,7 +527,7 @@ export async function createVectorAndUpdate(
 				chunks.push(value);
 			}
 			const fileContent = new Uint8Array(chunks.flat());
-			const fileToUpload = await toFile(new Blob([fileContent]));
+			const fileToUpload = await toFile(new Blob([fileContent]), filePath); // Pass filename to preserve extension
 			const file = await openai.files.create({
 				file: fileToUpload,
 				purpose: "assistants",
