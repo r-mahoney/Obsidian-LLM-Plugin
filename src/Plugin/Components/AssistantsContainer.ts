@@ -116,7 +116,7 @@ export class AssistantsContainer {
 		);
 		const submitButton = new ButtonComponent(buttonDiv);
 		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
-		submitButton.buttonEl.textContent = "NFS - Create Assistant";
+		submitButton.buttonEl.textContent = "Create Assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
 
