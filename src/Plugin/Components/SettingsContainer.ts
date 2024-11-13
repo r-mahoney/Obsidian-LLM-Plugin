@@ -4,14 +4,13 @@ import { DropdownComponent, Setting } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { modelNames, models } from "utils/models";
 import {
-	DEFAULT_DIRECTORY,
 	getAssistant,
 	getSettingType,
 	getViewInfo,
+	getGpt4AllPath
 } from "utils/utils";
 import { assistant as ASSISTANT, chat, GPT4All, messages, openAI } from "utils/constants"
 import { Header } from "./Header";
-const fs = require("fs");
 
 export class SettingsContainer {
 	viewType: ViewType;
@@ -45,17 +44,12 @@ export class SettingsContainer {
 				let keys = Object.keys(models);
 				for (let model of keys) {
 					if (models[model].type === GPT4All) {
-						fs.exists(
-							`${DEFAULT_DIRECTORY}/${models[model].model}`,
-							(exists: boolean) => {
-								if (exists) {
-									dropdown.addOption(
-										models[model].model,
-										model
-									);
-								}
-							}
-						);
+						const gpt4AllPath = getGpt4AllPath(this.plugin);
+						const fullPath = `${gpt4AllPath}/${models[model].model}`;
+						const exists = this.plugin.fileSystem.existsSync(fullPath);
+						if (exists) {
+							dropdown.addOption(models[model].model, model);
+						}
 					} else {
 						dropdown.addOption(models[model].model, model);
 					}

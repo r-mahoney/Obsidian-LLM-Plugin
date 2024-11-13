@@ -6,14 +6,12 @@ import {
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
-import { DEFAULT_DIRECTORY, changeDefaultModel } from "utils/utils";
+import { changeDefaultModel, getGpt4AllPath } from "utils/utils";
 import { models, modelNames } from "utils/models";
 import { claudeSonnetJuneModel, openAIModel, geminiModel, GPT4All } from "utils/constants";
 import logo from "assets/LLMguy.svg";
 import { FAB } from "Plugin/FAB/FAB";
 import DefaultModelModal from "Plugin/Components/DefaultModelModal";
-
-const fs = require("fs");
 
 export default class SettingsView extends PluginSettingTab {
 	plugin: LLMPlugin;
@@ -136,17 +134,12 @@ export default class SettingsView extends PluginSettingTab {
 				let keys = Object.keys(models);
 				for (let model of keys) {
 					if (models[model].type === GPT4All) {
-						fs.exists(
-							`${DEFAULT_DIRECTORY}/${models[model].model}`,
-							(exists: boolean) => {
-								if (exists) {
-									dropdown.addOption(
-										models[model].model,
-										model
-									);
-								}
-							}
-						);
+						const gpt4AllPath = getGpt4AllPath(this.plugin);
+						const fullPath = `${gpt4AllPath}/${models[model].model}`;
+						const exists = this.plugin.fileSystem.existsSync(fullPath);
+						if (exists) {
+							dropdown.addOption(models[model].model, model);
+						}
 					} else {
 						dropdown.addOption(models[model].model, model);
 					}

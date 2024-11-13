@@ -7,7 +7,8 @@ import {
 	TextComponent,
 	TFile,
 	ToggleComponent,
-	Notice
+	Notice,
+	Platform
 } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { VectorStore } from "openai/resources/beta/vector-stores/vector-stores";
@@ -16,16 +17,13 @@ import { openAIModels, models } from "utils/models";
 import {
 	createAssistant,
 	createVectorAndUpdate,
-	DEFAULT_DIRECTORY,
 	deleteAssistant,
 	deleteVector,
-	isWindows,
 	listAssistants,
 	listVectors,
 } from "utils/utils";
-import { assistant as ASSISTANT, GPT4All } from "utils/constants";
+import { assistant as ASSISTANT } from "utils/constants";
 import { SingletonNotice } from "./SingletonNotice";
-const fs = require("fs");
 
 export class AssistantsContainer {
 	viewType: ViewType;
@@ -135,15 +133,18 @@ export class AssistantsContainer {
 
 			SingletonNotice.show("Creating Assistant...")
 			e.preventDefault();
-			//@ts-ignore
-			const basePath = app.vault.adapter.basePath;
-			const slashToUse = isWindows() ? "\\" : "/";
 
-			const assistantFiles = this.assistantFilesToAdd?.map(
-				(file: string) => {
+			const assistantFiles = this.assistantFilesToAdd?.map((file: string) => {
+				if (Platform.isMobile) {
+					return file;
+				} else {
+					const slashToUse = this.plugin.os.platform() === "win32" ? "\\" : "/";
+					//@ts-ignore 
+					const basePath = this.plugin.app.vault.adapter.basePath;
+
 					return `${basePath}${slashToUse}${file}`;
 				}
-			);
+			});
 
 			const hasFiles = this.assistantFilesToAdd?.length >= 1
 			const assistantObj = {
@@ -161,7 +162,8 @@ export class AssistantsContainer {
 				const vector_store_id = await createVectorAndUpdate(
 					assistantFiles,
 					assistant,
-					this.plugin.settings.openAIAPIKey
+					this.plugin.settings.openAIAPIKey,
+					this.plugin.fileSystem
 				);
 				this.plugin.assistants.push({
 					...assistant,
@@ -316,7 +318,7 @@ export class AssistantsContainer {
 		needsReturn?: boolean
 	) {
 		let filePathArray: string[] = [];
-		const files = app.vault.getFiles();
+		const files = this.plugin.app.vault.getFiles();
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
@@ -336,7 +338,7 @@ export class AssistantsContainer {
 					file.basename.toLowerCase().includes(change.toLowerCase())
 				);
 				options.map((option: TFile) => {
-					const item = searchDiv.createEl("option", {
+					const item = searchDiv.createEl("span", {
 						text: option.name,
 						cls: "vector-file"
 					});

@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf } from "obsidian";
+import { Plugin, WorkspaceLeaf, Platform	 } from "obsidian";
 import {
 	HistoryItem,
 	ImageQuality,
@@ -29,6 +29,8 @@ import {
 	claude,
 	gemini,
 } from "utils/constants";
+import { DesktopOperatingSystem, MobileOperatingSystem, OperatingSystem } from "services/OperatingSystem";
+import { DesktopFileSystem, MobileFileSystem, FileSystem } from "services/FileSystem";
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -103,12 +105,16 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 };
 
 export default class LLMPlugin extends Plugin {
+	fileSystem: FileSystem;
+	os: OperatingSystem;
 	settings: LLMPluginSettings;
 	assistants: Assistants;
 	history: History;
 	fab: FAB;
 
 	async onload() {
+		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem(this);
+		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
 		await this.loadSettings();
 		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();

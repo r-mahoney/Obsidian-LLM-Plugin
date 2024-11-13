@@ -1,7 +1,4 @@
-import { existsSync } from "fs";
-import fs from "fs";
-import path from "path";
-import LLMPlugin, { LLMPluginSettings } from "main";
+import LLMPlugin, { FileSystem, LLMPluginSettings } from "main";
 import { Editor } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
@@ -22,21 +19,15 @@ import {
 import { Assistant } from "openai/resources/beta/assistants";
 import { GoogleGenerativeAI, Content, GenerateContentRequest } from "@google/generative-ai";
 
-const homeDir = require("os").homedir();
-export const DEFAULT_DIRECTORY = path.resolve(
-	homeDir,
-	navigator.platform.indexOf("Win") > -1
-		? "AppData/Local/nomic.ai/GPT4All/"
-		: "Library/Application Support/nomic.ai/GPT4All"
-);
-
-export function isWindows() {
-	return navigator.platform.indexOf("Win") > -1
-}
-
-export function modelLookup(modelName: string) {
-	const model = path.join(DEFAULT_DIRECTORY, modelName);
-	return existsSync(model);
+export function getGpt4AllPath(plugin: LLMPlugin) {
+	const platform = plugin.os.platform();
+	const homedir = plugin.os.homedir();
+	if (platform === "win32") {
+		return `${homedir}\\AppData\\Local\\nomic.ai\\GPT4All`;
+	} else {
+		// Mac 
+		return `${homedir}/Library/Application Support/nomic.ai/GPT4All`;
+	}
 }
 
 export function upperCaseFirst(input: string): string {
@@ -220,22 +211,25 @@ export async function openAIMessage(
 	}
 
 	if (endpointType === "speech") {
-		const { input, model, voice, responseFormat } =
-			params as SpeechParams;
-		const filename = input.split(" ")[0];
-		const speechfile = path.resolve(`./${filename}.${responseFormat}`);
+		// NOTE -> disabled this for the momement while initializing mobile support.
+		// NOTE P2 -> Not going to reenable this at the moment - it is unclear to me how to go about testing and working with this.
+		// if we do not add speech before launching the plugin - culling this section of code will make our review process easier.
+		// const { input, model, voice, responseFormat } =
+		// 	params as SpeechParams;
+		// const filename = input.split(" ")[0];
+		// const speechfile = path.resolve(`./${filename}.${responseFormat}`);
 
-		const response = await openai.audio.speech.create({
-			model,
-			voice: voice as
-				| "alloy"
-				| "echo"
-				| "fable"
-				| "onyx"
-				| "nova"
-				| "shimmer",
-			input,
-		});
+		// const response = await openai.audio.speech.create({
+		// 	model,
+		// 	voice: voice as
+		// 		| "alloy"
+		// 		| "echo"
+		// 		| "fable"
+		// 		| "onyx"
+		// 		| "nova"
+		// 		| "shimmer",
+		// 	input,
+		// });
 		// const buffer = Buffer.from(await response.arrayBuffer());
 		// await fs.promises.writeFile(speechfile, buffer);
 	}
@@ -352,31 +346,31 @@ export function changeDefaultModel(
 	model: string,
 	plugin: LLMPlugin,
 ) {
-		plugin.settings.defaultModel = model;
-		// Question -> why do we not update the FAB model here?
-		const modelName = modelNames[model];
-		// Modal settings
+	plugin.settings.defaultModel = model;
+	// Question -> why do we not update the FAB model here?
+	const modelName = modelNames[model];
+	// Modal settings
 
-		plugin.settings.modalSettings.model = model;
-		plugin.settings.modalSettings.modelName = modelName;
-		plugin.settings.modalSettings.modelType =
-			models[modelName].type;
-		plugin.settings.modalSettings.endpointURL =
-			models[modelName].url;
-		plugin.settings.modalSettings.modelEndpoint =
-			models[modelName].endpoint;
+	plugin.settings.modalSettings.model = model;
+	plugin.settings.modalSettings.modelName = modelName;
+	plugin.settings.modalSettings.modelType =
+		models[modelName].type;
+	plugin.settings.modalSettings.endpointURL =
+		models[modelName].url;
+	plugin.settings.modalSettings.modelEndpoint =
+		models[modelName].endpoint;
 
-		// Widget settings
-		plugin.settings.widgetSettings.model = model;
-		plugin.settings.widgetSettings.modelName = modelName;
-		plugin.settings.widgetSettings.modelType =
-			models[modelName].type;
-		plugin.settings.widgetSettings.endpointURL =
-			models[modelName].url;
-		plugin.settings.widgetSettings.modelEndpoint =
-			models[modelName].endpoint;
+	// Widget settings
+	plugin.settings.widgetSettings.model = model;
+	plugin.settings.widgetSettings.modelName = modelName;
+	plugin.settings.widgetSettings.modelType =
+		models[modelName].type;
+	plugin.settings.widgetSettings.endpointURL =
+		models[modelName].url;
+	plugin.settings.widgetSettings.modelEndpoint =
+		models[modelName].endpoint;
 
-		plugin.saveSettings();
+	plugin.saveSettings();
 }
 
 export function setHistoryIndex(
@@ -515,7 +509,8 @@ export async function deleteVector(OpenAI_API_Key: string, vector_id: string) {
 export async function createVectorAndUpdate(
 	files: string[],
 	assistant: Assistant,
-	OpenAI_API_Key: string
+	OpenAI_API_Key: string,
+	fileSystem: FileSystem
 ) {
 	const openai = new OpenAI({
 		apiKey: OpenAI_API_Key,
@@ -524,7 +519,16 @@ export async function createVectorAndUpdate(
 
 	const file_ids = await Promise.all(
 		files.map(async (filePath) => {
-			const fileToUpload = await toFile(fs.createReadStream(filePath));
+			const stream = await fileSystem.createReadStream(filePath);
+			const reader = stream.getReader();
+			const chunks = [];
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+				chunks.push(value);
+			}
+			const fileContent = new Uint8Array(chunks.flat());
+			const fileToUpload = await toFile(new Blob([fileContent]), filePath); // Pass filename to preserve extension
 			const file = await openai.files.create({
 				file: fileToUpload,
 				purpose: "assistants",
