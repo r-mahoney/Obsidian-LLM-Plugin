@@ -99,7 +99,6 @@ export class AssistantsContainer {
 
 	// NOTE -> for both the create assistant flow we should dump the this.createAssistant name & other fields
 	// after a successful submission event.
-	// TODO - support assistant creation for Mobile
 	createAssistant(parentContainer: HTMLElement) {
 		const file_ids = this.createSearch(
 			parentContainer,
@@ -107,8 +106,6 @@ export class AssistantsContainer {
 			true
 		) as Setting;
 		this.filesSetting = file_ids;
-		console.log('setting file ids', file_ids)
-		this.mobileLog('setting file ids', file_ids)
 		file_ids.settingEl.setAttr("style", "display:none");
 
 		const buttonDiv = parentContainer.createDiv();
@@ -327,13 +324,6 @@ export class AssistantsContainer {
 	) {
 		let filePathArray: string[] = [];
 		const files = this.plugin.app.vault.getFiles();
-		const filesLength = files.length;
-		this.mobileLog("filesLength", filesLength);
-		files.map((file: TFile) => {
-			this.mobileLog("file", file.basename);
-		})
-		console.log("Creating search for files", files);
-		// this.mobileLog("Creating search for files", files);
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
@@ -344,7 +334,6 @@ export class AssistantsContainer {
 		searchDiv.addClass("setting-item-control", "vector-files");
 		file_ids.addSearch((search: SearchComponent) => {
 			search.onChange((change) => {
-				this.mobileLog("search input", change);
 				searchDiv.empty();
 				if (change === "") {
 					searchDiv.empty();
@@ -353,15 +342,11 @@ export class AssistantsContainer {
 				const options = files.filter((file: TFile) =>
 					file.basename.toLowerCase().includes(change.toLowerCase())
 				);
-				for (const option of options) {
-					this.mobileLog("option", option.basename);
-				}
 				options.map((option: TFile) => {
 					const item = searchDiv.createEl("span", {
 						text: option.name,
 						cls: "vector-file"
 					});
-					this.mobileLog("item -- span", item);
 					if (filePathArray.includes(option.path))
 						item.addClass("file-added");
 
@@ -593,18 +578,5 @@ export class AssistantsContainer {
 	resetContainer(parentContainer: HTMLElement, total: boolean = true) {
 		parentContainer.empty();
 		if (total) this.generateAssistantsContainer(parentContainer);
-	}
-
-	private async mobileLog(message: string, data?: any) {
-		try {
-			new Notice(`Debug: ${message} ${data ? JSON.stringify(data) : ''}`);
-		} catch (error) {
-			console.error(error);
-			// console.log(message, data);
-		}
-		// if (Platform.isMobile) {
-		// } else {
-		// 	console.log(message, data);
-		// }
 	}
 }
