@@ -159,11 +159,19 @@ class DesktopFileSystem implements FileSystem {
 }
 
 class MobileFileSystem implements FileSystem {
+	private plugin: LLMPlugin;
+
+	constructor(plugin: LLMPlugin) {
+		this.plugin = plugin;
+	}
+
 	existsSync(path: string) {
 		return false;
 	}
+
 	async createReadStream(path: string): Promise<ReadableStream> {
-		const buffer = await app.vault.adapter.readBinary(path);
+		console.log("reading file from mobile", path);
+		const buffer = await this.plugin.app.vault.adapter.readBinary(path);
 		return new ReadableStream({
 			start(controller) {
 				controller.enqueue(buffer);
@@ -183,8 +191,8 @@ export default class LLMPlugin extends Plugin {
 	fab: FAB;
 
 	async onload() {
-		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem();
-		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
+		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem(this);
+		this.os = new MobileOperatingSystem();
 		await this.loadSettings();
 		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();

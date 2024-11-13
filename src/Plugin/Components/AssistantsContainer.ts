@@ -7,7 +7,8 @@ import {
 	TextComponent,
 	TFile,
 	ToggleComponent,
-	Notice
+	Notice,
+	Platform
 } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { VectorStore } from "openai/resources/beta/vector-stores/vector-stores";
@@ -106,6 +107,7 @@ export class AssistantsContainer {
 			true
 		) as Setting;
 		this.filesSetting = file_ids;
+		console.log('setting file ids', file_ids)
 		file_ids.settingEl.setAttr("style", "display:none");
 
 		const buttonDiv = parentContainer.createDiv();
@@ -134,17 +136,23 @@ export class AssistantsContainer {
 			SingletonNotice.show("Creating Assistant...")
 			e.preventDefault();
 			//@ts-ignore
-			const basePath = app.vault.adapter.basePath;
+			const basePath = this.plugin.app.vault.adapter.basePath;
+			console.log("basePath", basePath);
 			const slashToUse = "/";
 			// const slashToUse = isWindows() ? "\\" : "/";
 
-			const assistantFiles = this.assistantFilesToAdd?.map(
-				(file: string) => {
+			const assistantFiles = this.assistantFilesToAdd?.map((file: string) => {
+				if (Platform.isMobile) {
+					// On mobile, we just need the file path without base path
+					return file;
+				} else {
+					// On desktop, we need the full path
 					return `${basePath}${slashToUse}${file}`;
 				}
-			);
+			});
 
 			const hasFiles = this.assistantFilesToAdd?.length >= 1
+			console.log("hasFiles", hasFiles);
 			const assistantObj = {
 				name: this.createAssistantName,
 				instructions: this.createAssistantIntructions,
@@ -317,6 +325,7 @@ export class AssistantsContainer {
 	) {
 		let filePathArray: string[] = [];
 		const files = this.plugin.app.vault.getFiles();
+		console.log("Creating search for files", files);
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
