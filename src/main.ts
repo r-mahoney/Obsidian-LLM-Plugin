@@ -29,6 +29,8 @@ import {
 	claude,
 	gemini,
 } from "utils/constants";
+import { DesktopOperatingSystem, MobileOperatingSystem, OperatingSystem } from "services/OperatingSystem";
+import { DesktopFileSystem, MobileFileSystem, FileSystem } from "services/FileSystem";
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -102,88 +104,9 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	defaultModel: "",
 };
 
-// NOTE -> shift all OS | File System abstractions out of main.
-class MobileOperatingSystem implements OperatingSystem {
-	homedir() {
-		return "";
-	}
-	platform() {
-		return "";
-	}
-}
-
-class DesktopOperatingSystem implements OperatingSystem {
-	private os: typeof import("os");
-	constructor() {
-		this.os = require("os");
-	}
-	homedir() {
-		return this.os.homedir();
-	}
-	platform() {
-		return this.os.platform();
-	}
-}
-
-interface OperatingSystem {
-	homedir: () => string;
-	platform: () => string;
-}
-
-export interface FileSystem {
-    existsSync: (path: string) => boolean;
-    createReadStream: (path: string) => Promise<ReadableStream>; 
-}
-
-class DesktopFileSystem implements FileSystem {
-	private fs: typeof import('fs');
-
-	constructor() {
-		this.fs = require('fs');
-	}
-    existsSync(path: string) {
-        return this.fs.existsSync(path);
-    }
-	async createReadStream(path: string): Promise<ReadableStream> {
-		return new Promise((resolve) => {
-			const nodeStream = this.fs.createReadStream(path);
-			resolve(new ReadableStream({
-				start(controller) {
-					nodeStream.on('data', (chunk) => controller.enqueue(chunk));
-					nodeStream.on('end', () => controller.close());
-					nodeStream.on('error', (err) => controller.error(err));
-				}
-			}));
-		});
-	}
-}
-
-class MobileFileSystem implements FileSystem {
-	private plugin: LLMPlugin;
-
-	constructor(plugin: LLMPlugin) {
-		this.plugin = plugin;
-	}
-
-	existsSync(path: string) {
-		return false;
-	}
-
-	async createReadStream(path: string): Promise<ReadableStream> {
-		const buffer = await this.plugin.app.vault.adapter.readBinary(path);
-		return new ReadableStream({
-			start(controller) {
-				controller.enqueue(buffer);
-				controller.close();
-			}
-		});
-	}
-}
-// ---------------------- end of lift and shift section -------------
-
 export default class LLMPlugin extends Plugin {
-	fileSystem: DesktopFileSystem | MobileFileSystem;
-	os: DesktopOperatingSystem | MobileOperatingSystem;
+	fileSystem: FileSystem;
+	os: OperatingSystem;
 	settings: LLMPluginSettings;
 	assistants: Assistants;
 	history: History;
