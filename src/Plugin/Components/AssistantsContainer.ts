@@ -160,14 +160,14 @@ export class AssistantsContainer {
 				const vector_store_id = await createVectorAndUpdate(
 					assistantFiles,
 					assistant,
-					this.plugin.settings.openAIAPIKey
+					this.plugin.settings.openAIAPIKey,
+					this.plugin.fileSystem
 				);
 				this.plugin.assistants.push({
 					...assistant,
 					modelType: ASSISTANT,
 					tool_resources: {
-						// TODO - fix this
-						file_search: { vector_store_ids: ["vector_store_id"] },
+						file_search: { vector_store_ids: [vector_store_id] },
 					},
 				});
 			} else {

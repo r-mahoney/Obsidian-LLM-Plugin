@@ -1,6 +1,6 @@
-import LLMPlugin, { LLMPluginSettings } from "main";
+import LLMPlugin, { FileSystem, LLMPluginSettings } from "main";
 import { Editor } from "obsidian";
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
 import { openAI, claude, chat, claudeSonnetJuneModel, gemini, geminiModel } from "utils/constants";
 import { models, modelNames } from "utils/models";
@@ -22,7 +22,6 @@ import { GoogleGenerativeAI, Content, GenerateContentRequest } from "@google/gen
 export function getGpt4AllPath(plugin: LLMPlugin) {
 	const platform = plugin.os.platform();
 	const homedir = plugin.os.homedir();
-	console.log(platform, homedir);
 	if (platform === "win32") {
 		return `${homedir}\\AppData\\Local\\nomic.ai\\GPT4All`;
 	} else {
@@ -509,7 +508,8 @@ export async function deleteVector(OpenAI_API_Key: string, vector_id: string) {
 export async function createVectorAndUpdate(
 	files: string[],
 	assistant: Assistant,
-	OpenAI_API_Key: string
+	OpenAI_API_Key: string,
+	fileSystem: FileSystem
 ) {
 	const openai = new OpenAI({
 		apiKey: OpenAI_API_Key,
@@ -518,28 +518,35 @@ export async function createVectorAndUpdate(
 
 	const file_ids = await Promise.all(
 		files.map(async (filePath) => {
-			// TODO - add conditional logic to work on desktop but not mobile
-			// const fileToUpload = await toFile(fs.createReadStream(filePath));
-			// const file = await openai.files.create({
-			// 	file: fileToUpload,
-			// 	purpose: "assistants",
-			// });
-			// return file.id;
+			const stream = await fileSystem.createReadStream(filePath);
+			const reader = stream.getReader();
+			const chunks = [];
+			while (true) {
+				const {done, value} = await reader.read();
+				if (done) break;
+				chunks.push(value);
+			}
+			const fileContent = new Uint8Array(chunks.flat());
+			const fileToUpload = await toFile(new Blob([fileContent]));
+			const file = await openai.files.create({
+				file: fileToUpload,
+				purpose: "assistants",
+			});
+			return file.id;
 		})
 	);
 
-	// TODO - reenable
-	// let vectorStore = await openai.beta.vectorStores.create({
-	// 	name: "Assistant Files",
-	// });
+	let vectorStore = await openai.beta.vectorStores.create({
+		name: "Assistant Files",
+	});
 
-	// await openai.beta.vectorStores.fileBatches.create(vectorStore.id, {
-	// 	file_ids,
-	// });
+	await openai.beta.vectorStores.fileBatches.create(vectorStore.id, {
+		file_ids,
+	});
 
-	// await openai.beta.assistants.update(assistant.id, {
-	// 	tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
-	// });
+	await openai.beta.assistants.update(assistant.id, {
+		tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
+	});
 
-	// return vectorStore.id;
+	return vectorStore.id;
 }

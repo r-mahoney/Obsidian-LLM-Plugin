@@ -102,6 +102,7 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	defaultModel: "",
 };
 
+// NOTE -> shift all OS | File System abstractions out of main.
 class MobileOperatingSystem implements OperatingSystem {
 	homedir() {
 		return "";
@@ -124,15 +125,36 @@ class DesktopOperatingSystem implements OperatingSystem {
 	}
 }
 
+interface OperatingSystem {
+	homedir: () => string;
+	platform: () => string;
+}
+
+export interface FileSystem {
+    existsSync: (path: string) => boolean;
+    createReadStream: (path: string) => Promise<ReadableStream>; 
+}
+
 class DesktopFileSystem implements FileSystem {
 	private fs: typeof import('fs');
 
-    constructor() {
-        this.fs = require('fs');
+	constructor() {
+		this.fs = require('fs');
+	}
+    existsSync(path: string) {
+        return this.fs.existsSync(path);
     }
-
-	existsSync(path: string) {
-		return this.fs.existsSync(path);
+	async createReadStream(path: string): Promise<ReadableStream> {
+		return new Promise((resolve) => {
+			const nodeStream = this.fs.createReadStream(path);
+			resolve(new ReadableStream({
+				start(controller) {
+					nodeStream.on('data', (chunk) => controller.enqueue(chunk));
+					nodeStream.on('end', () => controller.close());
+					nodeStream.on('error', (err) => controller.error(err));
+				}
+			}));
+		});
 	}
 }
 
@@ -140,28 +162,27 @@ class MobileFileSystem implements FileSystem {
 	existsSync(path: string) {
 		return false;
 	}
+	async createReadStream(path: string): Promise<ReadableStream> {
+		const buffer = await app.vault.adapter.readBinary(path);
+		return new ReadableStream({
+			start(controller) {
+				controller.enqueue(buffer);
+				controller.close();
+			}
+		});
+	}
 }
-
-interface FileSystem {
-	existsSync: (path: string) => boolean;
-}
-
-interface OperatingSystem {
-	homedir: () => string;
-	platform: () => string;
-}
+// ---------------------- end of lift and shift section -------------
 
 export default class LLMPlugin extends Plugin {
-	fileSystem: FileSystem;
-	os: OperatingSystem;
+	fileSystem: DesktopFileSystem | MobileFileSystem;
+	os: DesktopOperatingSystem | MobileOperatingSystem;
 	settings: LLMPluginSettings;
 	assistants: Assistants;
 	history: History;
 	fab: FAB;
 
 	async onload() {
-		// The Node fs and os packages are not supported on mobile.
-		console.log('What is the platform?', Platform.isDesktop)
 		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem();
 		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
 		await this.loadSettings();
