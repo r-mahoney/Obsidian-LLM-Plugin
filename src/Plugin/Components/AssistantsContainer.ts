@@ -22,7 +22,7 @@ import {
 	listAssistants,
 	listVectors,
 } from "utils/utils";
-import { assistant as ASSISTANT, GPT4All } from "utils/constants";
+import { assistant as ASSISTANT } from "utils/constants";
 import { SingletonNotice } from "./SingletonNotice";
 
 export class AssistantsContainer {
@@ -133,25 +133,20 @@ export class AssistantsContainer {
 
 			SingletonNotice.show("Creating Assistant...")
 			e.preventDefault();
-			//@ts-ignore
-			const basePath = this.plugin.app.vault.adapter.basePath;
-			// console.log("basePath", basePath);
-			const slashToUse = "/";
-			// const slashToUse = isWindows() ? "\\" : "/";
 
 			const assistantFiles = this.assistantFilesToAdd?.map((file: string) => {
 				if (Platform.isMobile) {
-					// On mobile, we just need the file path without base path
-					// this does not work. And we do not get logs.
 					return file;
 				} else {
-					// On desktop, we need the full path
+					const slashToUse = this.plugin.os.platform() === "win32" ? "\\" : "/";
+					//@ts-ignore 
+					const basePath = this.plugin.app.vault.adapter.basePath;
+
 					return `${basePath}${slashToUse}${file}`;
 				}
 			});
 
 			const hasFiles = this.assistantFilesToAdd?.length >= 1
-			console.log("hasFiles", hasFiles);
 			const assistantObj = {
 				name: this.createAssistantName,
 				instructions: this.createAssistantIntructions,

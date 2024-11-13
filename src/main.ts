@@ -170,7 +170,6 @@ class MobileFileSystem implements FileSystem {
 	}
 
 	async createReadStream(path: string): Promise<ReadableStream> {
-		console.log("reading file from mobile", path);
 		const buffer = await this.plugin.app.vault.adapter.readBinary(path);
 		return new ReadableStream({
 			start(controller) {
@@ -192,7 +191,7 @@ export default class LLMPlugin extends Plugin {
 
 	async onload() {
 		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem(this);
-		this.os = new MobileOperatingSystem();
+		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
 		await this.loadSettings();
 		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();
