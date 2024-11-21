@@ -20,8 +20,10 @@ jobs:
 
       - name: Build plugin
         run: |
-          npm install
+          npm ci
           npm run build
+      - name: Run npm audit
+        run: npm audit
 
       - name: Create release
         env:
