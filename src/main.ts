@@ -149,7 +149,7 @@ export default class LLMPlugin extends Plugin {
 		//modal command that will be removed when modal is depricated
 		const openChat = this.addCommand({
 			id: "open-llm-modal",
-			name: "Open LLM Modal",
+			name: "Open Modal",
 			callback: () => {
 				new ChatModal2(this).open();
 			},
@@ -174,7 +174,7 @@ export default class LLMPlugin extends Plugin {
 
 		const toggleFab = this.addCommand({
 			id: "toggle-LLM-fab",
-			name: "Toggle LLM FAB",
+			name: "Toggle FAB",
 			callback: () => {
 				const currentFABState = this.settings.showFAB;
 				this.settings.showFAB = !currentFABState;
