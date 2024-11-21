@@ -1,6 +1,6 @@
 import LLMPlugin, { LLMPluginSettings } from "main";
 import { FileSystem } from "services/FileSystem";
-import { Editor } from "obsidian";
+import { Editor, requestUrl, RequestUrlParam } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
 import { openAI, claude, chat, claudeSonnetJuneModel, gemini, geminiModel } from "utils/constants";
@@ -37,7 +37,8 @@ export function upperCaseFirst(input: string): string {
 }
 
 export async function messageGPT4AllServer(params: ChatParams, url: string) {
-	const response = await fetch(`http://localhost:4891${url}`, {
+	const request = {
+		url: `http://localhost:4891${url}`,
 		method: "POST",
 		body: JSON.stringify({
 			model: params.model,
@@ -45,7 +46,8 @@ export async function messageGPT4AllServer(params: ChatParams, url: string) {
 			max_tokens: params.tokens,
 			temperature: params.temperature,
 		}),
-	}).then((res) => res.json());
+	} as RequestUrlParam;
+	const response = await requestUrl(request).then((res) => res.json());
 	return response.choices[0].message;
 }
 
