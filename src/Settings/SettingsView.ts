@@ -46,8 +46,10 @@ export default class SettingsView extends PluginSettingTab {
 				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.claudeAPIKey}`);
 				text.onChange((change) => {
-					valueChanged = true;
-					this.plugin.settings.claudeAPIKey = change;
+					if (change.trim().length) {
+						valueChanged = true;
+						this.plugin.settings.claudeAPIKey = change;
+					}
 				});
 				// Handle blur event (when the user finishes editing)
 				text.inputEl.addEventListener('blur', () => {
@@ -73,8 +75,10 @@ export default class SettingsView extends PluginSettingTab {
 				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.geminiAPIKey}`);
 				text.onChange((change) => {
-					valueChanged = true;
-					this.plugin.settings.geminiAPIKey = change;
+					if (change.trim().length) {
+						valueChanged = true;
+						this.plugin.settings.geminiAPIKey = change;
+					}
 				});
 				// Handle blur event (when the user finishes editing)
 				text.inputEl.addEventListener('blur', () => {
@@ -100,9 +104,11 @@ export default class SettingsView extends PluginSettingTab {
 				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.openAIAPIKey}`);
 				text.onChange((change) => {
-					valueChanged = true;
-					this.plugin.settings.openAIAPIKey = change;
-					this.plugin.saveSettings();
+					if (change.trim().length) {
+						valueChanged = true;
+						this.plugin.settings.openAIAPIKey = change;
+						this.plugin.saveSettings();
+					}
 				});
 				// Handle blur event (when the user finishes editing)
 				text.inputEl.addEventListener('blur', () => {
