@@ -149,16 +149,15 @@ export default class LLMPlugin extends Plugin {
 		//modal command that will be removed when modal is depricated
 		const openChat = this.addCommand({
 			id: "open-llm-modal",
-			name: "Open Modal",
+			name: "Open modal",
 			callback: () => {
 				new ChatModal2(this).open();
 			},
 		});
 
-		//widget command
 		const openWidgetLeaf = this.addCommand({
 			id: "open-LLM-widget-leaf",
-			name: "Open Chat in Sidebar",
+			name: "Open chat in sidebar",
 			callback: () => {
 				this.activateLeaf();
 			},
@@ -166,7 +165,7 @@ export default class LLMPlugin extends Plugin {
 
 		const openWidgetTab = this.addCommand({
 			id: "open-LLM-widget-tab",
-			name: "Open Chat in Tab",
+			name: "Open chat in tab",
 			callback: () => {
 				this.activateTab();
 			},
@@ -190,7 +189,7 @@ export default class LLMPlugin extends Plugin {
 		//modal ribbon icon will be removed when modal is depricated
 		const conversationalModalIcon = this.addRibbonIcon(
 			"bot",
-			"Ask A Question",
+			"Ask A question",
 			(evt: MouseEvent) => {
 				new ChatModal2(this).open();
 			}
