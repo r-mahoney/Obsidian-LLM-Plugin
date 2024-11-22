@@ -79,7 +79,7 @@ export class Header {
 		const rightButtonsDiv = titleDiv.createDiv();
 
 		titleDiv.addClass("title-div", "flex");
-		this.titleEl.textContent = "LLM Plugin";
+		this.titleEl.textContent = "LLM";
 		this.modelEl = titleContainer.createDiv();
 		this.modelEl.addClass("model-name");
 		this.modelEl.textContent = modelName;
@@ -128,19 +128,12 @@ export class Header {
 		if (this.viewType === "floating-action-button") {
 			this.newChatButton = new ButtonComponent(leftButtonDiv);
 			this.settingsButton = new ButtonComponent(rightButtonsDiv);
-		// 	const closeButton = new ButtonComponent(rightButtonsDiv);
-		// 	closeButton.buttonEl.addClass("clickable-icon");
-		// 	closeButton.setIcon("cross");
-		// 	closeButton.onClick(() => {
-		// 		const FAV = document.querySelectorAll(".fab-view-area")[0];
-		// 		hideContainer(FAV as HTMLElement);
-			// });
 		} else {
 			this.newChatButton = new ButtonComponent(rightButtonsDiv);
 			this.settingsButton = new ButtonComponent(leftButtonDiv);
 		}
 
-		this.settingsButton.setTooltip("Chat Settings");
+		this.settingsButton.setTooltip("Chat settings");
 		this.settingsButton.onClick(() => {
 			settingsContainer.resetSettings(settingsContainerDiv);
 			settingsContainer.generateSettingsContainer(
@@ -159,7 +152,7 @@ export class Header {
 			}
 		});
 
-		this.newChatButton.setTooltip("New Chat");
+		this.newChatButton.setTooltip("New chat");
 		this.newChatButton.onClick(() => {
 			const { modelName } = getViewInfo(this.plugin, this.viewType);
 			this.clickHandler(this.newChatButton, [
@@ -167,7 +160,7 @@ export class Header {
 				this.chatHistoryButton,
 				this.assistantsButton
 			]);
-			this.setHeader(modelName, "New Chat");
+			this.setHeader(modelName, "New chat");
 			showContainer(chatContainerDiv);
 			hideContainer(settingsContainerDiv);
 			hideContainer(chatHistoryContainerDiv);
