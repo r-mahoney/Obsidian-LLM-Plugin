@@ -66,8 +66,6 @@ In each of the views, you have access to Model Settings, Chat History, and New C
 
 Clicking the settings, or history button switches to that tab in the plugin view, to get back to the prompt tab, simply click on the highlighted button again.
 
--   Note: If you haven't submitted any prompts then the chat history tab will appear as an empty page that users may confuse with a broken plugin. We are working on adding an empty state to make it more apparent which tab you are on
-
 ## OpenAI Assistants for File Search
 
 The Assistants API allows you to build AI assistants within your own applications. An Assistant has instructions and can leverage models, tools, and files to respond to user queries. The Assistants API currently supports three types of tools: Code Interpreter, File Search, and Function calling. Our team currently only supports the File Search application.
