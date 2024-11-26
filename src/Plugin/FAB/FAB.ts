@@ -101,7 +101,7 @@ export class FAB {
 			.setIcon("message-circle")
 			.setClass("buttonItem")
 			.onClick(() => {
-				if (viewArea.style.display === "none") {
+				if (!viewArea.isShown()) {
 					this.showViewArea(viewArea);
 				} else {
 					this.hideContainer(viewArea);
