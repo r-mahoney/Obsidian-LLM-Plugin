@@ -98,7 +98,7 @@ export class Header {
 				this
 			);
 			this.clickHandler(this.chatHistoryButton, [this.settingsButton, this.assistantsButton]);
-			if (chatHistoryContainerDiv.style.display === "none") {
+			if (!chatHistoryContainerDiv.isShown()) {
 				showContainer(chatHistoryContainerDiv);
 				hideContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
@@ -114,7 +114,7 @@ export class Header {
 		assistantsContainer.generateAssistantsContainer(assistantContainerDiv);
 		this.assistantsButton.onClick(() => {
 			this.clickHandler(this.assistantsButton, [this.settingsButton, this.chatHistoryButton]);
-			if (assistantContainerDiv.style.display === "none") {
+			if (!assistantContainerDiv.isShown()) {
 				showContainer(assistantContainerDiv);
 				hideContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
@@ -141,7 +141,7 @@ export class Header {
 				this
 			);
 			this.clickHandler(this.settingsButton, [this.chatHistoryButton, this.assistantsButton]);
-			if (settingsContainerDiv.style.display === "none") {
+			if (!settingsContainerDiv.isShown()) {
 				showContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
 				hideContainer(chatHistoryContainerDiv);
