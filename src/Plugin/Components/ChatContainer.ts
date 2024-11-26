@@ -7,7 +7,7 @@ import {
 } from "obsidian";
 import { ChatCompletionChunk, Images } from "openai/resources";
 import { Stream } from "openai/streaming";
-import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
+import { errorMessages } from "Plugin/Errors/errors";
 import {
 	AssistantHistoryItem,
 	AssistantParams,
@@ -44,12 +44,10 @@ export class ChatContainer {
 	streamingDiv: HTMLElement;
 	viewType: ViewType;
 	previewText: string;
-	// closeModal?: () => void;
 	constructor(
 		private plugin: LLMPlugin,
-		viewType: ViewType /*closeModal?: () => void*/
+		viewType: ViewType
 	) {
-		// this.closeModal = closeModal;
 		this.viewType = viewType;
 	}
 

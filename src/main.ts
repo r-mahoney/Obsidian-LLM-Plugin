@@ -146,8 +146,7 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	private registerCommands() {
-		//modal command that will be removed when modal is depricated
-		const openChat = this.addCommand({
+		this.addCommand({
 			id: "open-llm-modal",
 			name: "Open modal",
 			callback: () => {
@@ -155,7 +154,7 @@ export default class LLMPlugin extends Plugin {
 			},
 		});
 
-		const openWidgetLeaf = this.addCommand({
+		this.addCommand({
 			id: "open-LLM-widget-leaf",
 			name: "Open chat in sidebar",
 			callback: () => {
@@ -163,7 +162,7 @@ export default class LLMPlugin extends Plugin {
 			},
 		});
 
-		const openWidgetTab = this.addCommand({
+		this.addCommand({
 			id: "open-LLM-widget-tab",
 			name: "Open chat in tab",
 			callback: () => {
@@ -171,7 +170,7 @@ export default class LLMPlugin extends Plugin {
 			},
 		});
 
-		const toggleFab = this.addCommand({
+		this.addCommand({
 			id: "toggle-LLM-fab",
 			name: "Toggle FAB",
 			callback: () => {
@@ -186,8 +185,7 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	private registerRibbonIcons() {
-		//modal ribbon icon will be removed when modal is depricated
-		const conversationalModalIcon = this.addRibbonIcon(
+		this.addRibbonIcon(
 			"bot",
 			"Ask A question",
 			(evt: MouseEvent) => {
@@ -312,9 +310,6 @@ export default class LLMPlugin extends Plugin {
 				return result.valid && result.provider === openAI;
 			}
 		});
-
-		// We likely want a 'global' state variable to track whether or not
-		// any UI elements around assistants should be on.
 
 		// If the model is OpenAI and the key is valid -> generate the assistant list
 		if (hasValidOpenAIAPIKey) await generateAssistantsList(this.settings);
