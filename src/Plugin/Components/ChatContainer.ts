@@ -7,7 +7,7 @@ import {
 } from "obsidian";
 import { ChatCompletionChunk, Images } from "openai/resources";
 import { Stream } from "openai/streaming";
-import { errorMessages, settingsErrorHandling } from "Plugin/Errors/errors";
+import { errorMessages } from "Plugin/Errors/errors";
 import {
 	AssistantHistoryItem,
 	AssistantParams,
@@ -44,12 +44,10 @@ export class ChatContainer {
 	streamingDiv: HTMLElement;
 	viewType: ViewType;
 	previewText: string;
-	// closeModal?: () => void;
 	constructor(
 		private plugin: LLMPlugin,
-		viewType: ViewType /*closeModal?: () => void*/
+		viewType: ViewType
 	) {
-		// this.closeModal = closeModal;
 		this.viewType = viewType;
 	}
 
@@ -612,7 +610,7 @@ export class ChatContainer {
 		});
 	}
 
-	private createMessage(role: string, content: string, index: number, finalMessage: Boolean) {
+	private createMessage(content: string, index: number, finalMessage: Boolean) {
 		const imLikeMessageContainer = this.historyMessages.createDiv();
 		const imLikeMessage = imLikeMessageContainer.createDiv();
 		const copyToClipboardButton = new ButtonComponent(
@@ -683,18 +681,18 @@ export class ChatContainer {
 
 	generateIMLikeMessgaes(messages: Message[]) {
 		let finalMessage = false
-		messages.map(({ role, content }, index) => {
+		messages.map(({ content }, index) => {
 			if (index === messages.length - 1) finalMessage = true
-			this.createMessage(role, content, index, finalMessage);
+			this.createMessage(content, index, finalMessage);
 		});
 		this.historyMessages.scroll(0, 9999);
 	}
 
 	appendNewMessage(message: Message) {
 		const length = this.historyMessages.childNodes.length;
-		const { role, content } = message;
+		const { content } = message;
 
-		this.createMessage(role, content, length, false);
+		this.createMessage(content, length, false);
 	}
 	removeLastMessageAndHistoryMessage() {
 		this.messages.pop();
