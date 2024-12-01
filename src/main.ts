@@ -247,7 +247,6 @@ export default class LLMPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	// TODO - refactor into utils
 	async validateActiveModelsAPIKeys() {
 		let activeClaudeModel, activeGeminiModel, activeOpenAIModel;
 
