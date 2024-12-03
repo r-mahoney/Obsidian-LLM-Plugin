@@ -23,7 +23,7 @@ export default class DefaultModelModal extends Modal {
 		contentEl.empty(); // Clear existing content if needed
 
 		// Create the modal content
-		contentEl.createEl('h2', { text: 'Set Model as Default' });
+		contentEl.createEl('h2', { text: 'Set model as default' });
 		contentEl.createEl('p', { text: 'Would you like to set this model as your default model?' });
 
 		// Create the interactive button

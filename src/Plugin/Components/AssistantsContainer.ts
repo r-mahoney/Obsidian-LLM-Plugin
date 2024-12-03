@@ -59,17 +59,17 @@ export class AssistantsContainer {
 
 	async generateAssistantsContainer(parentContainer: HTMLElement) {
 		const optionDropdown = new Setting(parentContainer)
-			.setName("Assistants Options")
+			.setName("Assistants options")
 			.setDesc("What do you want to do?")
 			.addDropdown((dropdown: DropdownComponent) => {
-				dropdown.addOption("", "---Assistant Options---");
-				dropdown.addOption("asst_create", "Create an Assistant");
-				dropdown.addOption("asst_update", "Update an Assistant");
-				dropdown.addOption("asst_delete", "Delete an Assistant");
-				dropdown.addOption("", "---Vector Storage Options---");
-				dropdown.addOption("vect_create", "Create Vector Storage");
-				dropdown.addOption("vect_update", "Update Vector Storage");
-				dropdown.addOption("vect_delete", "Delete Vector Storage");
+				dropdown.addOption("", "---Assistant options---");
+				dropdown.addOption("asst_create", "Create an assistant");
+				dropdown.addOption("asst_update", "Update an assistant");
+				dropdown.addOption("asst_delete", "Delete an assistant");
+				dropdown.addOption("", "---Vector storage options---");
+				dropdown.addOption("vect_create", "Create vector storage");
+				dropdown.addOption("vect_update", "Update vector storage");
+				dropdown.addOption("vect_delete", "Delete vector storage");
 
 				dropdown.onChange((change) => {
 					this.resetContainer(parentContainer);
@@ -116,7 +116,7 @@ export class AssistantsContainer {
 		);
 		const submitButton = new ButtonComponent(buttonDiv);
 		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
-		submitButton.buttonEl.textContent = "Create Assistant";
+		submitButton.buttonEl.textContent = "Create assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
 
@@ -131,7 +131,7 @@ export class AssistantsContainer {
 				return;
 			}
 
-			SingletonNotice.show("Creating Assistant...")
+			SingletonNotice.show("Creating assistant...")
 			e.preventDefault();
 
 			const assistantFiles = this.assistantFilesToAdd?.map((file: string) => {
@@ -181,7 +181,7 @@ export class AssistantsContainer {
 
 			// Note -> this notice shows up much faster than the UI pushes to the next view
 			if (assistant) {
-				new Notice("Assistant Created Successfully");
+				new Notice("Assistant created successfully");
 			}
 
 			this.resetContainer(parentContainer);
@@ -196,9 +196,9 @@ export class AssistantsContainer {
 		let chosenAssistant: Assistant;
 		const assistants = new Setting(parentContainer)
 			.setName("Assistants")
-			.setDesc("Which Assistant do you want to update?")
+			.setDesc("Which assistant do you want to update?")
 			.addDropdown((dropdown: DropdownComponent) => {
-				dropdown.addOption("", "---Select an Assistant---");
+				dropdown.addOption("", "---Select an assistant---");
 				assistantsList.map((assistant: Assistant) => {
 					dropdown.addOption(assistant.id, assistant.name as string);
 					dropdown.onChange((change) => {
@@ -229,7 +229,7 @@ export class AssistantsContainer {
 		buttonDiv.addClass("flex", "update-button-div", "setting-item");
 		const submitButton = new ButtonComponent(buttonDiv);
 		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
-		submitButton.buttonEl.textContent = "Update Assistant";
+		submitButton.buttonEl.textContent = "Update assistant";
 
 		submitButton.onClick((event: MouseEvent) => {
 			event.preventDefault();
@@ -368,7 +368,7 @@ export class AssistantsContainer {
 	createVector(parentContainer: HTMLElement) {
 		let vectorName = "";
 		const name = new Setting(parentContainer)
-			.setName("Vector Storage Name")
+			.setName("Vector storage name")
 			.setDesc("The name for your new vector storage")
 			.addText((text: TextComponent) => {
 				text.onChange((change) => { });
@@ -438,7 +438,7 @@ export class AssistantsContainer {
 		assistant?: Assistant
 	) {
 		const assistantName = new Setting(parentContainer)
-			.setName("Assistant Name")
+			.setName("Assistant name")
 			.setDesc("The name to be attributed to the new assistant")
 			.addText((text) => {
 				if (assistant) text.setValue(assistant.name as string);
@@ -451,7 +451,7 @@ export class AssistantsContainer {
 			});
 
 		const assistantIntructions = new Setting(parentContainer)
-			.setName("Assistant Instructions")
+			.setName("Assistant instructions")
 			.setDesc("The system instructions for the assistant to follow.")
 			.addText((text) => {
 				if (assistant) text.setValue(assistant.instructions as string);
@@ -464,11 +464,11 @@ export class AssistantsContainer {
 			});
 
 		const assistantModel = new Setting(parentContainer)
-			.setName("Assistant Model")
+			.setName("Assistant model")
 			.setDesc("Which LLM you want your assistant to use")
 			.addDropdown((dropdown: DropdownComponent) => {
 				if (assistant) dropdown.setValue(assistant.model as string);
-				dropdown.addOption("", "---Select Model---");
+				dropdown.addOption("", "---Select model---");
 				let keys = Object.keys(openAIModels);
 				for (let model of keys) {
 					dropdown.addOption(models[model].model, model);
@@ -482,12 +482,12 @@ export class AssistantsContainer {
 			});
 
 		const assistantToolType = new Setting(parentContainer)
-			.setName("Assistant Tool Type")
-			.setDesc("File Search or Code Review") // NOTE -> we do not support Code Review at this point.
+			.setName("Assistant tool type")
+			.setDesc("File search or code review") // NOTE -> we do not support Code Review at this point.
 			.addDropdown((dropdown: DropdownComponent) => {
 				if (assistant)
 					dropdown.setValue(assistant.tools[0].type as string);
-				dropdown.addOption("", "---Tool Type---");
+				dropdown.addOption("", "---Tool type---");
 				dropdown.addOption("file_search", "File Search");
 				// dropdown.addOption("code_interpreter", "Code Interpreter");
 
@@ -513,7 +513,7 @@ export class AssistantsContainer {
 		assistant?: Assistant
 	) {
 		const tool_resources = new Setting(parentContainer)
-			.setName("Tool Resources")
+			.setName("Tool resources")
 			.setDesc(
 				"A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the code_interpreter tool requires a list of file IDs, while the file_search tool requires a list of vector store IDs."
 			)
@@ -522,14 +522,14 @@ export class AssistantsContainer {
 				toggle.onChange((change) => {
 					if (change) {
 						const vector_store_ids = new Setting(trDiv)
-							.setName("Vector Store")
+							.setName("Vector store")
 							.setDesc(
 								"The new vector store id to attach to ths assistant"
 							)
 							.addDropdown((dropdown: DropdownComponent) => {
 								dropdown.addOption(
 									"",
-									"---Select Vectore Store---"
+									"---Select vector store---"
 								);
 								dropdown.addOption("vectorStoreId", "ID");
 								dropdown.onChange((change) => {
