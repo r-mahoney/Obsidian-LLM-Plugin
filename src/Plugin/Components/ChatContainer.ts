@@ -119,7 +119,6 @@ export class ChatContainer {
 		// Handle claude
 		if (endpoint === messages) {
 			const params: ChatParams = {
-				// TODO - remove prompt. This is not used in the Claude API
 				prompt: this.prompt,
 				// The Claude API accepts the most recent user message
 				// as well as an optional most recent assistant message.
@@ -164,7 +163,6 @@ export class ChatContainer {
 			modelName,
 		} = getViewInfo(this.plugin, this.viewType);
 		let shouldHaveAPIKey = modelType !== GPT4All
-		// TODO - fix this logic to actually do an API key check against the current view model.
 		if (shouldHaveAPIKey) {
 			const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey || this.plugin.settings.geminiAPIKey;
 			if (!API_KEY) {
@@ -232,7 +230,6 @@ export class ChatContainer {
 				return false;
 			}
 
-			// TODO - dry up as it repeats in the claude handler and the openai handler
 			this.streamingDiv.empty();
 			MarkdownRenderer.render(
 				this.plugin.app,
@@ -272,7 +269,6 @@ export class ChatContainer {
 				this.historyMessages.scroll(0, 9999);
 			})
 
-			// TODO - dry up as it repeats in the claude handler and the openai handler
 			this.streamingDiv.empty();
 			MarkdownRenderer.render(
 				this.plugin.app,
@@ -324,7 +320,6 @@ export class ChatContainer {
 				this.streamingDiv.textContent = this.previewText;
 				this.historyMessages.scroll(0, 9999);
 			}
-			// TODO - dry up as it repeats in the claude handler and the openai handler
 			this.streamingDiv.empty();
 			MarkdownRenderer.render(
 				this.plugin.app,

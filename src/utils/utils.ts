@@ -467,7 +467,6 @@ export async function listAssistants(OpenAI_API_Key: string) {
 	return myAssistants.data
 }
 
-// TODO / NOTE - Claude does not have 'assistants' 
 export async function generateAssistantsList(settings: LLMPluginSettings) {
 	const assisitantsFromOpenAI = await listAssistants(
 		settings.openAIAPIKey
