@@ -105,12 +105,9 @@ export const models: Record<string, Model> = {
 		url: "/v1/messages",
 	},
 	// Gemini Models
-	// TODO - we are going to start out with adding support for the flash model
-	// we will follow up with adding suport for the pro model (which is in preview mode).
 	"Gemini-1.5-flash": {
 		model: geminiModel,
 		type: gemini,
-		// We will not consume these so can we remove them?
 		endpoint: "gemini",
 		url: "gemini",
 	},

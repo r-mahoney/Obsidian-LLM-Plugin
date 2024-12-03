@@ -76,7 +76,6 @@ export type TokenParams = {
 };
 
 export type Message = {
-	// TODO - abstract role 'user' into a const
 	role: "user" | typeof assistant;
 	content: string;
 };
@@ -145,8 +144,6 @@ type OpenAISettings = {
 	responseFormat: string;
 	topP: number;
 };
-
-// TODO - add support for Claude settings
 
 type GeminiSettings = {
 	topP: number;
