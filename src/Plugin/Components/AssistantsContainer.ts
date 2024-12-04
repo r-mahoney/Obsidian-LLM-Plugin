@@ -110,12 +110,12 @@ export class AssistantsContainer {
 
 		const buttonDiv = parentContainer.createDiv();
 		buttonDiv.addClass(
-			"flex",
+			"llm-flex",
 			"assistants-create-button-div",
 			"setting-item"
 		);
 		const submitButton = new ButtonComponent(buttonDiv);
-		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
+		submitButton.buttonEl.addClass("mod-cta", "llm-assistants-button");
 		submitButton.buttonEl.textContent = "Create assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
@@ -219,15 +219,15 @@ export class AssistantsContainer {
 			});
 
 		const updateSettings = parentContainer.createEl("div");
-		updateSettings.addClass("update-settings");
+		updateSettings.addClass("llm-update-settings");
 		this.updateSettings = updateSettings;
 		this.generateGenericSettings(this.updateSettings, "update");
 		this.generateUpdateAssistants(this.updateSettings);
 
 		const buttonDiv = parentContainer.createDiv();
-		buttonDiv.addClass("flex", "update-button-div", "setting-item");
+		buttonDiv.addClass("llm-flex", "update-button-div", "setting-item");
 		const submitButton = new ButtonComponent(buttonDiv);
-		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
+		submitButton.buttonEl.addClass("mod-cta", "llm-assistants-button");
 		submitButton.buttonEl.textContent = "Update assistant";
 
 		submitButton.onClick((event: MouseEvent) => {
@@ -258,18 +258,18 @@ export class AssistantsContainer {
 				text: assistant.name as string,
 			});
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", "flex");
+			buttonsDiv.addClass("history-buttons-div", "llm-flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 			deleteHistory.buttonEl.setAttr("style", "visibility: hidden");
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "flex");
+			item.addClass("llm-history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
-				"delete-history-button",
+				"llm-delete-history-button",
 				"mod-warning"
 			);
-			deleteHistory.buttonEl.id = "delete-history-button";
+			deleteHistory.buttonEl.id = "llm-delete-history-button";
 
 			item.addEventListener("mouseenter", () => {
 				if (
@@ -321,11 +321,11 @@ export class AssistantsContainer {
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
-		filesDiv.addClass("setting-item", "vector-dropdown");
+		filesDiv.addClass("setting-item", "llm-vector-dropdown");
 		let header = filesDiv.createEl("div");
 		header.addClass("setting-item-info");
 		let searchDiv = filesDiv.createEl("div");
-		searchDiv.addClass("setting-item-control", "vector-files");
+		searchDiv.addClass("setting-item-control", "llm-vector-files");
 		file_ids.addSearch((search: SearchComponent) => {
 			search.onChange((change) => {
 				searchDiv.empty();
@@ -339,19 +339,19 @@ export class AssistantsContainer {
 				options.map((option: TFile) => {
 					const item = searchDiv.createEl("span", {
 						text: option.name,
-						cls: "vector-file"
+						cls: "llm-vector-file"
 					});
 					if (filePathArray.includes(option.path))
-						item.addClass("file-added");
+						item.addClass("llm-file-added");
 
 					item.onClickEvent((click: MouseEvent) => {
 						if (filePathArray.includes(option.path)) {
-							item.removeClass("file-added");
+							item.removeClass("llm-file-added");
 							filePathArray = filePathArray.filter(
 								(file_path: string) => file_path !== option.path
 							);
 						} else {
-							item.addClass("file-added");
+							item.addClass("llm-file-added");
 							filePathArray = [...filePathArray, option.path];
 						}
 						assistantOption === ASSISTANT
@@ -386,18 +386,18 @@ export class AssistantsContainer {
 				text: vectorStore.name
 			});
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", "flex");
+			buttonsDiv.addClass("history-buttons-div", "llm-flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 			deleteHistory.buttonEl.setAttr("style", "visibility: hidden");
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "flex");
+			item.addClass("llm-history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
-				"delete-history-button",
+				"llm-delete-history-button",
 				"mod-warning"
 			);
-			deleteHistory.buttonEl.id = "delete-history-button";
+			deleteHistory.buttonEl.id = "llm-delete-history-button";
 
 			item.addEventListener("mouseenter", () => {
 				if (

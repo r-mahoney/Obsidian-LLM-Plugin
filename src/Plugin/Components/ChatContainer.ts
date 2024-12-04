@@ -341,7 +341,7 @@ export class ChatContainer {
 		// The refresh button should only be displayed on the most recent
 		// assistant message.
 		const refreshButton =
-			this.historyMessages.querySelector(".refresh-output");
+			this.historyMessages.querySelector(".llm-refresh-output");
 		refreshButton?.remove();
 
 		const { model, modelName, modelType, endpointURL, modelEndpoint } =
@@ -383,8 +383,8 @@ export class ChatContainer {
 			}
 			header.enableButtons();
 			sendButton.setDisabled(false);
-			const buttonsContainer = this.loadingDivContainer.querySelector(".assistant-buttons")
-			buttonsContainer?.removeClass("hide");
+			const buttonsContainer = this.loadingDivContainer.querySelector(".llm-assistant-buttons")
+			buttonsContainer?.removeClass("llm-hide");
 		} catch (error) {
 			header.enableButtons();
 			sendButton.setDisabled(false);
@@ -456,7 +456,7 @@ export class ChatContainer {
 		const sendButton = new ButtonComponent(promptContainer);
 
 		if (this.viewType === "floating-action-button") {
-			promptContainer.addClass("flex");
+			promptContainer.addClass("llm-flex");
 		}
 		promptContainer.addClass(classNames[this.viewType]["prompt-container"]);
 		promptField.inputEl.className = classNames[this.viewType]["text-area"];
@@ -466,7 +466,7 @@ export class ChatContainer {
 		});
 		sendButton.buttonEl.addClass(
 			classNames[this.viewType].button,
-			"send-button"
+			"llm-send-button"
 		);
 		sendButton.setIcon("up-arrow-with-tail");
 		sendButton.setTooltip("Send prompt");
@@ -523,8 +523,8 @@ export class ChatContainer {
 
 	setDiv(streaming: boolean) {
 		const parent = this.historyMessages.createDiv();
-		parent.addClass("flex");
-		const assistant = parent.createEl("div", { cls: "assistant-logo" });
+		parent.addClass("llm-flex");
+		const assistant = parent.createEl("div", { cls: "llm-assistant-logo" });
 		assistant.appendChild(assistantLogo());
 
 		this.loadingDivContainer = parent.createDiv();
@@ -532,7 +532,7 @@ export class ChatContainer {
 
 		const buttonsContainer = this.loadingDivContainer.createEl(
 			"div",
-			{ cls: "assistant-buttons hide" }
+			{ cls: "llm-assistant-buttons llm-hide" }
 		)
 		const copyToClipboardButton = new ButtonComponent(
 			buttonsContainer
@@ -542,26 +542,26 @@ export class ChatContainer {
 		const refreshButton = new ButtonComponent(buttonsContainer);
 		refreshButton.setIcon("refresh-cw");
 
-		copyToClipboardButton.buttonEl.addClass("add-text");
-		refreshButton.buttonEl.addClass("refresh-output");
+		copyToClipboardButton.buttonEl.addClass("llm-add-text");
+		refreshButton.buttonEl.addClass("llm-refresh-output");
 
 		// GPT4All & Image enter the non-streaming block
 		// Claude, Gemini enter the streaming block
 		if (streaming) {
 			this.streamingDiv.empty()
 		} else {
-			const dots = this.streamingDiv.createEl("span", { cls: "bouncing-dots" })
+			const dots = this.streamingDiv.createEl("span")
 			for (let i = 0; i < 3; i++) {
-				const dot = dots.createEl("span", { cls: "dot" })
+				const dot = dots.createEl("span", { cls: "streaming-dot" })
 				dot.textContent = "."
 			}
 		}
 
 		this.streamingDiv.addClass("im-like-message");
 		this.loadingDivContainer.addClass(
-			"flex-end",
+			"llm-flex-end",
 			"im-like-message-container",
-			"flex"
+			"llm-flex"
 		);
 
 		copyToClipboardButton.onClick(async () => {
@@ -605,25 +605,25 @@ export class ChatContainer {
 		copyButton.forEach((item) => {
 			item.setAttribute("style", "display: none");
 		});
-		imLikeMessageContainer.addClass("im-like-message-container", "flex");
-		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
+		imLikeMessageContainer.addClass("im-like-message-container", "llm-flex");
+		copyToClipboardButton.buttonEl.addClass("add-text", "llm-hide");
 
 		imLikeMessage.addClass(
 			"im-like-message",
 			classNames[this.viewType]["chat-message"]
 		);
 		if (index % 2 === 0) {
-			imLikeMessageContainer.addClass("flex-start", "flex");
+			imLikeMessageContainer.addClass("llm-flex-start", "llm-flex");
 		} else {
-			imLikeMessageContainer.addClass("flex-end", "flex");
+			imLikeMessageContainer.addClass("llm-flex-end", "llm-flex");
 		}
 
 		imLikeMessageContainer.addEventListener("mouseenter", () => {
-			copyToClipboardButton.buttonEl.removeClass("hide");
+			copyToClipboardButton.buttonEl.removeClass("llm-hide");
 		});
 
 		imLikeMessageContainer.addEventListener("mouseleave", () => {
-			copyToClipboardButton.buttonEl.addClass("hide");
+			copyToClipboardButton.buttonEl.addClass("llm-hide");
 		});
 
 		copyToClipboardButton.setTooltip("Copy to clipboard");
@@ -636,14 +636,14 @@ export class ChatContainer {
 			const refreshButton = new ButtonComponent(imLikeMessageContainer);
 
 			refreshButton.setIcon("refresh-cw");
-			refreshButton.buttonEl.addClass("refresh-output", "hide");
+			refreshButton.buttonEl.addClass("llm-refresh-output", "llm-hide");
 
 			imLikeMessageContainer.addEventListener("mouseenter", () => {
-				refreshButton.buttonEl.removeClass("hide");
+				refreshButton.buttonEl.removeClass("llm-hide");
 			})
 
 			imLikeMessageContainer.addEventListener("mouseleave", () => {
-				refreshButton.buttonEl.addClass("hide");
+				refreshButton.buttonEl.addClass("llm-hide");
 			})
 			refreshButton.onClick(async () => {
 				new Notice("Regenerating response...");

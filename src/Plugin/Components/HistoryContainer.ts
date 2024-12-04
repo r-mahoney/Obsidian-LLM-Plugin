@@ -30,10 +30,10 @@ export class HistoryContainer {
 	};
 	
 	displayNoHistoryView(parentElement: HTMLElement) {
-		parentElement.addClass('justify-content-center');
+		parentElement.addClass('llm-justify-content-center');
 
 		const llmGal = parentElement.createDiv();
-		llmGal.addClass("icon-wrapper");
+		llmGal.addClass("llm-icon-wrapper");
 
 		// Parse SVG string to DOM element
 		const parser = new DOMParser();
@@ -45,7 +45,7 @@ export class HistoryContainer {
 
 		const cta = llmGal.createEl("div", {
 			attr: {
-				class: 'empty-history-cta font-size-medium justify-content-center'
+				class: 'empty-history-cta llm-font-size-medium llm-justify-content-center'
 			},
 			text: 'Looking kind of empty. Start chatting and conversations will appear here.'
 		})
@@ -53,7 +53,7 @@ export class HistoryContainer {
 
 		const createChatButton = new ButtonComponent(cta)
 		createChatButton.setButtonText('New chat')
-		createChatButton.setClass('empty-history-button')
+		createChatButton.setClass('llm-empty-history-button')
 		createChatButton.setClass('mod-cta')
 
 		createChatButton.onClick(() => {
@@ -65,7 +65,7 @@ export class HistoryContainer {
 			const chatContainer = document.querySelector(`[class*="${prefix}-chat-container"]`) as HTMLElement
 
 			showContainer(chatContainer);
-			parentElement.classList.remove('justify-content-center');
+			parentElement.classList.remove('llm-justify-content-center');
 		})
 	
 	}
@@ -138,9 +138,9 @@ export class HistoryContainer {
 		) => {
 			for (let i = 0; i < collection.length; i++) {
 				if (i !== index && !enabled) {
-					collection.item(i)?.addClass("no-pointer");
+					collection.item(i)?.addClass("llm-no-pointer");
 				} else {
-					collection.item(i)?.removeClass("no-pointer");
+					collection.item(i)?.removeClass("llm-no-pointer");
 				}
 			}
 		};
@@ -157,7 +157,7 @@ export class HistoryContainer {
 			const displayHTML = historyItem?.prompt || historyItem?.messages[0]?.content;
 			text.textContent = displayHTML;
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", "flex");
+			buttonsDiv.addClass("history-buttons-div", "llm-flex");
 			const editPrompt = new ButtonComponent(buttonsDiv);
 			const savePrompt = new ButtonComponent(buttonsDiv);
 			const deleteHistory = new ButtonComponent(buttonsDiv);
@@ -170,16 +170,16 @@ export class HistoryContainer {
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "flex");
+			item.addClass("llm-history-item", "llm-flex");
 			editPrompt.buttonEl.addClass("edit-prompt-button");
 			savePrompt.buttonEl.addClass("save-prompt-button");
 			editPrompt.setIcon("pencil");
 			savePrompt.setIcon("save");
 			deleteHistory.buttonEl.addClass(
-				"delete-history-button",
+				"llm-delete-history-button",
 				"mod-warning"
 			);
-			deleteHistory.buttonEl.id = "delete-history-button";
+			deleteHistory.buttonEl.id = "llm-delete-history-button";
 			item.addEventListener("click", () => {
 				this.plugin.settings[settingType].historyIndex = index;
 				this.historyIndex = index;
