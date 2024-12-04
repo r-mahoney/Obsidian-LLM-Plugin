@@ -72,14 +72,14 @@ export class FAB {
 		let history = this.plugin.settings.promptHistory;
 
 		settingsContainerDiv.setAttr("style", "display: none");
-		settingsContainerDiv.addClass("fab-settings-container", llm-flex);
+		settingsContainerDiv.addClass("fab-settings-container", "llm-flex");
 		assistantsContainerDiv.setAttr("style", "display: none");
-		assistantsContainerDiv.addClass("fab-assistants-container", llm-flex);
+		assistantsContainerDiv.addClass("fab-assistants-container", "llm-flex");
 		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.addClass("fab-chat-history-container", llm-flex);
+		chatHistoryContainer.addClass("fab-chat-history-container", "llm-flex");
 		lineBreak.className =
 			classNames["floating-action-button"]["title-border"];
-		chatContainerDiv.addClass("fab-chat-container", llm-flex);
+		chatContainerDiv.addClass("fab-chat-container", "llm-flex");
 
 		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(

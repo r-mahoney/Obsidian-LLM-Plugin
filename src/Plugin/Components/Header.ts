@@ -78,7 +78,7 @@ export class Header {
 		this.titleEl.addClass(`${this.viewType}-llm-title`);
 		const rightButtonsDiv = titleDiv.createDiv();
 
-		titleDiv.addClass("title-div", llm-flex);
+		titleDiv.addClass("title-div", "llm-flex");
 		this.titleEl.textContent = "LLM";
 		this.modelEl = titleContainer.createDiv();
 		this.modelEl.addClass("model-name");
@@ -170,9 +170,9 @@ export class Header {
 			setHistoryIndex(this.plugin, this.viewType);
 		});
 
-		leftButtonDiv.addClass("one", "left-buttons-div", llm-flex);
-		rightButtonsDiv.addClass("one", "right-buttons-div", llm-flex);
-		titleContainer.addClass("four", "title", llm-flex);
+		leftButtonDiv.addClass("one", "left-buttons-div", "llm-flex");
+		rightButtonsDiv.addClass("one", "right-buttons-div", "llm-flex");
+		titleContainer.addClass("four", "title", "llm-flex");
 		this.chatHistoryButton.buttonEl.addClass(
 			"clickable-icon",
 			"chat-history"

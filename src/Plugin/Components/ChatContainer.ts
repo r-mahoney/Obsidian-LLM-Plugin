@@ -457,7 +457,7 @@ export class ChatContainer {
 		const sendButton = new ButtonComponent(promptContainer);
 
 		if (this.viewType === "floating-action-button") {
-			promptContainer.addClass(llm-flex);
+			promptContainer.addClass("llm-flex");
 		}
 		promptContainer.addClass(classNames[this.viewType]["prompt-container"]);
 		promptField.inputEl.className = classNames[this.viewType]["text-area"];
@@ -524,7 +524,7 @@ export class ChatContainer {
 
 	setDiv(streaming: boolean) {
 		const parent = this.historyMessages.createDiv();
-		parent.addClass(llm-flex);
+		parent.addClass("llm-flex");
 		const assistant = parent.createEl("div", { cls: "assistant-logo" });
 		assistant.appendChild(assistantLogo());
 
@@ -562,7 +562,7 @@ export class ChatContainer {
 		this.loadingDivContainer.addClass(
 			"flex-end",
 			"im-like-message-container",
-			llm-flex
+			"llm-flex"
 		);
 
 		copyToClipboardButton.onClick(async () => {
@@ -606,7 +606,7 @@ export class ChatContainer {
 		copyButton.forEach((item) => {
 			item.setAttribute("style", "display: none");
 		});
-		imLikeMessageContainer.addClass("im-like-message-container", llm-flex);
+		imLikeMessageContainer.addClass("im-like-message-container", "llm-flex");
 		copyToClipboardButton.buttonEl.addClass("add-text", "llm-hide");
 
 		imLikeMessage.addClass(
@@ -614,9 +614,9 @@ export class ChatContainer {
 			classNames[this.viewType]["chat-message"]
 		);
 		if (index % 2 === 0) {
-			imLikeMessageContainer.addClass("flex-start", llm-flex);
+			imLikeMessageContainer.addClass("flex-start", "llm-flex");
 		} else {
-			imLikeMessageContainer.addClass("flex-end", llm-flex);
+			imLikeMessageContainer.addClass("flex-end", "llm-flex");
 		}
 
 		imLikeMessageContainer.addEventListener("mouseenter", () => {

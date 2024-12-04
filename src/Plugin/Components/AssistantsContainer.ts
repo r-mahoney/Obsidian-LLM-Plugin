@@ -110,7 +110,7 @@ export class AssistantsContainer {
 
 		const buttonDiv = parentContainer.createDiv();
 		buttonDiv.addClass(
-			llm-flex,
+			"llm-flex",
 			"assistants-create-button-div",
 			"setting-item"
 		);
@@ -225,7 +225,7 @@ export class AssistantsContainer {
 		this.generateUpdateAssistants(this.updateSettings);
 
 		const buttonDiv = parentContainer.createDiv();
-		buttonDiv.addClass(llm-flex, "update-button-div", "setting-item");
+		buttonDiv.addClass("llm-flex", "update-button-div", "setting-item");
 		const submitButton = new ButtonComponent(buttonDiv);
 		submitButton.buttonEl.addClass("mod-cta", "llm-assistants-button");
 		submitButton.buttonEl.textContent = "Update assistant";
@@ -258,13 +258,13 @@ export class AssistantsContainer {
 				text: assistant.name as string,
 			});
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", llm-flex);
+			buttonsDiv.addClass("history-buttons-div", "llm-flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 			deleteHistory.buttonEl.setAttr("style", "visibility: hidden");
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", llm-flex);
+			item.addClass("history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
 				"delete-history-button",
 				"mod-warning"
@@ -386,13 +386,13 @@ export class AssistantsContainer {
 				text: vectorStore.name
 			});
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", llm-flex);
+			buttonsDiv.addClass("history-buttons-div", "llm-flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 			deleteHistory.buttonEl.setAttr("style", "visibility: hidden");
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", llm-flex);
+			item.addClass("history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
 				"delete-history-button",
 				"mod-warning"
