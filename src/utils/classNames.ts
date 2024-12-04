@@ -2,7 +2,7 @@
 export const classNames = {
 	modal: {
 		"messages-div": "llm-modal-messages-div",
-		"title-border": "llm-llm-modal-title-border",
+		"title-border": "llm-modal-title-border",
 		"prompt-container": "llm-modal-prompt-container",
 		"text-area": "llm-modal-chat-prompt-text-area",
 		button: "llm-modal-send-button",
