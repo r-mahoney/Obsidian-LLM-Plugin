@@ -247,7 +247,6 @@ export default class LLMPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	// TODO - refactor into utils
 	async validateActiveModelsAPIKeys() {
 		let activeClaudeModel, activeGeminiModel, activeOpenAIModel;
 
@@ -298,7 +297,6 @@ export default class LLMPlugin extends Plugin {
 			return key;
 		});
 
-		// TODO - when a user saves a new api key, we should check if it's valid
 		const promises = filteredPairs.map(async (pair) => {
 			const result = await getApiKeyValidity(pair);
 			return result;

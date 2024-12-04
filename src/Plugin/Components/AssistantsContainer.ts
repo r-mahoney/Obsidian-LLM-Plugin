@@ -188,7 +188,6 @@ export class AssistantsContainer {
 		});
 	}
 
-	// TODO - add validation
 	async updateAssistant(parentContainer: HTMLElement) {
 		const assistantsList = await listAssistants(
 			this.plugin.settings.openAIAPIKey
