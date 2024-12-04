@@ -212,30 +212,6 @@ export async function openAIMessage(
 		});
 		return imageURLs;
 	}
-
-	if (endpointType === "speech") {
-		// NOTE -> disabled this for the momement while initializing mobile support.
-		// NOTE P2 -> Not going to reenable this at the moment - it is unclear to me how to go about testing and working with this.
-		// if we do not add speech before launching the plugin - culling this section of code will make our review process easier.
-		// const { input, model, voice, responseFormat } =
-		// 	params as SpeechParams;
-		// const filename = input.split(" ")[0];
-		// const speechfile = path.resolve(`./${filename}.${responseFormat}`);
-
-		// const response = await openai.audio.speech.create({
-		// 	model,
-		// 	voice: voice as
-		// 		| "alloy"
-		// 		| "echo"
-		// 		| "fable"
-		// 		| "onyx"
-		// 		| "nova"
-		// 		| "shimmer",
-		// 	input,
-		// });
-		// const buffer = Buffer.from(await response.arrayBuffer());
-		// await fs.promises.writeFile(speechfile, buffer);
-	}
 }
 
 export async function assistantsMessage(
@@ -282,7 +258,6 @@ export function getViewInfo(
 			assistantId: plugin.settings.modalSettings.assistantId,
 			imageSettings: plugin.settings.modalSettings.imageSettings,
 			chatSettings: plugin.settings.modalSettings.chatSettings,
-			speechSettings: plugin.settings.modalSettings.speechSettings,
 			model: plugin.settings.modalSettings.model,
 			modelName: plugin.settings.modalSettings.modelName,
 			modelType: plugin.settings.modalSettings.modelType,
@@ -298,7 +273,6 @@ export function getViewInfo(
 			assistantId: plugin.settings.widgetSettings.assistantId,
 			imageSettings: plugin.settings.widgetSettings.imageSettings,
 			chatSettings: plugin.settings.widgetSettings.chatSettings,
-			speechSettings: plugin.settings.widgetSettings.speechSettings,
 			model: plugin.settings.widgetSettings.model,
 			modelName: plugin.settings.widgetSettings.modelName,
 			modelType: plugin.settings.widgetSettings.modelType,
@@ -314,7 +288,6 @@ export function getViewInfo(
 			assistantId: plugin.settings.fabSettings.assistantId,
 			imageSettings: plugin.settings.fabSettings.imageSettings,
 			chatSettings: plugin.settings.fabSettings.chatSettings,
-			speechSettings: plugin.settings.fabSettings.speechSettings,
 			model: plugin.settings.fabSettings.model,
 			modelName: plugin.settings.fabSettings.modelName,
 			modelType: plugin.settings.fabSettings.modelType,
@@ -335,7 +308,6 @@ export function getViewInfo(
 			quality: "standard",
 		},
 		chatSettings: { maxTokens: 0, temperature: 0 },
-		speechSettings: { voice: "", responseFormat: "", speed: 0 },
 		model: "",
 		modelName: "",
 		modelType: "",

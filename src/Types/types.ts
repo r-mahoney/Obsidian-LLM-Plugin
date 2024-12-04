@@ -100,7 +100,6 @@ export type ViewSettings = {
 	historyIndex: number;
 	imageSettings: ImageSettings;
 	chatSettings: ChatSettings;
-	speechSettings: SpeechSettings;
 };
 
 export type ResponseFormat = "url" | "b64_json";
