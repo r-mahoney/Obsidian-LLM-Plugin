@@ -84,36 +84,36 @@
 }
 
 /*MODAL VIEW*/
-.modal-chat-history-container {
+.llm-modal-chat-history-container {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
 
-.modal-chat-container,
-.modal-settings-container,
+.llm-modal-chat-container,
+.llm-modal-settings-container,
 .llm-widget-chat-container,
-.modal-assistants-container {
+.llm-modal-assistants-container {
 	margin-top: 20px;
 }
 
-.modal-chat-container,
-.modal-chat-history-container,
-.modal-settings-container,
-.modal-assistants-container {
+.llm-modal-chat-container,
+.llm-modal-chat-history-container,
+.llm-modal-settings-container,
+.llm-modal-assistants-container {
 	min-height: 50vh;
 }
 
-.modal-chat-container,
-.modal-chat-history-container,
-.modal-settings-container,
-.modal-assistants-container {
+.llm-modal-chat-container,
+.llm-modal-chat-history-container,
+.llm-modal-settings-container,
+.llm-modal-assistants-container {
 	max-height: var(--modal-view-max-height);
 }
 
-.modal-chat-container,
-.modal-chat-history-container,
-.modal-settings-container,
-.modal-assistants-container,
+.llm-modal-chat-container,
+.llm-modal-chat-history-container,
+.llm-modal-settings-container,
+.llm-modal-assistants-container,
 .llm-widget-chat-container,
 .llm-widget-settings-container,
 .llm-widget-chat-history-container,
@@ -128,7 +128,7 @@
 	overflow: auto;
 }
 
-.modal-chat-container,
+.llm-modal-chat-container,
 .llm-widget-chat-container,
 .fab-chat-container {
 	justify-content: space-between;
@@ -136,7 +136,7 @@
 	width: 100%;
 }
 
-.modal-messages-div {
+.llm-modal-messages-div {
 	min-height: 10rem;
 	max-height: 40vh;
 	overflow-y: auto;
@@ -154,7 +154,7 @@
 	justify-content: flex-start;
 }
 
-.modal-prompt-container {
+.llm-modal-prompt-container {
 	position: relative;
 	width: 100%;
 }
@@ -165,7 +165,7 @@
 	resize: none;
 }
 
-.modal-chat-prompt-text-area,
+.llm-modal-chat-prompt-text-area,
 .llm-widget-chat-prompt-text-area {
 	height: 1px;
 	width: 100%;
@@ -189,7 +189,7 @@
 	--icon-stroke: var(--icon-s-stroke-width);
 }
 
-.modal-send-button {
+.llm-modal-send-button {
 	position: absolute;
 	bottom: 14px;
 	right: 9px;
@@ -203,7 +203,7 @@
 }
 
 /* IM LIKE MESSAGE*/
-.modal-messages-div > .im-like-message-container,
+.llm-modal-messages-div > .im-like-message-container,
 .fab-messages-div > .im-like-message-container,
 .llm-widget-messages-div > .im-like-message-container {
 	/* We do not want to set min width on assistant messages */
@@ -242,7 +242,7 @@
 	margin-bottom: 8px;
 }
 
-.modal-messages-div .llm-assistant-logo + .im-like-message-container,
+.llm-modal-messages-div .llm-assistant-logo + .im-like-message-container,
 .llm-widget-messages-div .llm-assistant-logo + .im-like-message-container {
 	background-color: var(--background-secondary);
 }

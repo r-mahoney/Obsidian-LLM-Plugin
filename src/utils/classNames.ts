@@ -1,12 +1,12 @@
 
 export const classNames = {
 	modal: {
-		"messages-div": "modal-messages-div",
-		"title-border": "llm-modal-title-border",
-		"prompt-container": "modal-prompt-container",
-		"text-area": "modal-chat-prompt-text-area",
-		button: "modal-send-button",
-		"chat-message" : "modal-chat-message"
+		"messages-div": "llm-modal-messages-div",
+		"title-border": "llm-llm-modal-title-border",
+		"prompt-container": "llm-modal-prompt-container",
+		"text-area": "llm-modal-chat-prompt-text-area",
+		button: "llm-modal-send-button",
+		"chat-message" : "llm-modal-chat-message"
 	},
 	widget: {
 		"messages-div": "llm-widget-messages-div",
