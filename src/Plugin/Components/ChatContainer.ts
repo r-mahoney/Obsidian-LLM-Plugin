@@ -132,19 +132,6 @@ export class ChatContainer {
 			};
 			return params;
 		}
-
-		if (endpoint === "speech") {
-			const params: SpeechParams = {
-				model,
-				input: this.prompt,
-				voice: this.plugin.settings[settingType].speechSettings.voice,
-				responseFormat:
-					this.plugin.settings[settingType].speechSettings
-						.responseFormat,
-				speed: this.plugin.settings[settingType].speechSettings.speed,
-			};
-			return params;
-		}
 	}
 
 	async regenerateOutput() {
@@ -368,7 +355,7 @@ export class ChatContainer {
 		try {
 			this.appendNewMessage({ role: "user", content: this.prompt });
 			this.previewText = "";
-			if (modelEndpoint !== "images" && modelEndpoint !== "speech") {
+			if (modelEndpoint !== "images") {
 				await this.handleGenerate();
 			}
 			if (modelEndpoint === "images") {
@@ -394,14 +381,6 @@ export class ChatContainer {
 						messages: this.messages,
 					} as ImageHistoryItem);
 				});
-			}
-			if (modelEndpoint === "speech") {
-				const response = await openAIMessage(
-					params as SpeechParams,
-					this.plugin.settings.openAIAPIKey,
-					endpointURL,
-					modelEndpoint
-				);
 			}
 			header.enableButtons();
 			sendButton.setDisabled(false);

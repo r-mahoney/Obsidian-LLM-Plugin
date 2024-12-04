@@ -122,9 +122,6 @@ export class SettingsContainer {
 		if (endpoint === "images") {
 			this.generateImageSettings(parentContainer, viewSettings.model);
 		}
-		if (endpoint === "speech") {
-			this.generateTTSSettings(parentContainer);
-		}
 		if (endpoint === "moderations") {
 			this.generateModerationsSettings(parentContainer);
 		}
@@ -358,55 +355,6 @@ export class SettingsContainer {
 					});
 				});
 		}
-	}
-
-	generateTTSSettings(parentContainer: HTMLElement) {
-		const settingType = getSettingType(this.viewType);
-		const viewSettings = this.plugin.settings[settingType];
-		const voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
-		const responseFormats = ["mp3", "opus", "aac", "flac", "pcm"];
-
-		const voice = new Setting(parentContainer)
-			.setName("Voice")
-			.setDesc("The voice used in speech generation")
-			.addDropdown((dropdown: DropdownComponent) => {
-				voices.map((voice) =>
-					dropdown.addOption(voice, voice.toUpperCase())
-				);
-				dropdown.onChange((change) => {
-					viewSettings.speechSettings.voice = change;
-					this.plugin.saveSettings();
-				});
-			});
-
-		const responseFormat = new Setting(parentContainer)
-			.setName("Response format")
-			.setDesc(
-				"Defaults to mp3 The format to audio in. Supported formats are mp3, opus, aac, flac, wav, and pcm."
-			)
-			.addDropdown((dropdown: DropdownComponent) => {
-				responseFormats.map((format) =>
-					dropdown.addOption(format, format)
-				);
-				dropdown.onChange((change) => {
-					viewSettings.speechSettings.responseFormat = change;
-					this.plugin.saveSettings();
-				});
-			});
-
-		const speed = new Setting(parentContainer)
-			.setName("Speed")
-			.setDesc(
-				"The speed of the generated audio. Select a value from 0.25 to 4.0. 1.0 is the default."
-			)
-			.addText((text) => {
-				text.setValue(`${viewSettings.speechSettings.speed}`);
-				text.inputEl.type = "number";
-				text.onChange((change) => {
-					viewSettings.speechSettings.speed = parseFloat(change);
-					this.plugin.saveSettings();
-				});
-			});
 	}
 
 	generateModerationsSettings(parentContainer: HTMLElement) { }

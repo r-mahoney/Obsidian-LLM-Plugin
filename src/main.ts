@@ -76,11 +76,6 @@ const defaultSettings = {
 			topP: 1,
 		},
 	},
-	speechSettings: {
-		voice: "alloy",
-		responseFormat: "mp3",
-		speed: 1.0,
-	},
 };
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
