@@ -32,6 +32,8 @@
 	font-weight: bold;
 	margin-top: -5px;
 	align-items: center;
+	max-width: 75%;
+	flex: 4;
 }
 
 .llm-title-div {
@@ -59,11 +61,6 @@
 
 .llm-right-buttons-div, .llm-left-buttons-div {
 	flex: 1;
-}
-
-.four {
-	max-width: 75%;
-	flex: 4;
 }
 
 .floating-action-button-llm-title,

@@ -172,7 +172,7 @@ export class Header {
 
 		leftButtonDiv.addClass("llm-left-buttons-div", "llm-flex");
 		rightButtonsDiv.addClass("llm-right-buttons-div", "llm-flex");
-		titleContainer.addClass("four", "llm-title", "llm-flex");
+		titleContainer.addClass("llm-title", "llm-flex");
 		this.chatHistoryButton.buttonEl.addClass(
 			"clickable-icon",
 			"chat-history"
