@@ -17,7 +17,6 @@ import {
 	ImageHistoryItem,
 	ImageParams,
 	Message,
-	SpeechParams,
 	ViewType,
 } from "Types/types";
 import { classNames } from "utils/classNames";

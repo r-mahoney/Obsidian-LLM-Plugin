@@ -27,14 +27,6 @@ export type ImageParams = InitialParams & {
 	quality?: "hd" | "standard";
 };
 
-export type SpeechParams = {
-	model: string;
-	input: string;
-	voice: string;
-	responseFormat: string;
-	speed: number;
-};
-
 export type AIAssistant = Assistant & {
 	modelType: string;
 };
@@ -59,15 +51,9 @@ export type ImageHistoryItem = InitialParams &
 		modelName: string;
 	};
 
-export type SpeechHistoryItem = InitialParams &
-	SpeechParams & {
-		modelName: string;
-	};
-
 export type HistoryItem =
 	| ChatHistoryItem
 	| ImageHistoryItem
-	| SpeechHistoryItem
 	| AssistantHistoryItem;
 
 export type TokenParams = {
@@ -112,12 +98,6 @@ export type ImageSize =
 	| "1024x1024"
 	| "1792x1024"
 	| "1024x1792";
-
-type SpeechSettings = {
-	voice: string;
-	responseFormat: string;
-	speed: number;
-};
 
 type ImageSettings = {
 	numberOfImages: number;
