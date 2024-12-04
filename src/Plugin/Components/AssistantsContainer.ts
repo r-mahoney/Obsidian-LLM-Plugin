@@ -219,7 +219,7 @@ export class AssistantsContainer {
 			});
 
 		const updateSettings = parentContainer.createEl("div");
-		updateSettings.addClass("update-settings");
+		updateSettings.addClass("llm-update-settings");
 		this.updateSettings = updateSettings;
 		this.generateGenericSettings(this.updateSettings, "update");
 		this.generateUpdateAssistants(this.updateSettings);

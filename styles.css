@@ -21,7 +21,7 @@
 	width: fit-content;
 }
 
-.update-settings {
+.llm-update-settings {
 	padding-top: 0.75em;
 	border-top: 1px solid var(--background-modifier-border);
 }
