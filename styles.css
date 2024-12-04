@@ -317,23 +317,13 @@ div.im-like-message.widget-chat-message > p {
 
 /*
 FAB MESSAGE ICON CSS
-.message-icon {
-    height: 20px;
-    aspect-ratio: 1;
-    border-radius: 10%;
-    border: 1px solid var(--background-modifier-border);
-    text-align: center;
-    text-transform: capitalize;
-    font-size: 10pt;
-    box-shadow: 1px 1px 2px var(--background-modifier-border);
-}
 */
 
 .im-like-message {
 	width: calc(100% - 40px);
 }
 
-.hide {
+.llm-hide {
 	visibility: hidden;
 }
 

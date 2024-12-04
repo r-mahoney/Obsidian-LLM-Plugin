@@ -385,7 +385,7 @@ export class ChatContainer {
 			header.enableButtons();
 			sendButton.setDisabled(false);
 			const buttonsContainer = this.loadingDivContainer.querySelector(".assistant-buttons")
-			buttonsContainer?.removeClass("hide");
+			buttonsContainer?.removeClass("llm-hide");
 		} catch (error) {
 			header.enableButtons();
 			sendButton.setDisabled(false);
@@ -607,7 +607,7 @@ export class ChatContainer {
 			item.setAttribute("style", "display: none");
 		});
 		imLikeMessageContainer.addClass("im-like-message-container", "flex");
-		copyToClipboardButton.buttonEl.addClass("add-text", "hide");
+		copyToClipboardButton.buttonEl.addClass("add-text", "llm-hide");
 
 		imLikeMessage.addClass(
 			"im-like-message",
@@ -620,11 +620,11 @@ export class ChatContainer {
 		}
 
 		imLikeMessageContainer.addEventListener("mouseenter", () => {
-			copyToClipboardButton.buttonEl.removeClass("hide");
+			copyToClipboardButton.buttonEl.removeClass("llm-hide");
 		});
 
 		imLikeMessageContainer.addEventListener("mouseleave", () => {
-			copyToClipboardButton.buttonEl.addClass("hide");
+			copyToClipboardButton.buttonEl.addClass("llm-hide");
 		});
 
 		copyToClipboardButton.setTooltip("Copy to clipboard");
@@ -637,14 +637,14 @@ export class ChatContainer {
 			const refreshButton = new ButtonComponent(imLikeMessageContainer);
 
 			refreshButton.setIcon("refresh-cw");
-			refreshButton.buttonEl.addClass("refresh-output", "hide");
+			refreshButton.buttonEl.addClass("refresh-output", "llm-hide");
 
 			imLikeMessageContainer.addEventListener("mouseenter", () => {
-				refreshButton.buttonEl.removeClass("hide");
+				refreshButton.buttonEl.removeClass("llm-hide");
 			})
 
 			imLikeMessageContainer.addEventListener("mouseleave", () => {
-				refreshButton.buttonEl.addClass("hide");
+				refreshButton.buttonEl.addClass("llm-hide");
 			})
 			refreshButton.onClick(async () => {
 				new Notice("Regenerating response...");
