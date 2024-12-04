@@ -2,7 +2,7 @@
 export const classNames = {
 	modal: {
 		"messages-div": "modal-messages-div",
-		"title-border": "modal-title-border",
+		"title-border": "llm-modal-title-border",
 		"prompt-container": "modal-prompt-container",
 		"text-area": "modal-chat-prompt-text-area",
 		button: "modal-send-button",
