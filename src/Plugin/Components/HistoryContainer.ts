@@ -157,7 +157,7 @@ export class HistoryContainer {
 			const displayHTML = historyItem?.prompt || historyItem?.messages[0]?.content;
 			text.textContent = displayHTML;
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", "flex");
+			buttonsDiv.addClass("history-buttons-div", llm-flex);
 			const editPrompt = new ButtonComponent(buttonsDiv);
 			const savePrompt = new ButtonComponent(buttonsDiv);
 			const deleteHistory = new ButtonComponent(buttonsDiv);
@@ -170,7 +170,7 @@ export class HistoryContainer {
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "flex");
+			item.addClass("history-item", llm-flex);
 			editPrompt.buttonEl.addClass("edit-prompt-button");
 			savePrompt.buttonEl.addClass("save-prompt-button");
 			editPrompt.setIcon("pencil");

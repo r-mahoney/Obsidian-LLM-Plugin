@@ -60,13 +60,13 @@ export class ChatModal2 extends Modal {
 		let history = this.plugin.settings.promptHistory;
 
 		settingsContainerDiv.setAttr("style", "display: none");
-		settingsContainerDiv.addClass("modal-settings-container", "flex");
+		settingsContainerDiv.addClass("modal-settings-container", llm-flex);
 		assistantsContainerDiv.setAttr("style", "display: none");
-		assistantsContainerDiv.addClass("modal-assistants-container", "flex");
+		assistantsContainerDiv.addClass("modal-assistants-container", llm-flex);
 		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.addClass("modal-chat-history-container", "flex");
+		chatHistoryContainer.addClass("modal-chat-history-container", llm-flex);
 		lineBreak.className = classNames["modal"]["title-border"];
-		chatContainerDiv.addClass("modal-chat-container", "flex");
+		chatContainerDiv.addClass("modal-chat-container", llm-flex);
 
 		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(

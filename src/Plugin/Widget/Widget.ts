@@ -59,14 +59,14 @@ export class WidgetView extends ItemView {
 		const assistantContainerDiv = container.createDiv();
 
 		settingsContainerDiv.setAttr("style", "display: none");
-		settingsContainerDiv.addClass("widget-settings-container", "flex");
+		settingsContainerDiv.addClass("widget-settings-container", llm-flex);
 		assistantContainerDiv.setAttr("style", "display: none");
-		assistantContainerDiv.addClass("widget-assistant-container", "flex");
+		assistantContainerDiv.addClass("widget-assistant-container", llm-flex);
 		this.viewType === "tab" ? assistantContainerDiv.addClass("widget-tab-assistants") : assistantContainerDiv.addClass("widget-sidebar-assistants")
 		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.addClass("widget-chat-history-container", "flex");
+		chatHistoryContainer.addClass("widget-chat-history-container", llm-flex);
 		lineBreak.className = classNames["widget"]["title-border"];
-		chatContainerDiv.addClass("widget-chat-container", "flex");
+		chatContainerDiv.addClass("widget-chat-container", llm-flex);
 
 		header.generateHeader(
 			container,
