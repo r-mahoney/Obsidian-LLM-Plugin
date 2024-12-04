@@ -327,7 +327,7 @@ export class SettingsContainer {
 			const responseFormat = new Setting(parentContainer)
 				.setName("Response format")
 				.setDesc(
-					`An object specifying the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106. Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.`
+					`An object specifying the format that the model must output. Compatible with GPT-4 turbo and all GPT-3.5 turbo models newer than gpt-3.5-turbo-1106. Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.`
 				)
 				.addText((text) => {
 					text.setValue(
