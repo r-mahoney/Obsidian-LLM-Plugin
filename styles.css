@@ -143,13 +143,13 @@
 	margin-bottom: 15px;
 }
 
-.flex-end {
+.llm-flex-end {
 	flex-direction: row;
 	justify-content: flex-end;
 	flex: 1;
 }
 
-.flex-start {
+.llm-flex-start {
 	flex-direction: row;
 	justify-content: flex-start;
 }
@@ -172,7 +172,7 @@
 	min-height: 3rem;
 }
 
-.send-button {
+.llm-send-button {
 	border-radius: var(--button-radius);
 	box-shadow: none;
 	height: auto;
@@ -183,7 +183,7 @@
 	cursor: var(--cursor);
 	padding: var(--size-4-2);
 	border-bottom: 1px solid var(--background-modifier-border);
-	color: var(--text-muted);
+	color: var(--llm-text-muted);
 	background-color: var(--interactive-normal);
 	--icon-size: var(--icon-s);
 	--icon-stroke: var(--icon-s-stroke-width);
@@ -223,20 +223,17 @@
 	padding-left: 5px;
 	border-radius: 8px;
 	border: 1px solid var(--background-modifier-border);
-	.message-icon {
-		margin-right: 5px;
-	}
 	.im-like-message {
 		text-align: left;
 	}
 }
 
-.assistant-logo + .im-like-message-container {
+.llm-assistant-logo + .im-like-message-container {
 	display: flex;
 	flex-flow: column;
 }
 
-.assistant-buttons {
+.llm-assistant-buttons {
 	width: 85px;
     display: flex;
     justify-content: space-between;
@@ -245,32 +242,32 @@
 	margin-bottom: 8px;
 }
 
-.modal-messages-div .assistant-logo + .im-like-message-container,
-.widget-messages-div .assistant-logo + .im-like-message-container {
+.modal-messages-div .llm-assistant-logo + .im-like-message-container,
+.widget-messages-div .llm-assistant-logo + .im-like-message-container {
 	background-color: var(--background-secondary);
 }
 
-.mod-sidedock .assistant-logo + .im-like-message-container,
-.fab-messages-div .assistant-logo + .im-like-message-container {
+.mod-sidedock .llm-assistant-logo + .im-like-message-container,
+.fab-messages-div .llm-assistant-logo + .im-like-message-container {
 	background-color: var(--background-primary);
 }
 
-.assistant-logo {
+.llm-assistant-logo {
 	margin-top: var(--size-4-1);
 	margin-right: var(--size-4-3);
 }
 
-.mod-sidedock .assistant-logo,
-.fab-messages-div .assistant-logo  {
+.mod-sidedock .llm-assistant-logo,
+.fab-messages-div .llm-assistant-logo  {
 	margin-right: var(--size-4-2);
 }
 
-.add-text,
-.refresh-output {
+.llm-add-text,
+.llm-refresh-output {
 	margin-top: auto;
 }
 
-.refresh-output {
+.llm-refresh-output {
 	margin-right: 4px;
 }
 
@@ -282,18 +279,6 @@
 }
 div.im-like-message.widget-chat-message > p {
 	margin: 0;
-}
-
-.message-icon {
-	height: 35px;
-	width: 35px;
-	border-radius: 10%;
-	border: 1px solid var(--background-modifier-border);
-	text-align: center;
-	line-height: 30px;
-	text-transform: capitalize;
-	font-size: 18pt;
-	box-shadow: 1px 1px 2px var(--background-modifier-border);
 }
 
 /*
@@ -309,22 +294,22 @@ FAB MESSAGE ICON CSS
 }
 
 /* HISTORY CONTAINER */
-.history-item {
+.llm-history-item {
 	justify-content: space-between;
 	padding-left: 10px;
 	border-radius: 5px;
 }
 
-.history-item:first-child {
+.llm-history-item:first-child {
 	padding-top: 10px;
 }
 
-.history-item > p {
+.llm-history-item > p {
 	margin: 0;
 	min-width: 1px;
 }
 
-.history-item:hover {
+.llm-history-item:hover {
 	box-shadow: var(--input-shadow-hover);
 }
 
@@ -332,19 +317,19 @@ FAB MESSAGE ICON CSS
 	align-items: center;
 }
 
-.no-pointer {
+.llm-no-pointer {
 	pointer-events: none;
 }
 
-.delete-history-button {
+.llm-delete-history-button {
 	margin: 0 10px;
 }
 
 .edit-prompt-button,
 .save-prompt-button,
-.add-text,
-.refresh-output,
-#delete-history-button {
+.llm-add-text,
+.llm-refresh-output,
+#llm-delete-history-button {
 	padding: 4px;
 }
 
@@ -362,6 +347,7 @@ FAB MESSAGE ICON CSS
 	margin-right: -40px;
 	margin-top: 5px;
 }
+
 .widget-prompt-container {
 	display: flex;
 	margin-top: auto;
@@ -496,23 +482,20 @@ FAB MESSAGE ICON CSS
 	}
 }
 
-.font-size-medium {
+.llm-font-size-medium {
 	font-size: 12px;
 }
 
-.text-align-center {
-	text-align: center;
-}
-
-.justify-content-center {
+.llm-justify-content-center {
 	justify-content: center;
 }
 
 .empty-history-cta {
+	text-align: center;
 	max-width: 25ch;
 }
 
-.empty-history-button {
+.llm-empty-history-button {
 	margin-top: 17px;
 }
 
@@ -529,7 +512,7 @@ FAB MESSAGE ICON CSS
 }
 
 /* LOADING ANIMATION TO USE BEFORE WE GET STREAMING UP */
-.dot {
+.streaming-dot {
 	color: var(--interactive-accent);
 	font-size: 18pt;
 	display: inline-block;
@@ -559,7 +542,7 @@ FAB MESSAGE ICON CSS
 	}
 }
 
-.icon-wrapper {
+.llm-icon-wrapper {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -572,30 +555,30 @@ FAB MESSAGE ICON CSS
 	}
 }
 
-#settings-credits {
+#llm-settings-credits {
 	text-align: center;
 }
 
-#hero-credits {
+#llm-hero-credits {
 	margin: 12px 0 0 0 !important;
 }
 
-.hero-names{
+.llm-hero-names {
 	font-size: 14px;
 	margin: 0px
 }
 
-.text-muted, .version {
-	color: var(--text-muted);
+.llm-text-muted, .version {
+	color: var(--llm-text-muted);
 	font-size: 12px;
 }
 
-#settings-credits > p {
+#llm-settings-credits > p {
 	font-size: 10pt;
 	margin: 0;
 }
 
-.vector-files {
+.llm-vector-files {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -607,7 +590,7 @@ FAB MESSAGE ICON CSS
 	gap: unset;
 }
 
-.vector-file {
+.llm-vector-file {
 	border-radius: 5px;
 	padding: 6px;
 	width: 100%;
@@ -618,14 +601,14 @@ FAB MESSAGE ICON CSS
 	white-space: nowrap;
 }
 
-.vector-file:hover {
+.llm-vector-file:hover {
 	box-shadow: var(--input-shadow-hover);
 }
 
-.vector-dropdown {
+.llm-vector-dropdown {
 	gap: 50%;
 }
 
-.file-added {
+.llm-file-added {
 	background-color: var(--icon-color-active);
 }

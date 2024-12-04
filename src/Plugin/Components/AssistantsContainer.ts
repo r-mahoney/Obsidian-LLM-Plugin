@@ -264,12 +264,12 @@ export class AssistantsContainer {
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "llm-flex");
+			item.addClass("llm-history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
-				"delete-history-button",
+				"llm-delete-history-button",
 				"mod-warning"
 			);
-			deleteHistory.buttonEl.id = "delete-history-button";
+			deleteHistory.buttonEl.id = "llm-delete-history-button";
 
 			item.addEventListener("mouseenter", () => {
 				if (
@@ -321,11 +321,11 @@ export class AssistantsContainer {
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
-		filesDiv.addClass("setting-item", "vector-dropdown");
+		filesDiv.addClass("setting-item", "llm-vector-dropdown");
 		let header = filesDiv.createEl("div");
 		header.addClass("setting-item-info");
 		let searchDiv = filesDiv.createEl("div");
-		searchDiv.addClass("setting-item-control", "vector-files");
+		searchDiv.addClass("setting-item-control", "llm-vector-files");
 		file_ids.addSearch((search: SearchComponent) => {
 			search.onChange((change) => {
 				searchDiv.empty();
@@ -339,19 +339,19 @@ export class AssistantsContainer {
 				options.map((option: TFile) => {
 					const item = searchDiv.createEl("span", {
 						text: option.name,
-						cls: "vector-file"
+						cls: "llm-vector-file"
 					});
 					if (filePathArray.includes(option.path))
-						item.addClass("file-added");
+						item.addClass("llm-file-added");
 
 					item.onClickEvent((click: MouseEvent) => {
 						if (filePathArray.includes(option.path)) {
-							item.removeClass("file-added");
+							item.removeClass("llm-file-added");
 							filePathArray = filePathArray.filter(
 								(file_path: string) => file_path !== option.path
 							);
 						} else {
-							item.addClass("file-added");
+							item.addClass("llm-file-added");
 							filePathArray = [...filePathArray, option.path];
 						}
 						assistantOption === ASSISTANT
@@ -392,12 +392,12 @@ export class AssistantsContainer {
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "llm-flex");
+			item.addClass("llm-history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
-				"delete-history-button",
+				"llm-delete-history-button",
 				"mod-warning"
 			);
-			deleteHistory.buttonEl.id = "delete-history-button";
+			deleteHistory.buttonEl.id = "llm-delete-history-button";
 
 			item.addEventListener("mouseenter", () => {
 				if (

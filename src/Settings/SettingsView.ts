@@ -192,7 +192,7 @@ export default class SettingsView extends PluginSettingTab {
 			});
 
 		const llmGuy = containerEl.createDiv();
-		llmGuy.addClass("icon-wrapper");
+		llmGuy.addClass("llm-icon-wrapper");
 
 		// Parse SVG string to DOM element
 		const parser = new DOMParser();
@@ -204,28 +204,28 @@ export default class SettingsView extends PluginSettingTab {
 
 		const credits = llmGuy.createEl("div", {
 			attr: {
-				id: "settings-credits"
+				id: "llm-settings-credits"
 			},
 
 		});
 		const creditsHeader = credits.createEl("h2", {
 			text: "LLM Plugin",
 			attr: {
-				id: "hero-credits"
+				id: "llm-hero-credits"
 			}
 		});
 		credits.appendChild(creditsHeader);
 		const creditsNames = credits.createEl("p", {
 			text: "By Johnny✨ and Ryan Mahoney",
 			attr: {
-				class: "hero-names text-muted"
+				class: "llm-hero-names llm-text-muted"
 			}
 		});
 		credits.appendChild(creditsNames);
 		const creditsVersion = credits.createEl("span", {
 			text: `v${this.plugin.manifest.version}`,
 			attr: {
-				class: "text-muted version"
+				class: "llm-text-muted version"
 			}
 		});
 		credits.appendChild(creditsVersion);
