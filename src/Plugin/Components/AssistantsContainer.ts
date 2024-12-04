@@ -115,7 +115,7 @@ export class AssistantsContainer {
 			"setting-item"
 		);
 		const submitButton = new ButtonComponent(buttonDiv);
-		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
+		submitButton.buttonEl.addClass("mod-cta", "llm-assistants-button");
 		submitButton.buttonEl.textContent = "Create assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
@@ -227,7 +227,7 @@ export class AssistantsContainer {
 		const buttonDiv = parentContainer.createDiv();
 		buttonDiv.addClass(llm-flex, "update-button-div", "setting-item");
 		const submitButton = new ButtonComponent(buttonDiv);
-		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
+		submitButton.buttonEl.addClass("mod-cta", "llm-assistants-button");
 		submitButton.buttonEl.textContent = "Update assistant";
 
 		submitButton.onClick((event: MouseEvent) => {

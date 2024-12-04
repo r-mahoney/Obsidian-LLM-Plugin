@@ -13,19 +13,11 @@
 	display: flex;
 }
 
-.none {
-	display: none;
-}
-
 .assistants-create-button-div {
 	border-top: unset;
 }
 
-.assistants-button-div {
-	justify-content: flex-end;
-}
-
-.assistants-button {
+.llm-assistants-button {
 	width: fit-content;
 }
 
@@ -505,9 +497,6 @@ FAB MESSAGE ICON CSS
 		.setting-item-control {
 			justify-content: center;
 		}
-	}
-	.assistants-button-div {
-		align-items: center;
 	}
 }
 
