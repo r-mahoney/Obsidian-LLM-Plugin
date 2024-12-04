@@ -51,7 +51,7 @@ const defaultSettings = {
 	assistant: false,
 	assistantId: "",
 	model: "gpt-3.5-turbo",
-	modelName: "ChatGPT-3.5 Turbo",
+	modelName: "ChatGPT-3.5 turbo",
 	modelType: "openAI",
 	modelEndpoint: chat,
 	endpointURL: "/chat/completions",
@@ -182,7 +182,7 @@ export default class LLMPlugin extends Plugin {
 	private registerRibbonIcons() {
 		this.addRibbonIcon(
 			"bot",
-			"Ask A question",
+			"Ask a question",
 			(evt: MouseEvent) => {
 				new ChatModal2(this).open();
 			}

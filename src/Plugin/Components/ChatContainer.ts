@@ -470,7 +470,7 @@ export class ChatContainer {
 			"send-button"
 		);
 		sendButton.setIcon("up-arrow-with-tail");
-		sendButton.setTooltip("Send Prompt");
+		sendButton.setTooltip("Send prompt");
 
 		promptField.setPlaceholder("Send a message...");
 
