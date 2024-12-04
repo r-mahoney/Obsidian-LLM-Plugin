@@ -455,11 +455,11 @@ export class ChatContainer {
 	}
 
 	auto_height(elem: TextAreaComponent, parentElement: Element) {
-		elem.inputEl.style.height = "50px";
+		elem.inputEl.setAttribute("style", "height: 50px");
 		const height = elem.inputEl.scrollHeight - 5;
 		if (!(height > Number(elem.inputEl.style.height.slice(0, 2)))) return;
-		elem.inputEl.style.height = `${height}px`;
-		elem.inputEl.style.overflow = "hidden";
+		elem.inputEl.setAttribute("style", `height: ${height}px`);
+		elem.inputEl.setAttribute("style", `overflow: hidden`);
 		parentElement.scrollTo(0, 9999);
 	}
 

@@ -36,7 +36,7 @@ export default class DefaultModelModal extends Modal {
 
 		// User elects to not save the model as default
 		const noButton = contentEl.createEl('button', { text: 'No' });
-		noButton.style.marginLeft = '16px';
+		noButton.setAttribute('style', 'margin-left: 16px;')
 		noButton.onclick = () => {
 			new Notice('API key saved');
 			this.close(); // Close the modal after the action
