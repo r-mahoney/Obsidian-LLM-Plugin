@@ -9,12 +9,12 @@ export const classNames = {
 		"chat-message" : "modal-chat-message"
 	},
 	widget: {
-		"messages-div": "widget-messages-div",
-		"title-border": "widget-title-border",
-		"prompt-container": "widget-prompt-container",
-		"text-area": "widget-chat-prompt-text-area",
-		button: "widget-send-button",
-		"chat-message" : "widget-chat-message"
+		"messages-div": "llm-widget-messages-div",
+		"title-border": "llm-widget-title-border",
+		"prompt-container": "llm-widget-prompt-container",
+		"text-area": "llm-widget-chat-prompt-text-area",
+		button: "llm-widget-send-button",
+		"chat-message" : "llm-widget-chat-message"
 	},
 	"floating-action-button": {
 		"messages-div": "fab-messages-div",

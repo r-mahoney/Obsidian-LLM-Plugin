@@ -91,7 +91,7 @@
 
 .modal-chat-container,
 .modal-settings-container,
-.widget-chat-container,
+.llm-widget-chat-container,
 .modal-assistants-container {
 	margin-top: 20px;
 }
@@ -114,10 +114,10 @@
 .modal-chat-history-container,
 .modal-settings-container,
 .modal-assistants-container,
-.widget-chat-container,
-.widget-settings-container,
-.widget-chat-history-container,
-.widget-assistant-container,
+.llm-widget-chat-container,
+.llm-widget-settings-container,
+.llm-widget-chat-history-container,
+.llm-widget-assistant-container,
 .fab-chat-container,
 .fab-settings-container,
 .fab-chat-history-container,
@@ -129,7 +129,7 @@
 }
 
 .modal-chat-container,
-.widget-chat-container,
+.llm-widget-chat-container,
 .fab-chat-container {
 	justify-content: space-between;
 	padding: 2px;
@@ -166,7 +166,7 @@
 }
 
 .modal-chat-prompt-text-area,
-.widget-chat-prompt-text-area {
+.llm-widget-chat-prompt-text-area {
 	height: 1px;
 	width: 100%;
 	min-height: 3rem;
@@ -196,7 +196,7 @@
 }
 
 .fab-send-button,
-.widget-send-button {
+.llm-widget-send-button {
 	position: relative;
 	height: 32px;
 	aspect-ratio: 1;
@@ -205,7 +205,7 @@
 /* IM LIKE MESSAGE*/
 .modal-messages-div > .im-like-message-container,
 .fab-messages-div > .im-like-message-container,
-.widget-messages-div > .im-like-message-container {
+.llm-widget-messages-div > .im-like-message-container {
 	/* We do not want to set min width on assistant messages */
 	/* only on user messages. */
 	min-width: 100%;
@@ -243,7 +243,7 @@
 }
 
 .modal-messages-div .llm-assistant-logo + .im-like-message-container,
-.widget-messages-div .llm-assistant-logo + .im-like-message-container {
+.llm-widget-messages-div .llm-assistant-logo + .im-like-message-container {
 	background-color: var(--background-secondary);
 }
 
@@ -277,7 +277,7 @@
 		margin: 0;
 	}
 }
-div.im-like-message.widget-chat-message > p {
+div.im-like-message.llm-widget-chat-message > p {
 	margin: 0;
 }
 
@@ -335,42 +335,42 @@ FAB MESSAGE ICON CSS
 
 /* WIDGET*/
 
-.widget-chat-container {
+.llm-widget-chat-container {
 	padding-bottom: var(--size-4-4);
 }
 
-.widget-messages-div {
+.llm-widget-messages-div {
 	overflow: auto;
 }
 
-.widget-chat-prompt-text-area {
+.llm-widget-chat-prompt-text-area {
 	margin-right: -40px;
 	margin-top: 5px;
 }
 
-.widget-prompt-container {
+.llm-widget-prompt-container {
 	display: flex;
 	margin-top: auto;
 }
 
-.widget-title-border {
+.llm-widget-title-border {
 	border-bottom: 1px solid var(--background-modifier-border);
 	width: 100%;
 }
 
-.widget-chat-container,
-.widget-settings-container,
-.widget-chat-history-container {
+.llm-widget-chat-container,
+.llm-widget-settings-container,
+.llm-widget-chat-history-container {
 	max-height: var(--widget-view-max-height);
 }
 
-.widget-chat-container,
-.widget-chat-history-container,
-.widget-settings-container {
+.llm-widget-chat-container,
+.llm-widget-chat-history-container,
+.llm-widget-settings-container {
 	height: calc(100% - 70px);
 }
 
-.widget-send-button,
+.llm-widget-send-button,
 .fab-send-button {
 	margin-top: auto;
 	top: -8px;
@@ -447,7 +447,7 @@ FAB MESSAGE ICON CSS
 
 .fab-settings-container,
 .fab-assistants-container,
-.widget-settings-container {
+.llm-widget-settings-container {
 	.setting-item {
 		flex-direction: column;
 		.setting-item-info {
@@ -462,7 +462,7 @@ FAB MESSAGE ICON CSS
 	}
 }
 
-.widget-sidebar-assistants {
+.llm-widget-sidebar-assistants {
 	.setting-item {
 		display: flex;
 		flex-direction: column;
@@ -475,7 +475,7 @@ FAB MESSAGE ICON CSS
 	}
 }
 
-.widget-tab-assistants {
+.llm-widget-tab-assistants {
 	.setting-item {
 		display: flex;
 		flex-direction: row;
