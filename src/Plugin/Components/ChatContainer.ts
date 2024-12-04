@@ -551,7 +551,7 @@ export class ChatContainer {
 		if (streaming) {
 			this.streamingDiv.empty()
 		} else {
-			const dots = this.streamingDiv.createEl("span", { cls: "bouncing-dots" })
+			const dots = this.streamingDiv.createEl("span")
 			for (let i = 0; i < 3; i++) {
 				const dot = dots.createEl("span", { cls: "streaming-dot" })
 				dot.textContent = "."
