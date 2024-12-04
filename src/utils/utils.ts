@@ -10,7 +10,6 @@ import {
 	ImageParams,
 	Message,
 	ProviderKeyPair,
-	SpeechParams,
 	ViewSettings,
 	ViewType,
 } from "Types/types";
@@ -156,7 +155,7 @@ export async function claudeMessage(
 
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
-	params: ChatParams | ImageParams | SpeechParams,
+	params: ChatParams | ImageParams,
 	OpenAI_API_Key: string,
 	endpoint: string,
 	endpointType: string
