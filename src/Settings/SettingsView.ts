@@ -216,7 +216,7 @@ export default class SettingsView extends PluginSettingTab {
 		});
 		credits.appendChild(creditsHeader);
 		const creditsNames = credits.createEl("p", {
-			text: "By Johnny✨ and Ryan Mahoney",
+			text: "By Johnny✨, Ryan Mahoney, and Evan Harris",
 			attr: {
 				class: "llm-hero-names llm-text-muted"
 			}
