@@ -152,7 +152,7 @@ export class ChatContainer {
 		if (shouldHaveAPIKey) {
 			const API_KEY = this.plugin.settings.openAIAPIKey || this.plugin.settings.claudeAPIKey || this.plugin.settings.geminiAPIKey;
 			if (!API_KEY) {
-				throw new Error("No API Key");
+				throw new Error("No API key");
 			}
 		}
 		const params = this.getParams(modelEndpoint, model, modelType);
