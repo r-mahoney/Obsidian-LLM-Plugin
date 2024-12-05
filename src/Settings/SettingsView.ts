@@ -208,6 +208,7 @@ export default class SettingsView extends PluginSettingTab {
 			},
 
 		});
+		// new Setting(containerEl).setName('your heading title').setHeading();
 		const creditsHeader = credits.createEl("h2", {
 			text: "LLM Plugin",
 			attr: {
