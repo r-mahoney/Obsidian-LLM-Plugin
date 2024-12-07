@@ -1,7 +1,7 @@
 {
 	"id": "llm-plugin",
 	"name": "LLM Plugin",
-	"version": "0.19.10",
+	"version": "0.19.11",
 	"minAppVersion": "0.15.0",
 	"description": "Enables access to LLMs via remote providers (OpenAI, Claude, Gemini) and local LLMs via GPT4ALL for use inside Obsidian.",
 	"author": "eharris128, r-mahoney, & jsmorabito",
