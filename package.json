@@ -1,6 +1,6 @@
 {
 	"name": "llm-plugin",
-	"version": "0.19.10",
+	"version": "0.19.11",
 	"description": "Enables access to LLMs via remote providers (OpenAI, Claude, Gemini) and local LLMs via GPT4ALL for use inside Obsidian.",
 	"main": "main.js",
 	"scripts": {
