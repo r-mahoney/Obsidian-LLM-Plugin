@@ -559,7 +559,13 @@ FAB MESSAGE ICON CSS
 	text-align: center;
 }
 
+.default-llm-header {
+	font-weight: bold;
+}
+
 #llm-hero-credits {
+	font-weight: bold;
+	font-size: 15px;
 	margin: 12px 0 0 0 !important;
 }
 

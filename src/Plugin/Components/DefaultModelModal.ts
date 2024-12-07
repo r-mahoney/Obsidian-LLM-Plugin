@@ -1,4 +1,4 @@
-import { App, Modal, Notice } from "obsidian";
+import { App, Modal, Notice, Setting } from "obsidian";
 import LLMPlugin from "main";
 import { changeDefaultModel } from "utils/utils";
 
@@ -23,7 +23,7 @@ export default class DefaultModelModal extends Modal {
 		contentEl.empty(); // Clear existing content if needed
 
 		// Create the modal content
-		contentEl.createEl('h2', { text: 'Set model as default' });
+		new Setting(contentEl).setName('Set model as default').setHeading().setClass("default-llm-header")
 		contentEl.createEl('p', { text: 'Would you like to set this model as your default model?' });
 
 		// Create the interactive button
