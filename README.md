@@ -4,7 +4,7 @@
   <img alt="Shows project promo image in light and dark mode" src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
 </picture>
 
-# A Plugin for accessing LLMs through Obsidian
+# Interact with LLMs in Obsidian
 
 The LLM Plugin gives Obsidian users access to Large Language Models through cloud providers (OpenAI, Anthropic, and Google) and locally via GPT4All. Models can be interacted with in the sidebar, main window, and a newly added, floating action button popup window.
 
@@ -13,6 +13,28 @@ The LLM Plugin gives Obsidian users access to Large Language Models through clou
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/789d0d1f-afa0-402d-814c-32cc9b3941a8">
   <img alt="Shows project promo image in light and dark mode" src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
 </picture>
+
+# Instructions
+**Installation:**
+Download the plugin via the community plugin browser.
+
+**Using models from cloud-based providers:**
+1. In the plugin settings menu, enter an API key from one of the supported model providers
+2. To interact with models, open one of the chat views using the newly added commands (see Commands section below) 
+
+**Using models locally:**
+1. Download GPT4all
+2. Download a model through GPT4alls model browser
+3. In the setting menu of GPT4all, toggle on the "Enable Local Server" setting
+4. Models downloaded via GPT4all will be selectable via the model switcher in each chat view
+
+# Commands
+| Command  | Description |
+| ------------- | ------------- |
+| Open LLM Modal  | Opens the chat modal  |
+| Toggle LLM FAB  | Toggles the visibility of the Floating Action Button (FAB) used to open and close the chat popup window  |
+| Open Chat in Tab | Opens the chat window in a tab |
+| Open Chat in Sidebar | Opens the chat window in the Sidebar |
 
 # Models
 
