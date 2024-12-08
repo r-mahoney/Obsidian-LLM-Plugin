@@ -31,10 +31,10 @@ Download the plugin via the community plugin browser.
 # Commands
 | Command  | Description |
 | ------------- | ------------- |
-| Open LLM Modal  | Opens the chat modal  |
-| Toggle LLM FAB  | Toggles the visibility of the Floating Action Button (FAB) used to open and close the chat popup window  |
-| Open Chat in Tab | Opens the chat window in a tab |
-| Open Chat in Sidebar | Opens the chat window in the Sidebar |
+| Open modal  | Opens the chat modal  |
+| Toggle FAB  | Toggles the visibility of the Floating Action Button (FAB) used to open and close the chat popup window  |
+| Open chat in tab | Opens the chat window in a tab |
+| Open chat in sidebar | Opens the chat window in the Sidebar |
 
 # Models
 
