@@ -6,7 +6,7 @@
 
 # Interact with LLMs in Obsidian
 
-The LLM Plugin gives Obsidian users access to Large Language Models through cloud providers (OpenAI, Anthropic, and Google) and locally via GPT4All. Models can be interacted with in the sidebar, main window, and a newly added, floating action button popup window.
+The Large Language Models (LLMs) Plugin gives Obsidian users access to LLMs through cloud providers (OpenAI, Anthropic, and Google) and locally via GPT4All. Models can be interacted with in the sidebar, main window, and a newly added, floating action button popup window.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/8f9e381d-6569-4d49-92c8-724b00dca962">
