@@ -1,9 +1,9 @@
 {
 	"id": "large-language-models",
 	"name": "Large Language Models",
-	"version": "0.19.12",
+	"version": "0.19.13",
 	"minAppVersion": "0.15.0",
-	"description": "Enables access to LLMs via remote providers (OpenAI, Claude, Gemini) and local LLMs via GPT4ALL for use inside Obsidian.",
+	"description": "Enables access to LLMs via remote providers (OpenAI, Claude, Gemini) and local LLMs via GPT4ALL.",
 	"author": "eharris128, r-mahoney, & jsmorabito",
 	"authorUrl": "https://bsky.app/profile/evanharris.bsky.social",
 	"fundingUrl": "https://www.buymeacoffee.com/johnny1093",
