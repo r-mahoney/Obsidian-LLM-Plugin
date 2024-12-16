@@ -78,10 +78,10 @@ export class Header {
 		this.titleEl.addClass(`${this.viewType}-llm-title`);
 		const rightButtonsDiv = titleDiv.createDiv();
 
-		titleDiv.addClass("title-div", "flex");
-		this.titleEl.textContent = "LLM Plugin";
+		titleDiv.addClass("llm-title-div", "llm-flex");
+		this.titleEl.textContent = "LLM";
 		this.modelEl = titleContainer.createDiv();
-		this.modelEl.addClass("model-name");
+		this.modelEl.addClass("llm-model-name");
 		this.modelEl.textContent = modelName;
 
 		this.chatHistoryButton = new ButtonComponent(leftButtonDiv);
@@ -98,7 +98,7 @@ export class Header {
 				this
 			);
 			this.clickHandler(this.chatHistoryButton, [this.settingsButton, this.assistantsButton]);
-			if (chatHistoryContainerDiv.style.display === "none") {
+			if (!chatHistoryContainerDiv.isShown()) {
 				showContainer(chatHistoryContainerDiv);
 				hideContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
@@ -114,7 +114,7 @@ export class Header {
 		assistantsContainer.generateAssistantsContainer(assistantContainerDiv);
 		this.assistantsButton.onClick(() => {
 			this.clickHandler(this.assistantsButton, [this.settingsButton, this.chatHistoryButton]);
-			if (assistantContainerDiv.style.display === "none") {
+			if (!assistantContainerDiv.isShown()) {
 				showContainer(assistantContainerDiv);
 				hideContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
@@ -128,19 +128,12 @@ export class Header {
 		if (this.viewType === "floating-action-button") {
 			this.newChatButton = new ButtonComponent(leftButtonDiv);
 			this.settingsButton = new ButtonComponent(rightButtonsDiv);
-		// 	const closeButton = new ButtonComponent(rightButtonsDiv);
-		// 	closeButton.buttonEl.addClass("clickable-icon");
-		// 	closeButton.setIcon("cross");
-		// 	closeButton.onClick(() => {
-		// 		const FAV = document.querySelectorAll(".fab-view-area")[0];
-		// 		hideContainer(FAV as HTMLElement);
-			// });
 		} else {
 			this.newChatButton = new ButtonComponent(rightButtonsDiv);
 			this.settingsButton = new ButtonComponent(leftButtonDiv);
 		}
 
-		this.settingsButton.setTooltip("Chat Settings");
+		this.settingsButton.setTooltip("Chat settings");
 		this.settingsButton.onClick(() => {
 			settingsContainer.resetSettings(settingsContainerDiv);
 			settingsContainer.generateSettingsContainer(
@@ -148,7 +141,7 @@ export class Header {
 				this
 			);
 			this.clickHandler(this.settingsButton, [this.chatHistoryButton, this.assistantsButton]);
-			if (settingsContainerDiv.style.display === "none") {
+			if (!settingsContainerDiv.isShown()) {
 				showContainer(settingsContainerDiv);
 				hideContainer(chatContainerDiv);
 				hideContainer(chatHistoryContainerDiv);
@@ -159,7 +152,7 @@ export class Header {
 			}
 		});
 
-		this.newChatButton.setTooltip("New Chat");
+		this.newChatButton.setTooltip("New chat");
 		this.newChatButton.onClick(() => {
 			const { modelName } = getViewInfo(this.plugin, this.viewType);
 			this.clickHandler(this.newChatButton, [
@@ -167,7 +160,7 @@ export class Header {
 				this.chatHistoryButton,
 				this.assistantsButton
 			]);
-			this.setHeader(modelName, "New Chat");
+			this.setHeader(modelName, "New chat");
 			showContainer(chatContainerDiv);
 			hideContainer(settingsContainerDiv);
 			hideContainer(chatHistoryContainerDiv);
@@ -177,9 +170,9 @@ export class Header {
 			setHistoryIndex(this.plugin, this.viewType);
 		});
 
-		leftButtonDiv.addClass("one", "left-buttons-div", "flex");
-		rightButtonsDiv.addClass("one", "right-buttons-div", "flex");
-		titleContainer.addClass("four", "title", "flex");
+		leftButtonDiv.addClass("llm-left-buttons-div", "llm-flex");
+		rightButtonsDiv.addClass("llm-right-buttons-div", "llm-flex");
+		titleContainer.addClass("llm-title", "llm-flex");
 		this.chatHistoryButton.buttonEl.addClass(
 			"clickable-icon",
 			"chat-history"

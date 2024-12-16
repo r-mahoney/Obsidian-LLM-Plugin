@@ -7,7 +7,8 @@ import {
 	TextComponent,
 	TFile,
 	ToggleComponent,
-	Notice
+	Notice,
+	Platform
 } from "obsidian";
 import { Assistant } from "openai/resources/beta/assistants";
 import { VectorStore } from "openai/resources/beta/vector-stores/vector-stores";
@@ -16,16 +17,13 @@ import { openAIModels, models } from "utils/models";
 import {
 	createAssistant,
 	createVectorAndUpdate,
-	DEFAULT_DIRECTORY,
 	deleteAssistant,
 	deleteVector,
-	isWindows,
 	listAssistants,
 	listVectors,
 } from "utils/utils";
-import { assistant as ASSISTANT, GPT4All } from "utils/constants";
+import { assistant as ASSISTANT } from "utils/constants";
 import { SingletonNotice } from "./SingletonNotice";
-const fs = require("fs");
 
 export class AssistantsContainer {
 	viewType: ViewType;
@@ -61,17 +59,17 @@ export class AssistantsContainer {
 
 	async generateAssistantsContainer(parentContainer: HTMLElement) {
 		const optionDropdown = new Setting(parentContainer)
-			.setName("Assistants Options")
+			.setName("Assistants options")
 			.setDesc("What do you want to do?")
 			.addDropdown((dropdown: DropdownComponent) => {
-				dropdown.addOption("", "---Assistant Options---");
-				dropdown.addOption("asst_create", "Create an Assistant");
-				dropdown.addOption("asst_update", "Update an Assistant");
-				dropdown.addOption("asst_delete", "Delete an Assistant");
-				dropdown.addOption("", "---Vector Storage Options---");
-				dropdown.addOption("vect_create", "Create Vector Storage");
-				dropdown.addOption("vect_update", "Update Vector Storage");
-				dropdown.addOption("vect_delete", "Delete Vector Storage");
+				dropdown.addOption("", "---Assistant options---");
+				dropdown.addOption("asst_create", "Create an assistant");
+				dropdown.addOption("asst_update", "Update an assistant");
+				dropdown.addOption("asst_delete", "Delete an assistant");
+				dropdown.addOption("", "---Vector storage options---");
+				dropdown.addOption("vect_create", "Create vector storage");
+				dropdown.addOption("vect_update", "Update vector storage");
+				dropdown.addOption("vect_delete", "Delete vector storage");
 
 				dropdown.onChange((change) => {
 					this.resetContainer(parentContainer);
@@ -112,13 +110,13 @@ export class AssistantsContainer {
 
 		const buttonDiv = parentContainer.createDiv();
 		buttonDiv.addClass(
-			"flex",
+			"llm-flex",
 			"assistants-create-button-div",
 			"setting-item"
 		);
 		const submitButton = new ButtonComponent(buttonDiv);
-		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
-		submitButton.buttonEl.textContent = "Create Assistant";
+		submitButton.buttonEl.addClass("mod-cta", "llm-assistants-button");
+		submitButton.buttonEl.textContent = "Create assistant";
 
 		submitButton.onClick(async (e: MouseEvent) => {
 
@@ -133,17 +131,20 @@ export class AssistantsContainer {
 				return;
 			}
 
-			SingletonNotice.show("Creating Assistant...")
+			SingletonNotice.show("Creating assistant...")
 			e.preventDefault();
-			//@ts-ignore
-			const basePath = app.vault.adapter.basePath;
-			const slashToUse = isWindows() ? "\\" : "/";
 
-			const assistantFiles = this.assistantFilesToAdd?.map(
-				(file: string) => {
+			const assistantFiles = this.assistantFilesToAdd?.map((file: string) => {
+				if (Platform.isMobile) {
+					return file;
+				} else {
+					const slashToUse = this.plugin.os.platform() === "win32" ? "\\" : "/";
+					//@ts-ignore 
+					const basePath = this.plugin.app.vault.adapter.basePath;
+
 					return `${basePath}${slashToUse}${file}`;
 				}
-			);
+			});
 
 			const hasFiles = this.assistantFilesToAdd?.length >= 1
 			const assistantObj = {
@@ -161,7 +162,8 @@ export class AssistantsContainer {
 				const vector_store_id = await createVectorAndUpdate(
 					assistantFiles,
 					assistant,
-					this.plugin.settings.openAIAPIKey
+					this.plugin.settings.openAIAPIKey,
+					this.plugin.fileSystem
 				);
 				this.plugin.assistants.push({
 					...assistant,
@@ -179,14 +181,13 @@ export class AssistantsContainer {
 
 			// Note -> this notice shows up much faster than the UI pushes to the next view
 			if (assistant) {
-				new Notice("Assistant Created Successfully");
+				new Notice("Assistant created successfully");
 			}
 
 			this.resetContainer(parentContainer);
 		});
 	}
 
-	// TODO - add validation
 	async updateAssistant(parentContainer: HTMLElement) {
 		const assistantsList = await listAssistants(
 			this.plugin.settings.openAIAPIKey
@@ -194,9 +195,9 @@ export class AssistantsContainer {
 		let chosenAssistant: Assistant;
 		const assistants = new Setting(parentContainer)
 			.setName("Assistants")
-			.setDesc("Which Assistant do you want to update?")
+			.setDesc("Which assistant do you want to update?")
 			.addDropdown((dropdown: DropdownComponent) => {
-				dropdown.addOption("", "---Select an Assistant---");
+				dropdown.addOption("", "---Select an assistant---");
 				assistantsList.map((assistant: Assistant) => {
 					dropdown.addOption(assistant.id, assistant.name as string);
 					dropdown.onChange((change) => {
@@ -218,16 +219,16 @@ export class AssistantsContainer {
 			});
 
 		const updateSettings = parentContainer.createEl("div");
-		updateSettings.addClass("update-settings");
+		updateSettings.addClass("llm-update-settings");
 		this.updateSettings = updateSettings;
 		this.generateGenericSettings(this.updateSettings, "update");
 		this.generateUpdateAssistants(this.updateSettings);
 
 		const buttonDiv = parentContainer.createDiv();
-		buttonDiv.addClass("flex", "update-button-div", "setting-item");
+		buttonDiv.addClass("llm-flex", "update-button-div", "setting-item");
 		const submitButton = new ButtonComponent(buttonDiv);
-		submitButton.buttonEl.addClass("mod-cta", "assistants-button");
-		submitButton.buttonEl.textContent = "Update Assistant";
+		submitButton.buttonEl.addClass("mod-cta", "llm-assistants-button");
+		submitButton.buttonEl.textContent = "Update assistant";
 
 		submitButton.onClick((event: MouseEvent) => {
 			event.preventDefault();
@@ -257,18 +258,18 @@ export class AssistantsContainer {
 				text: assistant.name as string,
 			});
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", "flex");
+			buttonsDiv.addClass("history-buttons-div", "llm-flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 			deleteHistory.buttonEl.setAttr("style", "visibility: hidden");
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "flex");
+			item.addClass("llm-history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
-				"delete-history-button",
+				"llm-delete-history-button",
 				"mod-warning"
 			);
-			deleteHistory.buttonEl.id = "delete-history-button";
+			deleteHistory.buttonEl.id = "llm-delete-history-button";
 
 			item.addEventListener("mouseenter", () => {
 				if (
@@ -316,15 +317,15 @@ export class AssistantsContainer {
 		needsReturn?: boolean
 	) {
 		let filePathArray: string[] = [];
-		const files = app.vault.getFiles();
+		const files = this.plugin.app.vault.getFiles();
 		this.generateGenericSettings(parentContainer, "create");
 		const file_ids = new Setting(parentContainer).setName("Search");
 		let filesDiv = parentContainer.createEl("div");
-		filesDiv.addClass("setting-item", "vector-dropdown");
+		filesDiv.addClass("setting-item", "llm-vector-dropdown");
 		let header = filesDiv.createEl("div");
 		header.addClass("setting-item-info");
 		let searchDiv = filesDiv.createEl("div");
-		searchDiv.addClass("setting-item-control", "vector-files");
+		searchDiv.addClass("setting-item-control", "llm-vector-files");
 		file_ids.addSearch((search: SearchComponent) => {
 			search.onChange((change) => {
 				searchDiv.empty();
@@ -336,21 +337,21 @@ export class AssistantsContainer {
 					file.basename.toLowerCase().includes(change.toLowerCase())
 				);
 				options.map((option: TFile) => {
-					const item = searchDiv.createEl("option", {
+					const item = searchDiv.createEl("span", {
 						text: option.name,
-						cls: "vector-file"
+						cls: "llm-vector-file"
 					});
 					if (filePathArray.includes(option.path))
-						item.addClass("file-added");
+						item.addClass("llm-file-added");
 
 					item.onClickEvent((click: MouseEvent) => {
 						if (filePathArray.includes(option.path)) {
-							item.removeClass("file-added");
+							item.removeClass("llm-file-added");
 							filePathArray = filePathArray.filter(
 								(file_path: string) => file_path !== option.path
 							);
 						} else {
-							item.addClass("file-added");
+							item.addClass("llm-file-added");
 							filePathArray = [...filePathArray, option.path];
 						}
 						assistantOption === ASSISTANT
@@ -366,7 +367,7 @@ export class AssistantsContainer {
 	createVector(parentContainer: HTMLElement) {
 		let vectorName = "";
 		const name = new Setting(parentContainer)
-			.setName("Vector Storage Name")
+			.setName("Vector storage name")
 			.setDesc("The name for your new vector storage")
 			.addText((text: TextComponent) => {
 				text.onChange((change) => { });
@@ -385,18 +386,18 @@ export class AssistantsContainer {
 				text: vectorStore.name
 			});
 			const buttonsDiv = item.createDiv();
-			buttonsDiv.addClass("history-buttons-div", "flex");
+			buttonsDiv.addClass("history-buttons-div", "llm-flex");
 			const deleteHistory = new ButtonComponent(buttonsDiv);
 			deleteHistory.buttonEl.setAttr("style", "visibility: hidden");
 
 			item.className = "setting-item";
 			item.setAttr("contenteditable", "false");
-			item.addClass("history-item", "flex");
+			item.addClass("llm-history-item", "llm-flex");
 			deleteHistory.buttonEl.addClass(
-				"delete-history-button",
+				"llm-delete-history-button",
 				"mod-warning"
 			);
-			deleteHistory.buttonEl.id = "delete-history-button";
+			deleteHistory.buttonEl.id = "llm-delete-history-button";
 
 			item.addEventListener("mouseenter", () => {
 				if (
@@ -436,7 +437,7 @@ export class AssistantsContainer {
 		assistant?: Assistant
 	) {
 		const assistantName = new Setting(parentContainer)
-			.setName("Assistant Name")
+			.setName("Assistant name")
 			.setDesc("The name to be attributed to the new assistant")
 			.addText((text) => {
 				if (assistant) text.setValue(assistant.name as string);
@@ -449,7 +450,7 @@ export class AssistantsContainer {
 			});
 
 		const assistantIntructions = new Setting(parentContainer)
-			.setName("Assistant Instructions")
+			.setName("Assistant instructions")
 			.setDesc("The system instructions for the assistant to follow.")
 			.addText((text) => {
 				if (assistant) text.setValue(assistant.instructions as string);
@@ -462,11 +463,11 @@ export class AssistantsContainer {
 			});
 
 		const assistantModel = new Setting(parentContainer)
-			.setName("Assistant Model")
+			.setName("Assistant model")
 			.setDesc("Which LLM you want your assistant to use")
 			.addDropdown((dropdown: DropdownComponent) => {
 				if (assistant) dropdown.setValue(assistant.model as string);
-				dropdown.addOption("", "---Select Model---");
+				dropdown.addOption("", "---Select model---");
 				let keys = Object.keys(openAIModels);
 				for (let model of keys) {
 					dropdown.addOption(models[model].model, model);
@@ -480,12 +481,12 @@ export class AssistantsContainer {
 			});
 
 		const assistantToolType = new Setting(parentContainer)
-			.setName("Assistant Tool Type")
-			.setDesc("File Search or Code Review") // NOTE -> we do not support Code Review at this point.
+			.setName("Assistant tool type")
+			.setDesc("File search or code review") // NOTE -> we do not support Code Review at this point.
 			.addDropdown((dropdown: DropdownComponent) => {
 				if (assistant)
 					dropdown.setValue(assistant.tools[0].type as string);
-				dropdown.addOption("", "---Tool Type---");
+				dropdown.addOption("", "---Tool type---");
 				dropdown.addOption("file_search", "File Search");
 				// dropdown.addOption("code_interpreter", "Code Interpreter");
 
@@ -511,7 +512,7 @@ export class AssistantsContainer {
 		assistant?: Assistant
 	) {
 		const tool_resources = new Setting(parentContainer)
-			.setName("Tool Resources")
+			.setName("Tool resources")
 			.setDesc(
 				"A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the code_interpreter tool requires a list of file IDs, while the file_search tool requires a list of vector store IDs."
 			)
@@ -520,14 +521,14 @@ export class AssistantsContainer {
 				toggle.onChange((change) => {
 					if (change) {
 						const vector_store_ids = new Setting(trDiv)
-							.setName("Vector Store")
+							.setName("Vector store")
 							.setDesc(
 								"The new vector store id to attach to ths assistant"
 							)
 							.addDropdown((dropdown: DropdownComponent) => {
 								dropdown.addOption(
 									"",
-									"---Select Vectore Store---"
+									"---Select vector store---"
 								);
 								dropdown.addOption("vectorStoreId", "ID");
 								dropdown.onChange((change) => {

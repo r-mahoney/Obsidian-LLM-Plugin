@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf } from "obsidian";
+import { Plugin, WorkspaceLeaf, Platform	 } from "obsidian";
 import {
 	HistoryItem,
 	ImageQuality,
@@ -30,6 +30,8 @@ import {
 	gemini,
 } from "utils/constants";
 import { MessageStore } from "Plugin/Components/MessageStore";
+import { DesktopOperatingSystem, MobileOperatingSystem, OperatingSystem } from "services/OperatingSystem";
+import { DesktopFileSystem, MobileFileSystem, FileSystem } from "services/FileSystem";
 
 export interface LLMPluginSettings {
 	appName: string;
@@ -51,7 +53,7 @@ const defaultSettings = {
 	assistant: false,
 	assistantId: "",
 	model: "gpt-3.5-turbo",
-	modelName: "ChatGPT-3.5 Turbo",
+	modelName: "ChatGPT-3.5 turbo",
 	modelType: "openAI",
 	modelEndpoint: chat,
 	endpointURL: "/chat/completions",
@@ -75,11 +77,6 @@ const defaultSettings = {
 			responseFormat: "",
 			topP: 1,
 		},
-	},
-	speechSettings: {
-		voice: "alloy",
-		responseFormat: "mp3",
-		speed: 1.0,
 	},
 };
 
@@ -106,6 +103,8 @@ export const DEFAULT_SETTINGS: LLMPluginSettings = {
 };
 
 export default class LLMPlugin extends Plugin {
+	fileSystem: FileSystem;
+	os: OperatingSystem;
 	settings: LLMPluginSettings;
 	assistants: Assistants;
 	history: History;
@@ -113,6 +112,8 @@ export default class LLMPlugin extends Plugin {
 	messageStore: MessageStore;
 
 	async onload() {
+		this.fileSystem = Platform.isDesktop ? new DesktopFileSystem() : new MobileFileSystem(this);
+		this.os = Platform.isDesktop ? new DesktopOperatingSystem() : new MobileOperatingSystem();
 		await this.loadSettings();
 		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();
@@ -149,35 +150,33 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	private registerCommands() {
-		//modal command that will be removed when modal is depricated
-		const openChat = this.addCommand({
+		this.addCommand({
 			id: "open-llm-modal",
-			name: "Open LLM Modal",
+			name: "Open modal",
 			callback: () => {
 				new ChatModal2(this).open();
 			},
 		});
 
-		//widget command
-		const openWidgetLeaf = this.addCommand({
+		this.addCommand({
 			id: "open-LLM-widget-leaf",
-			name: "Open Chat in Sidebar",
+			name: "Open chat in sidebar",
 			callback: () => {
 				this.activateLeaf();
 			},
 		});
 
-		const openWidgetTab = this.addCommand({
+		this.addCommand({
 			id: "open-LLM-widget-tab",
-			name: "Open Chat in Tab",
+			name: "Open chat in tab",
 			callback: () => {
 				this.activateTab();
 			},
 		});
 
-		const toggleFab = this.addCommand({
+		this.addCommand({
 			id: "toggle-LLM-fab",
-			name: "Toggle LLM FAB",
+			name: "Toggle FAB",
 			callback: () => {
 				const currentFABState = this.settings.showFAB;
 				this.settings.showFAB = !currentFABState;
@@ -190,10 +189,9 @@ export default class LLMPlugin extends Plugin {
 	}
 
 	private registerRibbonIcons() {
-		//modal ribbon icon will be removed when modal is depricated
-		const conversationalModalIcon = this.addRibbonIcon(
+		this.addRibbonIcon(
 			"bot",
-			"Ask A Question",
+			"Ask a question",
 			(evt: MouseEvent) => {
 				new ChatModal2(this).open();
 			}
@@ -255,7 +253,6 @@ export default class LLMPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	// TODO - refactor into utils
 	async validateActiveModelsAPIKeys() {
 		let activeClaudeModel, activeGeminiModel, activeOpenAIModel;
 
@@ -306,7 +303,6 @@ export default class LLMPlugin extends Plugin {
 			return key;
 		});
 
-		// TODO - when a user saves a new api key, we should check if it's valid
 		const promises = filteredPairs.map(async (pair) => {
 			const result = await getApiKeyValidity(pair);
 			return result;
@@ -318,9 +314,6 @@ export default class LLMPlugin extends Plugin {
 				return result.valid && result.provider === openAI;
 			}
 		});
-
-		// We likely want a 'global' state variable to track whether or not
-		// any UI elements around assistants should be on.
 
 		// If the model is OpenAI and the key is valid -> generate the assistant list
 		if (hasValidOpenAIAPIKey) await generateAssistantsList(this.settings);

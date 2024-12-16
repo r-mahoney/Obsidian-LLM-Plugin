@@ -6,14 +6,12 @@ import {
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
-import { DEFAULT_DIRECTORY, changeDefaultModel } from "utils/utils";
+import { changeDefaultModel, getGpt4AllPath } from "utils/utils";
 import { models, modelNames } from "utils/models";
 import { claudeSonnetJuneModel, openAIModel, geminiModel, GPT4All } from "utils/constants";
 import logo from "assets/LLMguy.svg";
 import { FAB } from "Plugin/FAB/FAB";
 import DefaultModelModal from "Plugin/Components/DefaultModelModal";
-
-const fs = require("fs");
 
 export default class SettingsView extends PluginSettingTab {
 	plugin: LLMPlugin;
@@ -48,8 +46,10 @@ export default class SettingsView extends PluginSettingTab {
 				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.claudeAPIKey}`);
 				text.onChange((change) => {
-					valueChanged = true;
-					this.plugin.settings.claudeAPIKey = change;
+					if (change.trim().length) {
+						valueChanged = true;
+						this.plugin.settings.claudeAPIKey = change;
+					}
 				});
 				// Handle blur event (when the user finishes editing)
 				text.inputEl.addEventListener('blur', () => {
@@ -75,8 +75,10 @@ export default class SettingsView extends PluginSettingTab {
 				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.geminiAPIKey}`);
 				text.onChange((change) => {
-					valueChanged = true;
-					this.plugin.settings.geminiAPIKey = change;
+					if (change.trim().length) {
+						valueChanged = true;
+						this.plugin.settings.geminiAPIKey = change;
+					}
 				});
 				// Handle blur event (when the user finishes editing)
 				text.inputEl.addEventListener('blur', () => {
@@ -102,9 +104,11 @@ export default class SettingsView extends PluginSettingTab {
 				let valueChanged = false;
 				text.setValue(`${this.plugin.settings.openAIAPIKey}`);
 				text.onChange((change) => {
-					valueChanged = true;
-					this.plugin.settings.openAIAPIKey = change;
-					this.plugin.saveSettings();
+					if (change.trim().length) {
+						valueChanged = true;
+						this.plugin.settings.openAIAPIKey = change;
+						this.plugin.saveSettings();
+					}
 				});
 				// Handle blur event (when the user finishes editing)
 				text.inputEl.addEventListener('blur', () => {
@@ -136,17 +140,12 @@ export default class SettingsView extends PluginSettingTab {
 				let keys = Object.keys(models);
 				for (let model of keys) {
 					if (models[model].type === GPT4All) {
-						fs.exists(
-							`${DEFAULT_DIRECTORY}/${models[model].model}`,
-							(exists: boolean) => {
-								if (exists) {
-									dropdown.addOption(
-										models[model].model,
-										model
-									);
-								}
-							}
-						);
+						const gpt4AllPath = getGpt4AllPath(this.plugin);
+						const fullPath = `${gpt4AllPath}/${models[model].model}`;
+						const exists = this.plugin.fileSystem.existsSync(fullPath);
+						if (exists) {
+							dropdown.addOption(models[model].model, model);
+						}
 					} else {
 						dropdown.addOption(models[model].model, model);
 					}
@@ -193,7 +192,7 @@ export default class SettingsView extends PluginSettingTab {
 			});
 
 		const llmGuy = containerEl.createDiv();
-		llmGuy.addClass("icon-wrapper");
+		llmGuy.addClass("llm-icon-wrapper");
 
 		// Parse SVG string to DOM element
 		const parser = new DOMParser();
@@ -205,28 +204,29 @@ export default class SettingsView extends PluginSettingTab {
 
 		const credits = llmGuy.createEl("div", {
 			attr: {
-				id: "settings-credits"
+				id: "llm-settings-credits"
 			},
 
 		});
-		const creditsHeader = credits.createEl("h2", {
+
+		const creditsHeader = credits.createEl("p", {
 			text: "LLM Plugin",
 			attr: {
-				id: "hero-credits"
+				id: "llm-hero-credits"
 			}
 		});
 		credits.appendChild(creditsHeader);
 		const creditsNames = credits.createEl("p", {
-			text: "By Johnny✨ and Ryan Mahoney",
+			text: "By Johnny✨, Ryan Mahoney, and Evan Harris",
 			attr: {
-				class: "hero-names text-muted"
+				class: "llm-hero-names llm-text-muted"
 			}
 		});
 		credits.appendChild(creditsNames);
 		const creditsVersion = credits.createEl("span", {
 			text: `v${this.plugin.manifest.version}`,
 			attr: {
-				class: "text-muted version"
+				class: "llm-text-muted version"
 			}
 		});
 		credits.appendChild(creditsVersion);

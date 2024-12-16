@@ -1,8 +1,6 @@
-import { existsSync } from "fs";
-import fs from "fs";
-import path from "path";
 import LLMPlugin, { LLMPluginSettings } from "main";
-import { Editor } from "obsidian";
+import { FileSystem } from "services/FileSystem";
+import { Editor, requestUrl, RequestUrlParam } from "obsidian";
 import OpenAI, { toFile } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
 import { openAI, claude, chat, claudeSonnetJuneModel, gemini, geminiModel } from "utils/constants";
@@ -12,7 +10,6 @@ import {
 	ImageParams,
 	Message,
 	ProviderKeyPair,
-	SpeechParams,
 	ViewSettings,
 	ViewType,
 } from "Types/types";
@@ -22,21 +19,15 @@ import {
 import { Assistant } from "openai/resources/beta/assistants";
 import { GoogleGenerativeAI, Content, GenerateContentRequest } from "@google/generative-ai";
 
-const homeDir = require("os").homedir();
-export const DEFAULT_DIRECTORY = path.resolve(
-	homeDir,
-	navigator.platform.indexOf("Win") > -1
-		? "AppData/Local/nomic.ai/GPT4All/"
-		: "Library/Application Support/nomic.ai/GPT4All"
-);
-
-export function isWindows() {
-	return navigator.platform.indexOf("Win") > -1
-}
-
-export function modelLookup(modelName: string) {
-	const model = path.join(DEFAULT_DIRECTORY, modelName);
-	return existsSync(model);
+export function getGpt4AllPath(plugin: LLMPlugin) {
+	const platform = plugin.os.platform();
+	const homedir = plugin.os.homedir();
+	if (platform === "win32") {
+		return `${homedir}\\AppData\\Local\\nomic.ai\\GPT4All`;
+	} else {
+		// Mac 
+		return `${homedir}/Library/Application Support/nomic.ai/GPT4All`;
+	}
 }
 
 export function upperCaseFirst(input: string): string {
@@ -45,7 +36,8 @@ export function upperCaseFirst(input: string): string {
 }
 
 export async function messageGPT4AllServer(params: ChatParams, url: string) {
-	const response = await fetch(`http://localhost:4891${url}`, {
+	const request = {
+		url: `http://localhost:4891${url}`,
 		method: "POST",
 		body: JSON.stringify({
 			model: params.model,
@@ -53,7 +45,8 @@ export async function messageGPT4AllServer(params: ChatParams, url: string) {
 			max_tokens: params.tokens,
 			temperature: params.temperature,
 		}),
-	}).then((res) => res.json());
+	} as RequestUrlParam;
+	const response = await requestUrl(request).then((res) => res.json());
 	return response.choices[0].message;
 }
 
@@ -162,7 +155,7 @@ export async function claudeMessage(
 
 /* FOR NOW USING GPT4ALL PARAMS, BUT SHOULD PROBABLY MAKE NEW OPENAI PARAMS TYPE */
 export async function openAIMessage(
-	params: ChatParams | ImageParams | SpeechParams,
+	params: ChatParams | ImageParams,
 	OpenAI_API_Key: string,
 	endpoint: string,
 	endpointType: string
@@ -218,27 +211,6 @@ export async function openAIMessage(
 		});
 		return imageURLs;
 	}
-
-	if (endpointType === "speech") {
-		const { input, model, voice, responseFormat } =
-			params as SpeechParams;
-		const filename = input.split(" ")[0];
-		const speechfile = path.resolve(`./${filename}.${responseFormat}`);
-
-		const response = await openai.audio.speech.create({
-			model,
-			voice: voice as
-				| "alloy"
-				| "echo"
-				| "fable"
-				| "onyx"
-				| "nova"
-				| "shimmer",
-			input,
-		});
-		// const buffer = Buffer.from(await response.arrayBuffer());
-		// await fs.promises.writeFile(speechfile, buffer);
-	}
 }
 
 export async function assistantsMessage(
@@ -285,7 +257,6 @@ export function getViewInfo(
 			assistantId: plugin.settings.modalSettings.assistantId,
 			imageSettings: plugin.settings.modalSettings.imageSettings,
 			chatSettings: plugin.settings.modalSettings.chatSettings,
-			speechSettings: plugin.settings.modalSettings.speechSettings,
 			model: plugin.settings.modalSettings.model,
 			modelName: plugin.settings.modalSettings.modelName,
 			modelType: plugin.settings.modalSettings.modelType,
@@ -301,7 +272,6 @@ export function getViewInfo(
 			assistantId: plugin.settings.widgetSettings.assistantId,
 			imageSettings: plugin.settings.widgetSettings.imageSettings,
 			chatSettings: plugin.settings.widgetSettings.chatSettings,
-			speechSettings: plugin.settings.widgetSettings.speechSettings,
 			model: plugin.settings.widgetSettings.model,
 			modelName: plugin.settings.widgetSettings.modelName,
 			modelType: plugin.settings.widgetSettings.modelType,
@@ -317,7 +287,6 @@ export function getViewInfo(
 			assistantId: plugin.settings.fabSettings.assistantId,
 			imageSettings: plugin.settings.fabSettings.imageSettings,
 			chatSettings: plugin.settings.fabSettings.chatSettings,
-			speechSettings: plugin.settings.fabSettings.speechSettings,
 			model: plugin.settings.fabSettings.model,
 			modelName: plugin.settings.fabSettings.modelName,
 			modelType: plugin.settings.fabSettings.modelType,
@@ -338,7 +307,6 @@ export function getViewInfo(
 			quality: "standard",
 		},
 		chatSettings: { maxTokens: 0, temperature: 0 },
-		speechSettings: { voice: "", responseFormat: "", speed: 0 },
 		model: "",
 		modelName: "",
 		modelType: "",
@@ -352,31 +320,31 @@ export function changeDefaultModel(
 	model: string,
 	plugin: LLMPlugin,
 ) {
-		plugin.settings.defaultModel = model;
-		// Question -> why do we not update the FAB model here?
-		const modelName = modelNames[model];
-		// Modal settings
+	plugin.settings.defaultModel = model;
+	// Question -> why do we not update the FAB model here?
+	const modelName = modelNames[model];
+	// Modal settings
 
-		plugin.settings.modalSettings.model = model;
-		plugin.settings.modalSettings.modelName = modelName;
-		plugin.settings.modalSettings.modelType =
-			models[modelName].type;
-		plugin.settings.modalSettings.endpointURL =
-			models[modelName].url;
-		plugin.settings.modalSettings.modelEndpoint =
-			models[modelName].endpoint;
+	plugin.settings.modalSettings.model = model;
+	plugin.settings.modalSettings.modelName = modelName;
+	plugin.settings.modalSettings.modelType =
+		models[modelName].type;
+	plugin.settings.modalSettings.endpointURL =
+		models[modelName].url;
+	plugin.settings.modalSettings.modelEndpoint =
+		models[modelName].endpoint;
 
-		// Widget settings
-		plugin.settings.widgetSettings.model = model;
-		plugin.settings.widgetSettings.modelName = modelName;
-		plugin.settings.widgetSettings.modelType =
-			models[modelName].type;
-		plugin.settings.widgetSettings.endpointURL =
-			models[modelName].url;
-		plugin.settings.widgetSettings.modelEndpoint =
-			models[modelName].endpoint;
+	// Widget settings
+	plugin.settings.widgetSettings.model = model;
+	plugin.settings.widgetSettings.modelName = modelName;
+	plugin.settings.widgetSettings.modelType =
+		models[modelName].type;
+	plugin.settings.widgetSettings.endpointURL =
+		models[modelName].url;
+	plugin.settings.widgetSettings.modelEndpoint =
+		models[modelName].endpoint;
 
-		plugin.saveSettings();
+	plugin.saveSettings();
 }
 
 export function setHistoryIndex(
@@ -470,7 +438,6 @@ export async function listAssistants(OpenAI_API_Key: string) {
 	return myAssistants.data
 }
 
-// TODO / NOTE - Claude does not have 'assistants' 
 export async function generateAssistantsList(settings: LLMPluginSettings) {
 	const assisitantsFromOpenAI = await listAssistants(
 		settings.openAIAPIKey
@@ -515,7 +482,8 @@ export async function deleteVector(OpenAI_API_Key: string, vector_id: string) {
 export async function createVectorAndUpdate(
 	files: string[],
 	assistant: Assistant,
-	OpenAI_API_Key: string
+	OpenAI_API_Key: string,
+	fileSystem: FileSystem
 ) {
 	const openai = new OpenAI({
 		apiKey: OpenAI_API_Key,
@@ -524,7 +492,16 @@ export async function createVectorAndUpdate(
 
 	const file_ids = await Promise.all(
 		files.map(async (filePath) => {
-			const fileToUpload = await toFile(fs.createReadStream(filePath));
+			const stream = await fileSystem.createReadStream(filePath);
+			const reader = stream.getReader();
+			const chunks = [];
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+				chunks.push(value);
+			}
+			const fileContent = new Uint8Array(chunks.flat());
+			const fileToUpload = await toFile(new Blob([fileContent]), filePath); // Pass filename to preserve extension
 			const file = await openai.files.create({
 				file: fileToUpload,
 				purpose: "assistants",

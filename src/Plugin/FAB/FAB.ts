@@ -73,14 +73,14 @@ export class FAB {
 		let history = this.plugin.settings.promptHistory;
 
 		settingsContainerDiv.setAttr("style", "display: none");
-		settingsContainerDiv.addClass("fab-settings-container", "flex");
+		settingsContainerDiv.addClass("fab-settings-container", "llm-flex");
 		assistantsContainerDiv.setAttr("style", "display: none");
-		assistantsContainerDiv.addClass("fab-assistants-container", "flex");
+		assistantsContainerDiv.addClass("fab-assistants-container", "llm-flex");
 		chatHistoryContainer.setAttr("style", "display: none");
-		chatHistoryContainer.addClass("fab-chat-history-container", "flex");
+		chatHistoryContainer.addClass("fab-chat-history-container", "llm-flex");
 		lineBreak.className =
 			classNames["floating-action-button"]["title-border"];
-		chatContainerDiv.addClass("fab-chat-container", "flex");
+		chatContainerDiv.addClass("fab-chat-container", "llm-flex");
 
 		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(
@@ -102,7 +102,7 @@ export class FAB {
 			.setIcon("message-circle")
 			.setClass("buttonItem")
 			.onClick(() => {
-				if (viewArea.style.display === "none") {
+				if (!viewArea.isShown()) {
 					this.showViewArea(viewArea);
 				} else {
 					this.hideContainer(viewArea);
