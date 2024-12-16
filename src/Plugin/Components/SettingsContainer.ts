@@ -61,7 +61,6 @@ export class SettingsContainer {
 					}
 				}
 				dropdown.onChange((change) => {
-					console.log(change);
 					const { historyIndex } = getViewInfo(
 						this.plugin,
 						this.viewType

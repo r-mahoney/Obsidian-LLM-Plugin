@@ -29,9 +29,11 @@ import {
 	claude,
 	gemini,
 } from "utils/constants";
+import { MessageStore } from "Plugin/Components/MessageStore";
 
 export interface LLMPluginSettings {
 	appName: string;
+	currentIndex: number;
 	modalSettings: ViewSettings;
 	widgetSettings: ViewSettings;
 	fabSettings: ViewSettings;
@@ -83,6 +85,7 @@ const defaultSettings = {
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
 	appName: "Local LLM Plugin",
+	currentIndex: -1,
 	modalSettings: {
 		...defaultSettings,
 	},
@@ -107,12 +110,18 @@ export default class LLMPlugin extends Plugin {
 	assistants: Assistants;
 	history: History;
 	fab: FAB;
+	messageStore: MessageStore;
 
 	async onload() {
 		await this.loadSettings();
 		await this.checkForAPIKeyBasedModel();
 		this.registerRibbonIcons();
 		this.registerCommands();
+		this.messageStore = new MessageStore();
+		this.settings.currentIndex = -1;
+		this.messageStore.setMessages([]);
+		console.log(this.messageStore.getMessages());
+		this.saveSettings();
 
 		this.registerView(
 			TAB_VIEW_TYPE,
@@ -231,6 +240,8 @@ export default class LLMPlugin extends Plugin {
 		const dataJSON = await this.loadData();
 		if (dataJSON) {
 			this.settings = Object.assign({}, dataJSON);
+			this.settings.fabSettings.historyIndex = -1;
+			this.settings.widgetSettings.historyIndex = -1;
 		} else {
 			this.settings = Object.assign(
 				{},
