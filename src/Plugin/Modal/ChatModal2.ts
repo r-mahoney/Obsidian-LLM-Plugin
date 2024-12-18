@@ -58,7 +58,7 @@ export class ChatModal2 extends Modal {
 			this.hideContainer
 		);
 		let history = this.plugin.settings.promptHistory;
-console.log('hi')
+
 		settingsContainerDiv.setAttr("style", "display: none");
 		settingsContainerDiv.addClass("llm-modal-settings-container", "llm-flex");
 		assistantsContainerDiv.setAttr("style", "display: none");
