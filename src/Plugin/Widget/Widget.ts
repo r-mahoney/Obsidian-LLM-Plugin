@@ -46,7 +46,8 @@ export class WidgetView extends ItemView {
 		const header = new Header(this.plugin, "widget");
 		const chatContainer = new ChatContainer(
 			this.plugin,
-			"widget" /*, closeModal*/
+			"widget",
+			this.plugin.messageStore
 		);
 		const historyContainer = new HistoryContainer(this.plugin, "widget");
 		const settingsContainer = new SettingsContainer(this.plugin, "widget");

@@ -97,7 +97,7 @@ export class HistoryContainer {
 			showContainer(containerToShow);
 			chat.setMessages(true);
 			const messages = chat.getMessages();
-			chat.generateIMLikeMessgaes(messages);
+			chat.generateIMLikeMessages(messages);
 			containerToShow.querySelector(".messages-div")?.scroll(0, 9999);
 			const index = this.historyIndex;
 			const header = this.plugin.settings.promptHistory[index].prompt;
