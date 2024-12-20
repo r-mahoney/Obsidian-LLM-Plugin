@@ -4,6 +4,7 @@ import { ChatContainer } from "./ChatContainer";
 import { HistoryContainer } from "./HistoryContainer";
 import { ViewType } from "Types/types";
 import { getViewInfo, setHistoryIndex } from "utils/utils";
+import { hideContainer, showContainer } from "utils/dom";
 import { SettingsContainer } from "./SettingsContainer";
 import { AssistantsContainer } from "./AssistantsContainer";
 
@@ -67,8 +68,6 @@ export class Header {
 		historyContainer: HistoryContainer,
 		settingsContainer: SettingsContainer,
 		assistantsContainer: AssistantsContainer,
-		showContainer: (container: HTMLElement) => void,
-		hideContainer: (container: HTMLElement) => void
 	) {
 		const { modelName } = getViewInfo(this.plugin, this.viewType);
 		const titleDiv = createDiv();
@@ -91,8 +90,6 @@ export class Header {
 			historyContainer.generateHistoryContainer(
 				chatHistoryContainerDiv,
 				this.plugin.settings.promptHistory,
-				hideContainer,
-				showContainer,
 				chatContainerDiv,
 				chatContainer,
 				this

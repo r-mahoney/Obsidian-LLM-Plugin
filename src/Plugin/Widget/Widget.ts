@@ -19,13 +19,6 @@ export class WidgetView extends ItemView {
 		this.viewType = viewType
 	}
 
-	hideContainer(container: HTMLElement) {
-		container.setAttr("style", "display: none");
-	}
-	showContainer(container: HTMLElement) {
-		container.setAttr("style", "display: flex");
-	}
-
 	getViewType(): string {
 		return (this.viewType === "tab" ? TAB_VIEW_TYPE : LEAF_VIEW_TYPE);
 		//return an empty tring because workspace.getLeavesOfType function in widget commands uses this to determine what
@@ -35,7 +28,7 @@ export class WidgetView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return "LLM Plugin View";
+		return "LLM";
 	}
 
 	async onOpen() {
@@ -78,15 +71,11 @@ export class WidgetView extends ItemView {
 			historyContainer,
 			settingsContainer,
 			assistantsContainer,
-			this.showContainer,
-			this.hideContainer
 		);
 		chatContainer.generateChatContainer(chatContainerDiv, header);
 		historyContainer.generateHistoryContainer(
 			chatHistoryContainer,
 			history,
-			this.hideContainer,
-			this.showContainer,
 			chatContainerDiv,
 			chatContainer,
 			header

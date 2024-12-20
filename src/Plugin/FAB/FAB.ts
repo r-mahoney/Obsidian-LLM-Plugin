@@ -6,6 +6,8 @@ import { SettingsContainer } from "Plugin/Components/SettingsContainer";
 import LLMPlugin from "main";
 import { ButtonComponent } from "obsidian";
 import { classNames } from "utils/classNames";
+import { hideContainer } from "utils/dom";
+
 
 const ROOT_WORKSPACE_CLASS = ".mod-vertical.mod-root";
 
@@ -13,13 +15,6 @@ export class FAB {
 	plugin: LLMPlugin;
 	constructor(plugin: LLMPlugin) {
 		this.plugin = plugin;
-	}
-
-	hideContainer(container: HTMLElement) {
-		container.setAttr("style", "display: none");
-	}
-	showContainer(container: HTMLElement) {
-		container.setAttr("style", "display: flex");
 	}
 
 	showViewArea(container: HTMLElement) {
@@ -66,8 +61,6 @@ export class FAB {
 			historyContainer,
 			settingsContainer,
 			assistantsContainer,
-			this.showContainer,
-			this.hideContainer
 		);
 		let history = this.plugin.settings.promptHistory;
 
@@ -85,8 +78,6 @@ export class FAB {
 		historyContainer.generateHistoryContainer(
 			chatHistoryContainer,
 			history,
-			this.hideContainer,
-			this.showContainer,
 			chatContainerDiv,
 			chatContainer,
 			header
@@ -104,7 +95,7 @@ export class FAB {
 				if (!viewArea.isShown()) {
 					this.showViewArea(viewArea);
 				} else {
-					this.hideContainer(viewArea);
+					hideContainer(viewArea);
 				}
 			});
 

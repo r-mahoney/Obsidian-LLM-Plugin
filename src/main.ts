@@ -33,7 +33,6 @@ import { DesktopOperatingSystem, MobileOperatingSystem, OperatingSystem } from "
 import { DesktopFileSystem, MobileFileSystem, FileSystem } from "services/FileSystem";
 
 export interface LLMPluginSettings {
-	appName: string;
 	modalSettings: ViewSettings;
 	widgetSettings: ViewSettings;
 	fabSettings: ViewSettings;
@@ -79,7 +78,6 @@ const defaultSettings = {
 };
 
 export const DEFAULT_SETTINGS: LLMPluginSettings = {
-	appName: "Local LLM Plugin",
 	modalSettings: {
 		...defaultSettings,
 	},

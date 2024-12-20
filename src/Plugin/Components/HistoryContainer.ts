@@ -73,8 +73,6 @@ export class HistoryContainer {
 	generateHistoryContainer(
 		parentElement: HTMLElement,
 		history: HistoryItem[],
-		hideContainer: (container: HTMLElement) => void,
-		showContainer: (container: HTMLElement) => void,
 		containerToShow: HTMLElement,
 		chat: ChatContainer,
 		Header: Header
@@ -224,8 +222,6 @@ export class HistoryContainer {
 				this.generateHistoryContainer(
 					parentElement,
 					this.plugin.settings.promptHistory,
-					hideContainer,
-					showContainer,
 					containerToShow,
 					chat,
 					Header
