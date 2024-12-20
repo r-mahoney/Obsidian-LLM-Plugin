@@ -232,7 +232,8 @@ export class SettingsContainer {
 	generateChatSettings(parentContainer: HTMLElement, modelType: string) {
 		const settingType = getSettingType(this.viewType);
 		const viewSettings = this.plugin.settings[settingType];
-		const tempSetting = new Setting(parentContainer)
+
+		new Setting(parentContainer)
 			.setName("Temperature")
 			.setDesc(
 				modelType !== GPT4All
@@ -248,7 +249,7 @@ export class SettingsContainer {
 				});
 			});
 
-		const tokenSetting = new Setting(parentContainer)
+		new Setting(parentContainer)
 			.setName("Tokens")
 			.setDesc("The number of tokens used in the completion.")
 			.addText((text) => {
